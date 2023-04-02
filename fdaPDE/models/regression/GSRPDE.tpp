@@ -27,6 +27,22 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute(c
   return std::tie(pW_, py_);
 }
 
+
+// I:
+template <typename PDE, typename RegularizationType, Sampling SamplingDesign,
+	  SolverType Solver, typename Distribution>
+double
+GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute_J_unpenalized(const DVector<double>& mu) {
+  
+  // compute value of functional J given mu: \norm{V^{-1/2}(y - \mu)}^2 
+	DVector<double> V = distribution_.variance(mu).array().sqrt().inverse().matrix();
+	double J = (V.asDiagonal()*(y() - mu)).squaredNorm() ;
+  return J;
+}
+
+
+
+
 // required to support GCV based smoothing parameter selection
 // in case of a GSRPDE model we have T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1), with Q = W*(I-H)
 template <typename PDE, typename RegularizationType, Sampling SamplingDesign,

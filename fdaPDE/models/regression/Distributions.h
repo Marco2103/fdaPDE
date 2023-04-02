@@ -128,6 +128,18 @@ namespace models {
     // deviance function
     double deviance(double x, double y) { return 2*((y-x)/x - std::log(y/x)); };    
   };
+
+  // M: idea spostare questo all'interno della nostra classe
+  class Quantile {
+  public:
+    // constructor
+    Quantile() = default;
+
+    void preprocess(DVector<double>& data) const { return; }
+                      
+    DMatrix<double> inv_link(const DMatrix<double>& x) const {
+      return x; }          
+  };
   
 }}
 

@@ -83,7 +83,7 @@ namespace models{
       double J_old = tolerance_+1; double J_new = 0;
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
-	// request weight matrix W and pseudo-observation vector \tilde y from model
+	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 	auto pair = m_.compute(mu_);
 	
 	// solve weighted least square problem
@@ -102,10 +102,10 @@ namespace models{
 	// update value of \mu_
 	DVector<double> fitted = solver.fitted(); // compute fitted values
 	mu_ = distribution_.inv_link(fitted);
-	
+
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
-	DVector<double> V = distribution_.variance(mu_).array().sqrt().inverse().matrix();
-	double J = (V.asDiagonal()*(m_.y() - mu_)).squaredNorm() + g_.dot(m_.R0()*g_); // \int_D (Lf-u)^2
+  double J = m_.compute_J_unpenalized(mu_) + g_.dot(m_.R0()*g_);
+
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
       }
