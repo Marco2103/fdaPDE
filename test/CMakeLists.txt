@@ -19,7 +19,7 @@ FetchContent_Declare(
   SOURCE_DIR "../../googletest-609281088cfefc76f9d0ce82e1ff6c30cc3591e5"
 )
 # No !  
-
+# NO-2 !
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
