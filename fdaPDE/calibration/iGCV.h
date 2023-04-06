@@ -15,6 +15,10 @@ namespace calibration{
     DMatrix<double> R_{}; // R = R1^T*R0^{-1}*R1
     DMatrix<double> T_{}; // T = \Psi^T*Q*\Psi + \lambda*R
     DMatrix<double> Q_{}; // Q_ = I - H, whatever H is for the model
+
+    // Aggiunta:
+    DMatrix<double> SmoothingMatrix_{};
+
   public:
     // constructor
     iGCV() {};
@@ -25,6 +29,9 @@ namespace calibration{
     virtual const DMatrix<double>& T() = 0; // returns matrix T = \Psi^T*Q*\Psi + \lambda*R, stores also matrix R_
     // computes the norm of y - \hat y, according to the choosen distribution
     virtual double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const = 0;
+
+    // Aggiunta: 
+    virtual const DMatrix<double>& SmoothingMatrix() {return SmoothingMatrix_ ;}; 
 
     // utilities
     fdaPDE::SparseLU<SpMatrix<double>>& invR0() { return invR0_; };

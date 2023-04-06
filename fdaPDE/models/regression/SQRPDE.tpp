@@ -37,6 +37,7 @@ SQRPDE<PDE, SamplingDesign, Distribution>::compute_J_unpenalized(const DVector<d
     // facendo la radice sull'array?       
 }
 
+// --- FAI DA QUI
 
 // required to support GCV based smoothing parameter selection
 // in case of an SRPDE model we have T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
@@ -58,7 +59,7 @@ const DMatrix<double>& SRPDE<PDE, SamplingDesign>::T() {
 // Q is computed on demand only when it is needed by GCV and cached for fast reacess (in general operations
 // involving Q can be substituted with the more efficient routine lmbQ(), which is part of iRegressionModel interface)
 template <typename PDE, Sampling SamplingDesign>
-const DMatrix<double>& SRPDE<PDE, SamplingDesign>::Q() {
+const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
   if(Q_.size() == 0){ // Q is computed on request since not needed in general
     // compute Q = W(I - H) = W - W*X*(X*W*X^T)^{-1}*X^T*W
     Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
@@ -68,6 +69,28 @@ const DMatrix<double>& SRPDE<PDE, SamplingDesign>::Q() {
 
 // returns the euclidean norm of op1 - op2
 template <typename PDE, Sampling SamplingDesign>
-double SRPDE<PDE, SamplingDesign>::norm(const DMatrix<double>& op1, const DMatrix<double>& op2) const {
+double SQRPDE<PDE, SamplingDesign>::norm(const DMatrix<double>& op1, const DMatrix<double>& op2) const {
   return (op1 - op2).squaredNorm();
 }
+
+template <typename PDE, Sampling SamplingDesign, typename Distribution>
+const DMatrix<double>& 
+SQRPDE<PDE, SamplingDesign, Distribution>::Q() {
+  if(Q_.size() == 0){ // Q is computed on request since not needed in general
+    // compute Q = W(I - H) = W - W*X*(X*W*X^T)^{-1}*X^T*W
+    Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
+  }
+  return Q_;
+}
+
+// I 
+template <typename PDE, Sampling SamplingDesign, typename Distribution>
+const DMatrix<double>&
+SQRPDE<PDE, SamplingDesign, Distribution>::SmoothingMatrix() {
+  // case no active constraints 
+  if(model_.hasCovariates())
+    return invA()*PsiTD()*Q()*Psi() ; 
+  else 
+    return invA()*PsiTD()*W()*Psi() ; 
+} 
+// per ora quindi il campo SmoothingMatrix_ ereditato da GCV rimane vuoto perchè riempiendolo ci sembra di avere una copia inutile

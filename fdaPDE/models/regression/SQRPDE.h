@@ -69,8 +69,22 @@ namespace models{
     // iGCV interface implementation
     virtual const DMatrix<double>& T(); // T = ...
     virtual const DMatrix<double>& Q(); // Q = ...
+
+    // I 
+    virtual const DMatrix<double>& SmoothingMatrix() override ; 
+
     // returns the euclidian norm of y - \hat y
     virtual double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const;
+
+    // getters
+    const DiagMatrix<double>& W() const { return W_; }
+    /*  servono?
+    const SpMatrix<double>& A() const { return A_; }
+    const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
+    const DMatrix<double>& U() const { return U_; }
+    const DMatrix<double>& V() const { return V_; }
+    */
+
 
     virtual ~SQRPDE() = default;
   };

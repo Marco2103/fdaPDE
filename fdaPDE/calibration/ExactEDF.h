@@ -16,18 +16,26 @@ namespace calibration{
   private:
     Model& model_;
 
+    // Modificato: 
     // compute matrix S = \Psi*T^{-1}*\Psi^T*Q
     const DMatrix<double>& S() {
-      // compute \Psi^T*D*Q (take into account of areal sampling)
-      if(model_.hasCovariates())
-	E_ = model_.PsiTD()*model_.Q();
-      else E_ = model_.PsiTD();
-      
-      // factorize matrix T
-      invT_ = model_.T().partialPivLu();
-      V_ = invT_.solve(E_); // V = invT*E = T^{-1}*\Psi^T*Q
-      S_ = model_.Psi()*V_; // S = \Psi*V
-      return S_;
+      if(model_.SmoothingMatrix().size()==0) {
+        // compute \Psi^T*D*Q (take into account of areal sampling)
+        if(model_.hasCovariates())
+          E_ = model_.PsiTD()*model_.Q();
+        else E_ = model_.PsiTD();
+        
+        // factorize matrix T
+        invT_ = model_.T().partialPivLu();
+        V_ = invT_.solve(E_); // V = invT*E = T^{-1}*\Psi^T*Q
+        S_ = model_.Psi()*V_; // S = \Psi*V
+        return S_;
+      }
+      else {
+        S_ = model_.SmoothingMatrix();
+        return S_; 
+        
+      }
     };    
 
   public:
