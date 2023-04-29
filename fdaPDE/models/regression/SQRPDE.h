@@ -32,12 +32,13 @@ namespace models{
   private:
     typedef RegressionBase<SQRPDE<PDE, SamplingDesign>> Base;
     
-    double alpha_ = 0.5;    // quantile order 
+    double alpha_;    // quantile order 
 
-    DiagMatrix<double> W_;   
+    DiagMatrix<double> W_;          // weight matrix at FPRILS convergence 
+    DiagMatrix<double> XtWX_; 
     Distribution distribution_{};
-    DVector<double> py_{}; // y - (1-2*alpha)|y - X*beta - f|
-    DVector<double> pW_;   // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
+    DVector<double> py_{};          // y - (1-2*alpha)|y - X*beta - f|
+    DVector<double> pW_;            // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 15;
@@ -48,8 +49,7 @@ namespace models{
     using Base::lambdaS; // smoothing parameter in space
     // constructor
     SQRPDE() = default;
-    SQRPDE(const PDE& pde, double alpha = 0.5) : Base(pde), alpha_(alpha) {};   // inizializzare alpha anche
-                                                            // qui è necessario? 
+    SQRPDE(const PDE& pde, double alpha = 0.5) : Base(pde), alpha_(alpha) {};   
 
     
     // setter
@@ -85,9 +85,9 @@ namespace models{
     const DMatrix<double>& V() const { return V_; }
     */
 
-
     virtual ~SQRPDE() = default;
   };
+  
   template <typename PDE_, Sampling SamplingDesign>
   struct model_traits<SQRPDE<PDE_, SamplingDesign>> {
     typedef PDE_ PDE;
