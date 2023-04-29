@@ -129,11 +129,11 @@ namespace models {
     double deviance(double x, double y) { return 2*((y-x)/x - std::log(y/x)); };    
   };
 
-  // M: idea spostare questo all'interno della nostra classe
-  class Quantile {
+  // M: 
+  class Gaussian {
   public:
     // constructor
-    Quantile() = default;
+    Gaussian() = default;
 
     void preprocess(DVector<double>& data) const { return; }
                       

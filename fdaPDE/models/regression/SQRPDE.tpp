@@ -1,31 +1,38 @@
 // finds a solution to the SQR-PDE smoothing problem
-template <typename PDE, Sampling SamplingDesign, typename Distribution = fdaPDE::models::Quantile>
-void SQRPDE<PDE, SamplingDesign, Distribution>::solve() {
+template <typename PDE, Sampling SamplingDesign>
+void SQRPDE<PDE, SamplingDesign>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
-  FPIRLS<decltype(*this), Distribution> fpirls(*this, tol_, max_iter_); // FPIRLS engine
+  FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
   fpirls.compute();
   
   // fpirls converged: extract matrix P and solution estimates
-  W_ = fpirls.weights().asDiagonal();
+  W_ =    fpirls.weights().asDiagonal();
+  XtWX_ = X().transpose()*W_*X(); 
+  invXtWX_ = XtWX_.partialPivLu(); 
+  //A_ =    fpirls.solver().A(); 
+  invA_ = fpirls.solver().invA();
+  U_ =    fpirls.solver().U(); 
+  V_ =    fpirls.solver().V(); 
+
   f_ = fpirls.f();
   if(hasCovariates()) beta_ = fpirls.beta();
   return;
 }
 
-template <typename PDE, Sampling SamplingDesign, typename Distribution>
+template <typename PDE, Sampling SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
-SQRPDE<PDE, SamplingDesign, Distribution>::compute(const DVector<double>& mu) {
+SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   // compute weight matrix and pseudo-observation vector
   DVector<double> abs_res = std::abs( y() - mu ); 
-  pW_ = 1 / (2*ModelBase::n_obs()*abs_res).matrix();    // controlla n_obs e std::abs 
+  pW_ = 1 / (2*n_obs()*abs_res).matrix();    // controlla n_obs
   py_ = y() - (1 - 2*alpha_)*abs_res;
   return std::tie(pW_, py_);
 }
 
-template <typename PDE, Sampling SamplingDesign, typename Distribution>
+template <typename PDE, Sampling SamplingDesign>
 double
-SQRPDE<PDE, SamplingDesign, Distribution>::compute_J_unpenalized(const DVector<double>& mu) {
+SQRPDE<PDE, SamplingDesign>::compute_J_unpenalized(const DVector<double>& mu) {
   
   // compute value of functional J given mu: /(2*n) 
     return (pW_.sqrt().asDiagonal()*(py_ - mu)).squaredNorm() ;
@@ -36,8 +43,6 @@ SQRPDE<PDE, SamplingDesign, Distribution>::compute_J_unpenalized(const DVector<d
     // per riusare pW_ già calcolata. E' più efficiente così oppure ricalcolandosi pW_ 
     // facendo la radice sull'array?       
 }
-
-// --- FAI DA QUI
 
 // required to support GCV based smoothing parameter selection
 // in case of an SRPDE model we have T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
@@ -70,12 +75,32 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
 // returns the euclidean norm of op1 - op2
 template <typename PDE, Sampling SamplingDesign>
 double SQRPDE<PDE, SamplingDesign>::norm(const DMatrix<double>& op1, const DMatrix<double>& op2) const {
-  return (op1 - op2).squaredNorm();
+  double result = 0;
+  for(std::size_t i = 0; i < obs.rows(); ++i)
+    result += distr_.deviance(obs.coeff(i,0), fitted.coeff(i,0));
+  return result;
 }
 
-template <typename PDE, Sampling SamplingDesign, typename Distribution>
+
+// returns the numerator of the GCV score 
+template <typename PDE, Sampling SamplingDesign>
+double SQRPDE<PDE, SamplingDesign>::norm
+(const DMatrix<double>& obs, const DMatrix<double>& fitted) const {
+  double result = 0;
+  for(std::size_t i = 0; i < obs.rows(); ++i)
+    result += rho_alpha(obs.coeff(i,0) - fitted.coeff(i,0));
+  return result*result / n ;
+}
+
+// returns the pinball loss at a specific x 
+template <typename PDE, Sampling SamplingDesign>
+double SQRPDE<PDE, SamplingDesign, Distribution>::rho_alpha(const double& x) const{
+  return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
+}
+
+template <typename PDE, Sampling SamplingDesign>
 const DMatrix<double>& 
-SQRPDE<PDE, SamplingDesign, Distribution>::Q() {
+SQRPDE<PDE, SamplingDesign>::Q() {
   if(Q_.size() == 0){ // Q is computed on request since not needed in general
     // compute Q = W(I - H) = W - W*X*(X*W*X^T)^{-1}*X^T*W
     Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
@@ -83,14 +108,4 @@ SQRPDE<PDE, SamplingDesign, Distribution>::Q() {
   return Q_;
 }
 
-// I 
-template <typename PDE, Sampling SamplingDesign, typename Distribution>
-const DMatrix<double>&
-SQRPDE<PDE, SamplingDesign, Distribution>::SmoothingMatrix() {
-  // case no active constraints 
-  if(model_.hasCovariates())
-    return invA()*PsiTD()*Q()*Psi() ; 
-  else 
-    return invA()*PsiTD()*W()*Psi() ; 
-} 
-// per ora quindi il campo SmoothingMatrix_ ereditato da GCV rimane vuoto perchè riempiendolo ci sembra di avere una copia inutile
+

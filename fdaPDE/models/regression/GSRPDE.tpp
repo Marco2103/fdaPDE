@@ -40,9 +40,6 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute_J
   return J;
 }
 
-
-
-
 // required to support GCV based smoothing parameter selection
 // in case of a GSRPDE model we have T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1), with Q = W*(I-H)
 template <typename PDE, typename RegularizationType, Sampling SamplingDesign,

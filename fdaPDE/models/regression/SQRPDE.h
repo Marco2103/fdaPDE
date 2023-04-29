@@ -25,24 +25,33 @@ using fdaPDE::models::FPIRLS
 namespace fdaPDE{
 namespace models{
   
-  template <typename PDE, Sampling SamplingDesign, typename Distribution>
-  class SQRPDE : public RegressionBase<SQRPDE<PDE, SamplingDesign, Distribution>>, public iGCV {
+  template <typename PDE, Sampling SamplingDesign>
+  class SQRPDE : public RegressionBase<SQRPDE<PDE, SamplingDesign>>, public iGCV {
     // compile time checks
     static_assert(std::is_base_of<PDEBase, PDE>::value);
   private:
     typedef RegressionBase<SQRPDE<PDE, SamplingDesign>> Base;
     
-    double alpha_;    // quantile order 
+    double alpha_;                                          // quantile order 
+    double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
-    DiagMatrix<double> W_;          // weight matrix at FPRILS convergence 
+    //SpMatrix<double> A_{};                          // system matrix of non-parametric problem (2N x 2N matrix)
+    fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
+
+    DiagMatrix<double> W_;                            // weight matrix at FPRILS convergence 
     DiagMatrix<double> XtWX_; 
-    Distribution distribution_{};
-    DVector<double> py_{};          // y - (1-2*alpha)|y - X*beta - f|
-    DVector<double> pW_;            // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
+    Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
+
+    DVector<double> py_{};                            // y - (1-2*alpha)|y - X*beta - f|
+    DVector<double> pW_;                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 15;
     double tol_ = 0.0002020;
+
+    // matrices related to woodbury decomposition
+    DMatrix<double> U_{};
+    DMatrix<double> V_{};  
 
   public:
     IMPORT_REGRESSION_SYMBOLS;
@@ -67,24 +76,21 @@ namespace models{
     double compute_J_unpenalized(const DVector<double>& mu); 
     
     // iGCV interface implementation
-    virtual const DMatrix<double>& T(); // T = ...
-    virtual const DMatrix<double>& Q(); // Q = ...
-
-    // I 
-    virtual const DMatrix<double>& SmoothingMatrix() override ; 
+    virtual const DMatrix<double>& T(); // T = A 
+    virtual const DMatrix<double>& Q(); 
 
     // returns the euclidian norm of y - \hat y
-    virtual double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const;
+    double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const
 
     // getters
     const DiagMatrix<double>& W() const { return W_; }
-    /*  servono?
-    const SpMatrix<double>& A() const { return A_; }
+    const DiagMatrix<double>& XtWX() const { return XtWX_; }
+    //const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
-    */
 
+    
     virtual ~SQRPDE() = default;
   };
   
@@ -98,7 +104,7 @@ namespace models{
   };
  
 
-#include "SRPDE.tpp"
+#include "SQRPDE.tpp"
 }}
     
-#endif // __SRPDE_H__
+#endif // __SQRPDE_H__
