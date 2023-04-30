@@ -98,14 +98,5 @@ double SQRPDE<PDE, SamplingDesign, Distribution>::rho_alpha(const double& x) con
   return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
 }
 
-template <typename PDE, Sampling SamplingDesign>
-const DMatrix<double>& 
-SQRPDE<PDE, SamplingDesign>::Q() {
-  if(Q_.size() == 0){ // Q is computed on request since not needed in general
-    // compute Q = W(I - H) = W - W*X*(X*W*X^T)^{-1}*X^T*W
-    Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
-  }
-  return Q_;
-}
 
 
