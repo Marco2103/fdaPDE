@@ -1,13 +1,27 @@
 // perform initialization of model object, must be called before call to .solve()
 template <typename Model>
 void ModelBase<Model>::init(){
+
+  std::cout << "Inizio init" << std::endl ; 
+
   init_pde();                    // init pde object
+
+  std::cout << "pde fatto" << std::endl ; 
+
   model().init_regularization(); // init regularization term
-  model().init_sampling(true);   // init \Psi matrix, always force recomputation
+
+  std::cout << "init_reg fatto" << std::endl ; 
+  model().init_sampling(true);   // init \Psi matrix, always force recomputation  --> PROBLEMA QUI 
   
+std::cout << "init_sam fatto" << std::endl ; 
+
   // analyze and set missing data
   model().analyze_nan();
+  std::cout << "analyz nan fatto" << std::endl ; 
+
   model().set_nan();
+  std::cout << "set nan fatto" << std::endl ; 
+  std::cout << "prova init_model " << std::endl ; 
   
   model().init_model();          // init model
 }

@@ -20,7 +20,7 @@ using fdaPDE::calibration::iGCV;
 #include "RegressionBase.h"
 using fdaPDE::models::RegressionBase;
 #include "FPIRLS.h"
-using fdaPDE::models::FPIRLS
+using fdaPDE::models::FPIRLS ; 
 
 namespace fdaPDE{
 namespace models{
@@ -38,8 +38,8 @@ namespace models{
     //SpMatrix<double> A_{};                          // system matrix of non-parametric problem (2N x 2N matrix)
     fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
 
-    DiagMatrix<double> W_;                            // weight matrix at FPRILS convergence 
-    DiagMatrix<double> XtWX_; 
+    DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence 
+    DMatrix<double> XtWX_{}; 
     Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
 
     DVector<double> py_{};                            // y - (1-2*alpha)|y - X*beta - f|
@@ -80,11 +80,11 @@ namespace models{
     virtual const DMatrix<double>& Q(); 
 
     // returns the euclidian norm of y - \hat y
-    double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const
+    double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const ; 
 
     // getters
-    const DiagMatrix<double>& W() const { return W_; }
-    const DiagMatrix<double>& XtWX() const { return XtWX_; }
+    const DiagMatrix<double>& W() const { return W_; }  // TOLTO IL CONST ALL'INIZIO PERCHE DAVA ERRORE -> CONTROLLA
+    const DMatrix<double>& XtWX() const { return XtWX_; }
     //const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }

@@ -111,7 +111,7 @@ namespace models{
 	mu_ = distribution_.inv_link(fitted);
 
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
-  double J = m_.compute_J_unpenalized(mu_) + m_.lambda()*g_.dot(m_.R0()*g_);
+  double J = m_.compute_J_unpenalized(mu_) + m_.lambdaS()*(g_.dot(m_.R0()*g_));
 
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
@@ -127,7 +127,7 @@ namespace models{
     const DVector<double>& f() const { return f_; }                                     // estimate of spatial field 
     const DVector<double>& g() const { return g_; }                                     // PDE misfit
     std::size_t n_iter() const { return k_ - 1; }                                       // number of iterations
-    typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
+    const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
   };
   
 }}
