@@ -15,13 +15,29 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   std::cout << "post compute " << std::endl ; 
   
   // fpirls converged: extract matrix P and solution estimates
+  std::cout << "W " << std::endl ; 
   W_ =    fpirls.weights().asDiagonal();
-  XtWX_ = X().transpose()*W_*X(); 
-  invXtWX_ = XtWX_.partialPivLu();
+
+  if(hasCovariates()) {
+    std::cout << "XtWX " << std::endl ; 
+    XtWX_ = X().transpose()*W_*X(); 
+    std::cout << "invXtWX " << std::endl ; 
+    invXtWX_ = XtWX_.partialPivLu();
+
+  }
+  
+  std::cout << "invA " << std::endl ; 
   //A_ =    fpirls.solver().A(); 
   invA_ = fpirls.solver().invA();
-  U_ =    fpirls.solver().U(); 
-  V_ =    fpirls.solver().V(); 
+
+  if(hasCovariates()) {
+    std::cout << "U " << std::endl ; 
+    U_ =    fpirls.solver().U(); 
+    std::cout << "V " << std::endl ; 
+    V_ =    fpirls.solver().V(); 
+
+  }
+  
 
   std::cout << "bha " << std::endl ; 
 
@@ -33,21 +49,67 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 }
 
 template <typename PDE, Sampling SamplingDesign>
+DVector<double> 
+SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
+
+  std::cout << "Entra " << std::endl ; 
+  
+  std::cout << "Calcolo R0inv_temp " << std::endl ;
+  fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
+  invR0_temp.compute(R0());
+  std::cout << "Fine Calcolo R0inv_temp " << std::endl ;
+  SpMatrix<double> A_temp = PsiTD()*Psi() + lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; // factor of 2 ? 
+
+  std::cout << "A_temp ok " << std::endl ; 
+
+  fdaPDE::SparseLU<SpMatrix<double>> invA_temp ; 
+  invA_temp.compute(A_temp);
+
+  std::cout << "invA_temp ok " << std::endl ; 
+
+  // FullPivLU<DMatrix<double>> lu(A_temp) ; 
+  DVector<double> b_temp = PsiTD()*y() ; 
+  std::cout << "b_temp ok " << std::endl ; 
+  DVector<double> f = invA_temp.solve(b_temp);
+  std::cout << "f_temp ok " << std::endl ; 
+  DVector<double> fn = Psi()*f ; 
+    
+  std::cout << "return  " << std::endl ; 
+  return fn ; 
+
+}
+
+template <typename PDE, Sampling SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
 SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   // compute weight matrix and pseudo-observation vector
-  DVector<double> abs_res = ( y() - mu ).cwiseAbs() ; 
-  pW_ = (2*n_obs()*abs_res).cwiseInverse().matrix();    // controlla n_obs
+
+  std::cout << "entrato in compute  " << std::endl ; 
+  DVector<double> abs_res{} ;
+  abs_res.resize(y().size()) ; 
+  std::cout << "fatto resize " << std::endl ; 
+
+  double tol = 1e-6; 
+  for(int i = 0; i < y().size(); ++i)
+    abs_res(i) = (y()(i) - mu(i)) > tol ? y()(i) - mu(i) : y()(i) - mu(i) + tol;   
+
+  std::cout << "fatto for " << std::endl ; 
+  pW_ = (2*n_obs()*abs_res).cwiseInverse().matrix();   
+  std::cout << "fatto pW " << std::endl ; 
   py_ = y() - (1 - 2*alpha_)*abs_res;
+  std::cout << "fatto py " << std::endl ; 
   return std::tie(pW_, py_);
 }
 
 template <typename PDE, Sampling SamplingDesign>
 double
 SQRPDE<PDE, SamplingDesign>::compute_J_unpenalized(const DVector<double>& mu) {
+
+  std::cout << "entrato in compute_J_unpen  " << std::endl ; 
+
   
   // compute value of functional J given mu: /(2*n) 
-    return (pW_.cwiseSqrt()*(py_ - mu)).squaredNorm() ;
+    return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm() ;
     // differentemente da GSPDE, in cui la sequenza dei calcoli è   
         // array() --> sqrt() --> .. --> matrix()
     // noi stiamo facendo 

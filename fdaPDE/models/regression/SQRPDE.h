@@ -35,15 +35,15 @@ namespace models{
     double alpha_;                                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
-    //SpMatrix<double> A_{};                          // system matrix of non-parametric problem (2N x 2N matrix)
-    fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
+    SpMatrix<double> A_{};                          // system matrix of non-parametric problem (2N x 2N matrix)
+    fdaPDE::SparseLU<SpMatrix<double>> invA_{};         // factorization of matrix A
 
     DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence 
     DMatrix<double> XtWX_{}; 
     Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
 
     DVector<double> py_{};                            // y - (1-2*alpha)|y - X*beta - f|
-    DVector<double> pW_;                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
+    DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 15;
@@ -73,7 +73,10 @@ namespace models{
     // returns a pair of references to W^k and \tilde y^k
     std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
 
-    double compute_J_unpenalized(const DVector<double>& mu); 
+    double compute_J_unpenalized(const DVector<double>& mu); // private or public?
+
+    DVector<double> initialize_mu() const ; 
+
     
     // iGCV interface implementation
     virtual const DMatrix<double>& T(); // T = A 
@@ -83,9 +86,9 @@ namespace models{
     double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const ; 
 
     // getters
-    const DiagMatrix<double>& W() const { return W_; }  // TOLTO IL CONST ALL'INIZIO PERCHE DAVA ERRORE -> CONTROLLA
+    const DiagMatrix<double>& W() const { return W_; } 
     const DMatrix<double>& XtWX() const { return XtWX_; }
-    //const SpMatrix<double>& A() const { return A_; }
+    const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }

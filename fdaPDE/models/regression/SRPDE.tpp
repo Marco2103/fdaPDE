@@ -10,6 +10,11 @@ void SRPDE<PDE, SamplingDesign>::init_model() {
       lambdaS()*R1(),     lambdaS()*R0()            );
   // cache non-parametric matrix and its factorization for reuse
   A_ = A.derived();
+
+  std::cout << "Stampa A_ " << std::endl; 
+  // std::cout << Eigen::MatrixXd(A_) << std::endl ; 
+
+
   invA_.compute(A_);
   // prepare rhs of linear system
   b_.resize(A_.rows());
@@ -27,7 +32,12 @@ void SRPDE<PDE, SamplingDesign>::solve() {
     // update rhs of SR-PDE linear system
     b_.block(0,0, n_basis(),1) = -PsiTD()*W()*y();
     // solve linear system A_*x = b_
+
+    std::cout << "Calcolo sol  " << std::endl ; 
+
     sol = invA_.solve(b_);
+    
+    std::cout << "Calcolo f  " << std::endl ; 
     f_ = sol.head(n_basis());
   }else{ // parametric case
     // update rhs of SR-PDE linear system
@@ -45,7 +55,10 @@ void SRPDE<PDE, SamplingDesign>::solve() {
     beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
   }
   // store PDE misfit
+  std::cout << "Calcolo g  " << std::endl ; 
   g_ = sol.tail(n_basis());
+
+  std::cout << "return  " << std::endl ; 
   return;
 }
 
