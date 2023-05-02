@@ -63,6 +63,8 @@ namespace models{
 
     // I:
     double compute_J_unpenalized(const DVector<double>& mu); 
+
+    DVector<double> initialize_mu() const ; 
     
     // iGCV interface implementation
     virtual const DMatrix<double>& T(); // T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)

@@ -81,17 +81,29 @@ namespace models{
     
     // executes the FPIRLS algorithm
     void compute() {
+
       static_assert(is_regression_model<Model>::value);      
       // algorithm initialization
-      mu_ = m_.y();
+      // mu_ = m_.y();  --> NON VA BENE PER IL NOSTRO SQRPDE PERCHè PORTA AD AVERE w = 0 --> CASINO QUANDO INVERTE
+
+      std::cout << "initialize mu " << std::endl ; 
+      mu_ = m_.initialize_mu(); 
+
+      std::cout << "fine initialize mu " << std::endl ; 
+
       distribution_.preprocess(mu_);
+
+      std::cout << "fine preprocess " << std::endl ; 
           
       // algorithm stops when an enought small difference between two consecutive values of the J is recordered
       double J_old = tolerance_+1; double J_new = 0;
+
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
+
 	auto pair = m_.compute(mu_);
+  std::cout << "fine compute  " << std::endl ; 
 	
 	// solve weighted least square problem
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
@@ -99,25 +111,55 @@ namespace models{
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
 	// update solver_ to change in the weight matrix
 	solver_.update_to_data();
+
+  std::cout << "Stampa invA prima di init_model " << std::endl; 
+  // solver_.invA().info() ; 
+
 	solver_.init_model(); 
+
+  std::cout << "Stampa invA dopo init_model " << std::endl; 
+  // std::cout << solver_.invA() << std::endl ; 
+  // solver_.invA().info() ; 
+
+  std::cout << "Chiamo solve di SRPDE " << std::endl ; 
 	solver_.solve();
+
+  std::cout << "finito solve " << std::endl ; 
+
 	
 	// extract estimates from solver
 	f_ = solver_.f(); g_ = solver_.g();
+
+  std::cout << "fatto f  " << std::endl ; 
+
 	if(m_.hasCovariates()) beta_ = solver_.beta();
 	
 	// update value of \mu_
 	DVector<double> fitted = solver_.fitted(); // compute fitted values
 	mu_ = distribution_.inv_link(fitted);
 
+
+  std::cout << "calcolo J   " << std::endl ; 
+
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
   double J = m_.compute_J_unpenalized(mu_) + m_.lambdaS()*(g_.dot(m_.R0()*g_));
 
+  std::cout << "finito calcolo J   " << std::endl ; 
+
+
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
+
+
       }
+
+  std::cout << "store W  " << std::endl ; 
+
       // store weight matrix at convergence
       W_ = std::get<0>(m_.compute(mu_));
+
+  std::cout << "return da solve " << std::endl ; 
+
       return;
     } 
 
