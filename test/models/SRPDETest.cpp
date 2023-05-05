@@ -115,10 +115,10 @@ TEST(SRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
   
   // load data from .csv files
   CSVFile<double> yFile; // observation file
-  yFile = reader.parseFile  ("data/models/SRPDE/2D_test2/z.csv");
+  yFile = reader.parseFile("data/models/SRPDE/2D_test2/z.csv");
   DMatrix<double> y = yFile.toEigen();
   CSVFile<double> XFile; // design matrix
-  XFile = reader.parseFile  ("data/models/SRPDE/2D_test2/X.csv");
+  XFile = reader.parseFile("data/models/SRPDE/2D_test2/X.csv");
   DMatrix<double> X = XFile.toEigen();
 
   // set model data

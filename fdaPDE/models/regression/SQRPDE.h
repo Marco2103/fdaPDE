@@ -46,8 +46,8 @@ namespace models{
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 15;
-    double tol_ = 0.0002020;
+    std::size_t max_iter_ = 200;
+    double tol_ = 0.000001;
 
     // matrices related to woodbury decomposition
     DMatrix<double> U_{};
