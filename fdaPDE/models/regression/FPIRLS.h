@@ -142,7 +142,7 @@ namespace models{
   std::cout << "calcolo J   " << std::endl ; 
 
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
-  double J = m_.compute_J_unpenalized(mu_) + m_.lambdaS()*(g_.dot(m_.R0()*g_));
+  double J = m_.compute_J_unpenalized(mu_) + g_.dot(m_.R0()*g_); // m_.lambdaS()*(g_.dot(m_.R0()*g_));  -> lambda?
 
   std::cout << "finito calcolo J   " << std::endl ; 
 
@@ -152,6 +152,11 @@ namespace models{
 
 
       }
+
+  if (k_ == max_iter_)
+    std::cout << "MAX ITER RAGGIUNTO " << std::endl ;  
+
+  std::cout << "Number of FPIRLS iterations: " << k_ << std::endl ; 
 
   std::cout << "store W  " << std::endl ; 
 

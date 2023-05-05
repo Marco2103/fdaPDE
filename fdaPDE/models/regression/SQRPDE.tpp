@@ -1,3 +1,4 @@
+
 // finds a solution to the SQR-PDE smoothing problem
 template <typename PDE, Sampling SamplingDesign>
 void SQRPDE<PDE, SamplingDesign>::solve() {
@@ -58,7 +59,7 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
   fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
   invR0_temp.compute(R0());
   std::cout << "Fine Calcolo R0inv_temp " << std::endl ;
-  SpMatrix<double> A_temp = PsiTD()*Psi() + lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; // factor of 2 ? 
+  SpMatrix<double> A_temp = PsiTD()*Psi() + 2*n_obs()*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; // factor of 2 ? 
 
   std::cout << "A_temp ok " << std::endl ; 
 
@@ -91,10 +92,10 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
   double tol = 1e-6; 
   for(int i = 0; i < y().size(); ++i)
-    abs_res(i) = (y()(i) - mu(i)) > tol ? y()(i) - mu(i) : y()(i) - mu(i) + tol;   
+    abs_res(i) = std::abs(y()(i) - mu(i)) > tol ? std::abs( y()(i) - mu(i) ) : ( std::abs(y()(i) - mu(i)) + tol );   
 
   std::cout << "fatto for " << std::endl ; 
-  pW_ = (2*n_obs()*abs_res).cwiseInverse().matrix();   
+  pW_ = (2*n_obs()*abs_res).cwiseInverse();   
   std::cout << "fatto pW " << std::endl ; 
   py_ = y() - (1 - 2*alpha_)*abs_res;
   std::cout << "fatto py " << std::endl ; 
@@ -109,13 +110,10 @@ SQRPDE<PDE, SamplingDesign>::compute_J_unpenalized(const DVector<double>& mu) {
 
   
   // compute value of functional J given mu: /(2*n) 
-    return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm() ;
-    // differentemente da GSPDE, in cui la sequenza dei calcoli è   
-        // array() --> sqrt() --> .. --> matrix()
-    // noi stiamo facendo 
-        // matrix() --> sqrt() 
-    // per riusare pW_ già calcolata. E' più efficiente così oppure ricalcolandosi pW_ 
-    // facendo la radice sull'array?       
+    return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm() ;    // serve .matrix() dopo cwiseSqrt() ? 
+    // differentemente da GSRPDE, in cui la sequenza dei calcoli è   
+        // array() --> sqrt() --> .. --> matrix() ---> .asDiagonal() 
+    // noi chiamiamo cwiseSqrt che opera component wise sul vettore (quindi è lo stesso) e poi chiamiamo la view asDiagonal   
 }
 
 // required to support GCV based smoothing parameter selection
