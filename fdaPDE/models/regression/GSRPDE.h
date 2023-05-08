@@ -20,7 +20,7 @@ namespace models{
 
   // base class for GSRPDE model
   template <typename PDE, typename RegularizationType, Sampling SamplingDesign,
-	    SolverType Solver, typename Distribution>
+	    SolverType Solver, typename Distribution = Gaussian>
   class GSRPDE : public RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>>, public iGCV {
     // compile time checks
     static_assert(std::is_base_of<PDEBase, PDE>::value);

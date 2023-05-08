@@ -49,6 +49,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   return;
 }
 
+
+// Non-parametric and semi-parametric cases coincide here, since beta^(0) = 0
 template <typename PDE, Sampling SamplingDesign>
 DVector<double> 
 SQRPDE<PDE, SamplingDesign>::initialize_mu() const {

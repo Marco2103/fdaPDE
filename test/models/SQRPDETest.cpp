@@ -34,11 +34,10 @@ using fdaPDE::testing::almost_equal;
    covariates:   no
    BC:           no
    order FE:     1
-   alpha = 0.95 -> lambda_opt (calcolato da R) = 0.001
+   alpha = 0.1
    Dati generati come nel README in data/models/SRPDE/test1 sullo script di R test_dati_Palummo.R 
 
  */
-
 
 TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   // define domain and regularizing PDE
@@ -49,9 +48,10 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 
   std::cout << "domain fatto" << std::endl ; 
 
+  double alpha = 0.1; 
   // use optimal lambda to avoid possible numerical issues
-  double lambda = 1.0 ;
-  double alpha = 0.95 ; 
+  double lambda = ;
+  std::string alpha_string = "01"
   SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
   model.setLambdaS(lambda);
 
@@ -60,10 +60,10 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   // load data from .csv files
   CSVReader<double> reader{};
   CSVFile<double> yFile; // observation file
-  yFile = reader.parseFile("data/models/SQRPDE/2D_test1/data_3600.csv");
+  yFile = reader.parseFile("data/models/SQRPDE/2D_test1/z.csv");
   DMatrix<double> y = yFile.toEigen();
 
-std::cout << "dati fatto" << std::endl ; 
+  std::cout << "dati fatto" << std::endl ; 
 
   // set model data
   BlockFrame<double, int> df;
@@ -112,7 +112,7 @@ std::cout << "dati fatto" << std::endl ;
   std::size_t N = computedF.rows();
 
   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream file("data/models/SQRPDE/2D_test1/sol_Cpp3600.csv");
+  std::ofstream file("data/models/SQRPDE/2D_test1/solCpp_" + alpha_string + ".csv");
   if (file.is_open()){
     file << computedF.format(CSVFormat);
     file.close();
@@ -122,14 +122,6 @@ std::cout << "dati fatto" << std::endl ;
   // DMatrix<double> temp = DMatrix<double>(expectedSolution).topRows(N) ; 
   std::cout << "Almost equal " << std::endl ; 
   // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
-
-
-
-//   // estimate of coefficient vector \hat \beta
-//   SpMatrix<double> expectedBeta;
-//   Eigen::loadMarket(expectedBeta, "data/models/SQRPDE/2D_test2/beta.mtx");
-//   DVector<double> computedBeta = model.beta();
-//   EXPECT_TRUE( almost_equal(DMatrix<double>(expectedBeta), computedBeta) );
 
 }
 
@@ -142,7 +134,9 @@ std::cout << "dati fatto" << std::endl ;
    BC:           no
    order FE:     1
  */
-TEST(SRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
+
+/*
+TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
   // define domain and regularizing PDE
   MeshLoader<Mesh2D<>> domain("c_shaped");
   auto L = Laplacian();
@@ -156,9 +150,10 @@ TEST(SRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
   locFile = reader.parseFile("data/models/SQRPDE/2D_test2/locs.csv");
   DMatrix<double> loc = locFile.toEigen();
 
+  double alpha = 0.5;
   // use optimal lambda to avoid possible numerical issues
-  double lambda = 0.05011872 ;
-  double alpha = 0.5 ; 
+  double lambda = 0.05011872 ; 
+  alpha_string = "05"
   SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
   model.setLambdaS(lambda);
 
@@ -181,18 +176,106 @@ TEST(SRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
   // solve smoothing problem
   model.init();
   model.solve();
-
+*/
   /*   **  test correctness of computed results  **   */
-  DMatrix<double> computedF = model.f();
-  std::size_t N = computedF.rows();
 
-  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream file("data/models/SQRPDE/2D_test2/sol_Cpp.csv");
-  if (file.is_open()){
-    file << computedF.format(CSVFormat);
-    file.close();
-  }
+
+  // DMatrix<double> computedF = model.f();
+  // std::size_t N = computedF.rows();
+
+
+  // const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+  // std::ofstream file("data/models/SQRPDE/2D_test2/solCpp_" + alpha_string + ".csv");
+  // if (file.is_open()){
+  //   file << computedF.format(CSVFormat);
+  //   file.close();
+  // }
+
 
   
+// }; 
+
+
+
+
+/* test 3
+   domain:       unit square [0,1] x [0,1]
+   sampling:     locations = nodes
+   penalization: costant coefficients PDE
+   covariates:   no
+   BC:           no
+   order FE:     1
+ */
+/*
+*/
+// TEST(SQRPDE, Test3_CostantCoefficientsPDE_NonParametric_GeostatisticalAtNodes) {
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("unit_square");
+
+//   // non unitary diffusion tensor
+//   SMatrix<2> K;
+//   K << 1,0,0,4;
+//   auto L = Laplacian(K); // anisotropic diffusion
   
-}
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+
+//   // define statistical model
+//   double lambda = 10;
+//   double alpha = 0.1;
+//   std::string alpha_string = "0.1"; 
+//   SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
+//   model.setLambdaS(lambda);
+  
+//   // load data from .csv files
+//   CSVReader<double> reader{};
+//   CSVFile<double> yFile; // observation file
+//   yFile = reader.parseFile("data/models/SQRPDE/2D_test3/z.csv");
+//   DMatrix<double> y = yFile.toEigen();
+
+//   // set model data
+//   BlockFrame<double, int> df;
+//   df.insert(OBSERVATIONS_BLK, y);
+//   model.setData(df);
+
+//   // solve smoothing problem
+//   model.init();
+//   model.solve();
+
+//   /*   **  test correctness of computed results  **   */
+  
+//   // // \Psi matrix
+//   // SpMatrix<double> expectedPsi;
+//   // Eigen::loadMarket(expectedPsi, "data/models/SRPDE/2D_test3/Psi.mtx");
+//   // SpMatrix<double> computedPsi = model.Psi();
+//   // EXPECT_TRUE( almost_equal(expectedPsi, computedPsi) );
+
+//   // // R0 matrix (discretization of identity operator)
+//   // SpMatrix<double> expectedR0;
+//   // Eigen::loadMarket(expectedR0,  "data/models/SRPDE/2D_test3/R0.mtx");
+//   // SpMatrix<double> computedR0 = model.R0();
+//   // EXPECT_TRUE( almost_equal(expectedR0, computedR0) );
+  
+//   // // R1 matrix (discretization of differential operator)
+//   // SpMatrix<double> expectedR1;
+//   // Eigen::loadMarket(expectedR1,  "data/models/SRPDE/2D_test3/R1.mtx");
+//   // SpMatrix<double> computedR1 = model.R1();
+//   // EXPECT_TRUE( almost_equal(expectedR1, computedR1) );
+    
+//   // // estimate of spatial field \hat f
+//   // SpMatrix<double> expectedSolution;
+//   // Eigen::loadMarket(expectedSolution, "data/models/SRPDE/2D_test3/sol.mtx");
+//   // DMatrix<double> computedF = model.f();
+//   // std::size_t N = computedF.rows();
+//   // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );ù
+
+
+//   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file("data/models/SQRPDE/2D_test3/solCpp_" + alpha_string + ".csv");
+//   if (file.is_open()){
+//     file << computedF.format(CSVFormat);
+//     file.close();
+//   }
+
+// }
+

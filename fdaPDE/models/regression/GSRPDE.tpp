@@ -30,7 +30,7 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute(c
 
 template <typename PDE, typename RegularizationType, Sampling SamplingDesign,
 	  SolverType Solver, typename Distribution>
-double
+DVector<double>
 GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::initialize_mu() const {
   
   return y();
