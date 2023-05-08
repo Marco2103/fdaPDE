@@ -39,91 +39,78 @@ using fdaPDE::testing::almost_equal;
 
  */
 
-TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
-  // define domain and regularizing PDE
-  MeshLoader<Mesh2D<>> domain("unit_square");
-  auto L = Laplacian();
-  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+// TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("unit_square");
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-  std::cout << "domain fatto" << std::endl ; 
+//   double alpha = 0.1; 
+//   // use optimal lambda to avoid possible numerical issues
+//   double lambda = 0.001;
+//   std::string alpha_string = "01" ; 
+//   SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
+//   model.setLambdaS(lambda);
 
-  double alpha = 0.1; 
-  // use optimal lambda to avoid possible numerical issues
-  double lambda = ;
-  std::string alpha_string = "01"
-  SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
-  model.setLambdaS(lambda);
+//   // load data from .csv files
+//   CSVReader<double> reader{};
+//   CSVFile<double> yFile; // observation file
+//   yFile = reader.parseFile("data/models/SQRPDE/2D_test1/z.csv");
+//   DMatrix<double> y = yFile.toEigen();
 
-  std::cout << "lambda fatto" << std::endl ; 
+//   // set model data
+//   BlockFrame<double, int> df;
+//   df.insert(OBSERVATIONS_BLK,  y);
+//   // df.insert(SPACE_LOCATIONS_BLK, loc);
+//   model.setData(df);
+
+//   // solve smoothing problem
+//   model.init();     
+//   model.solve();
+
+//   /*   **  test correctness of computed results  **   */
   
-  // load data from .csv files
-  CSVReader<double> reader{};
-  CSVFile<double> yFile; // observation file
-  yFile = reader.parseFile("data/models/SQRPDE/2D_test1/z.csv");
-  DMatrix<double> y = yFile.toEigen();
+//   // // \Psi matrix (sensible to locations != nodes)
+//   // SpMatrix<double> expectedPsi;
+//   // Eigen::loadMarket(expectedPsi, "data/models/SQRPDE/2D_test3/Psi.mtx");
+//   // SpMatrix<double> computedPsi = model.Psi();
+//   // EXPECT_TRUE( almost_equal(expectedPsi, computedPsi) );
 
-  std::cout << "dati fatto" << std::endl ; 
+//   // // R0 matrix (discretization of identity operator)
+//   // SpMatrix<double> expectedR0;
+//   // Eigen::loadMarket(expectedR0,  "data/models/SQRPDE/2D_test3/R0.mtx");
+//   // SpMatrix<double> computedR0 = model.R0();
+//   // EXPECT_TRUE( almost_equal(expectedR0, computedR0) );
 
-  // set model data
-  BlockFrame<double, int> df;
-  df.insert(OBSERVATIONS_BLK,  y);
-  // df.insert(SPACE_LOCATIONS_BLK, loc);
-  model.setData(df);
-  
-  std::cout << "risolvi" << std::endl ; 
+//   // // R1 matrix (discretization of differential operator)
+//   // SpMatrix<double> expectedR1;
+//   // Eigen::loadMarket(expectedR1,  "data/models/SQRPDE/2D_test3/R1.mtx");
+//   // SpMatrix<double> computedR1 = model.R1();
+//   // EXPECT_TRUE( almost_equal(expectedR1, computedR1) );
 
-  // solve smoothing problem
-  model.init();     
+//   // estimate of spatial field \hat f
 
-  std::cout << "init fatto" << std::endl ; 
-
-  model.solve();
-
-  std::cout << "risolto" << std::endl ; 
-
-  /*   **  test correctness of computed results  **   */
-  
-  // // \Psi matrix (sensible to locations != nodes)
-  // SpMatrix<double> expectedPsi;
-  // Eigen::loadMarket(expectedPsi, "data/models/SQRPDE/2D_test3/Psi.mtx");
-  // SpMatrix<double> computedPsi = model.Psi();
-  // EXPECT_TRUE( almost_equal(expectedPsi, computedPsi) );
-
-  // // R0 matrix (discretization of identity operator)
-  // SpMatrix<double> expectedR0;
-  // Eigen::loadMarket(expectedR0,  "data/models/SQRPDE/2D_test3/R0.mtx");
-  // SpMatrix<double> computedR0 = model.R0();
-  // EXPECT_TRUE( almost_equal(expectedR0, computedR0) );
-
-  // // R1 matrix (discretization of differential operator)
-  // SpMatrix<double> expectedR1;
-  // Eigen::loadMarket(expectedR1,  "data/models/SQRPDE/2D_test3/R1.mtx");
-  // SpMatrix<double> computedR1 = model.R1();
-  // EXPECT_TRUE( almost_equal(expectedR1, computedR1) );
-
-  // estimate of spatial field \hat f
-
-  // std::cout << "leggo sol " << std::endl ; 
-  // SpMatrix<double> expectedSolution;
-  // Eigen::loadMarket(expectedSolution, "data/models/SQRPDE/2D_test1/sol.mtx");
+//   // std::cout << "leggo sol " << std::endl ; 
+//   // SpMatrix<double> expectedSolution;
+//   // Eigen::loadMarket(expectedSolution, "data/models/SQRPDE/2D_test1/sol.mtx");
  
-  DMatrix<double> computedF = model.f();
-  std::size_t N = computedF.rows();
+//   DMatrix<double> computedF = model.f();
+//   std::size_t N = computedF.rows();
 
-  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream file("data/models/SQRPDE/2D_test1/solCpp_" + alpha_string + ".csv");
-  if (file.is_open()){
-    file << computedF.format(CSVFormat);
-    file.close();
-  }
+//   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file("data/models/SQRPDE/2D_test1/solCpp_" + alpha_string + ".csv");
+//   if (file.is_open()){
+//     file << computedF.format(CSVFormat);
+//     file.close();
+//   }
 
-  std::cout << "Save temp " << std::endl ; 
-  // DMatrix<double> temp = DMatrix<double>(expectedSolution).topRows(N) ; 
-  std::cout << "Almost equal " << std::endl ; 
-  // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
+//   // std::cout << "Save temp " << std::endl ; 
+//   // DMatrix<double> temp = DMatrix<double>(expectedSolution).topRows(N) ; 
+//   // std::cout << "Almost equal " << std::endl ; 
+//   // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
 
-}
+// }
 
 
 /* test 2
@@ -135,61 +122,69 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
    order FE:     1
  */
 
-/*
-TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
-  // define domain and regularizing PDE
-  MeshLoader<Mesh2D<>> domain("c_shaped");
-  auto L = Laplacian();
-  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-  // define statistical model
-  CSVReader<double> reader{};
-  // load locations where data are sampled
-  CSVFile<double> locFile;
-  locFile = reader.parseFile("data/models/SQRPDE/2D_test2/locs.csv");
-  DMatrix<double> loc = locFile.toEigen();
+// TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("c_shaped");
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-  double alpha = 0.5;
-  // use optimal lambda to avoid possible numerical issues
-  double lambda = 0.05011872 ; 
-  alpha_string = "05"
-  SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
-  model.setLambdaS(lambda);
+//   // define statistical model
+//   CSVReader<double> reader{};
+//   // load locations where data are sampled
+//   CSVFile<double> locFile;
+//   locFile = reader.parseFile("data/models/SQRPDE/2D_test2/locs.csv");
+//   DMatrix<double> loc = locFile.toEigen();
+
+//   double alpha = 0.1;
+//   // use optimal lambda to avoid possible numerical issues
+//   double lambda = 0.1 ; 
+//   std::string alpha_string = "01" ; 
+//   SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
+//   model.setLambdaS(lambda);
 
   
-  // load data from .csv files
-  CSVFile<double> yFile; // observation file
-  yFile = reader.parseFile("data/models/SQRPDE/2D_test2/z.csv");
-  DMatrix<double> y = yFile.toEigen();
-  CSVFile<double> XFile; // design matrix
-  XFile = reader.parseFile("data/models/SQRPDE/2D_test2/X.csv");
-  DMatrix<double> X = XFile.toEigen();
+//   // load data from .csv files
+//   CSVFile<double> yFile; // observation file
+//   yFile = reader.parseFile("data/models/SQRPDE/2D_test2/z.csv");
+//   DMatrix<double> y = yFile.toEigen();
+//   CSVFile<double> XFile; // design matrix
+//   XFile = reader.parseFile("data/models/SQRPDE/2D_test2/X.csv");
+//   DMatrix<double> X = XFile.toEigen();
 
-  // set model data
-  BlockFrame<double, int> df;
-  df.insert(OBSERVATIONS_BLK,  y);
-  df.insert(DESIGN_MATRIX_BLK, X);
-  df.insert(SPACE_LOCATIONS_BLK, loc);
-  model.setData(df);
+//   // set model data
+//   BlockFrame<double, int> df;
+//   df.insert(OBSERVATIONS_BLK,  y);
+//   df.insert(DESIGN_MATRIX_BLK, X);
+//   df.insert(SPACE_LOCATIONS_BLK, loc);
+//   model.setData(df);
   
-  // solve smoothing problem
-  model.init();
-  model.solve();
-*/
-  /*   **  test correctness of computed results  **   */
+//   // solve smoothing problem
+//   model.init();
+//   model.solve();
+
+//   /*   **  test correctness of computed results  **   */
 
 
-  // DMatrix<double> computedF = model.f();
-  // std::size_t N = computedF.rows();
+//   DMatrix<double> computedF = model.f();
+//   std::size_t N = computedF.rows();
 
 
-  // const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file("data/models/SQRPDE/2D_test2/solCpp_" + alpha_string + ".csv");
-  // if (file.is_open()){
-  //   file << computedF.format(CSVFormat);
-  //   file.close();
-  // }
+//   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file("data/models/SQRPDE/2D_test2/solCpp_" + alpha_string + ".csv");
+//   if (file.is_open()){
+//     file << computedF.format(CSVFormat);
+//     file.close();
+//   }
+
+//   DVector<double> computedBeta = model.beta();
+//   const static Eigen::IOFormat CSVFormat_beta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file_beta("data/models/SQRPDE/2D_test2/betaCpp_" + alpha_string + ".csv");
+//   if (file_beta.is_open()){
+//     file_beta << computedBeta.format(CSVFormat_beta);
+//     file_beta.close();
+//   }
 
 
   
@@ -206,8 +201,8 @@ TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
    BC:           no
    order FE:     1
  */
-/*
-*/
+
+
 // TEST(SQRPDE, Test3_CostantCoefficientsPDE_NonParametric_GeostatisticalAtNodes) {
 //   // define domain and regularizing PDE
 //   MeshLoader<Mesh2D<>> domain("unit_square");
@@ -221,9 +216,9 @@ TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
 //   // define statistical model
-//   double lambda = 10;
+//   double lambda = 0.001 ;
 //   double alpha = 0.1;
-//   std::string alpha_string = "0.1"; 
+//   std::string alpha_string = "01"; 
 //   SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
 //   model.setLambdaS(lambda);
   
@@ -270,6 +265,8 @@ TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
 //   // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );ù
 
 
+//   DMatrix<double> computedF = model.f();
+//   std::size_t N = computedF.rows();
 //   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
 //   std::ofstream file("data/models/SQRPDE/2D_test3/solCpp_" + alpha_string + ".csv");
 //   if (file.is_open()){
@@ -278,4 +275,79 @@ TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
 //   }
 
 // }
+
+
+TEST(SQRPDE, Test5_Laplacian_NonParametric_GeostatisticalAtNodes) {
+  // define domain and regularizing PDE
+  MeshLoader<Mesh2D<>> domain("unit_square");
+  auto L = Laplacian();
+  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+
+  double alpha = 0.1; 
+  // use optimal lambda to avoid possible numerical issues
+  double lambda = 0.001;
+  std::string alpha_string = "01" ; 
+  SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
+  model.setLambdaS(lambda);
+
+  // load data from .csv files
+  CSVReader<double> reader{};
+  CSVFile<double> yFile; // observation file
+  yFile = reader.parseFile("data/models/SQRPDE/2D_test5/z.csv");
+  DMatrix<double> y = yFile.toEigen();
+
+  // set model data
+  BlockFrame<double, int> df;
+  df.insert(OBSERVATIONS_BLK,  y);
+  // df.insert(SPACE_LOCATIONS_BLK, loc);
+  model.setData(df);
+
+  // solve smoothing problem
+  model.init();     
+  model.solve();
+
+  /*   **  test correctness of computed results  **   */
+  
+  // // \Psi matrix (sensible to locations != nodes)
+  // SpMatrix<double> expectedPsi;
+  // Eigen::loadMarket(expectedPsi, "data/models/SQRPDE/2D_test3/Psi.mtx");
+  // SpMatrix<double> computedPsi = model.Psi();
+  // EXPECT_TRUE( almost_equal(expectedPsi, computedPsi) );
+
+  // // R0 matrix (discretization of identity operator)
+  // SpMatrix<double> expectedR0;
+  // Eigen::loadMarket(expectedR0,  "data/models/SQRPDE/2D_test3/R0.mtx");
+  // SpMatrix<double> computedR0 = model.R0();
+  // EXPECT_TRUE( almost_equal(expectedR0, computedR0) );
+
+  // // R1 matrix (discretization of differential operator)
+  // SpMatrix<double> expectedR1;
+  // Eigen::loadMarket(expectedR1,  "data/models/SQRPDE/2D_test3/R1.mtx");
+  // SpMatrix<double> computedR1 = model.R1();
+  // EXPECT_TRUE( almost_equal(expectedR1, computedR1) );
+
+  // estimate of spatial field \hat f
+
+  // std::cout << "leggo sol " << std::endl ; 
+  // SpMatrix<double> expectedSolution;
+  // Eigen::loadMarket(expectedSolution, "data/models/SQRPDE/2D_test1/sol.mtx");
+ 
+  DMatrix<double> computedF = model.f();
+  std::size_t N = computedF.rows();
+
+  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+  std::ofstream file("data/models/SQRPDE/2D_test5/solCpp_" + alpha_string + ".csv");
+  if (file.is_open()){
+    file << computedF.format(CSVFormat);
+    file.close();
+  }
+
+  // std::cout << "Save temp " << std::endl ; 
+  // DMatrix<double> temp = DMatrix<double>(expectedSolution).topRows(N) ; 
+  // std::cout << "Almost equal " << std::endl ; 
+  // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
+
+}
+
 
