@@ -26,7 +26,7 @@ namespace models{
     static_assert(std::is_base_of<PDEBase, PDE>::value);
   private:
     typedef RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>> Base;
-    DiagMatrix<double> W_;
+    DiagMatrix<double> W_;  // possiamo toglierla
     Distribution distribution_{};
     DVector<double> py_{}; // \tilde y^k = G^k(y-u^k) + \theta^k
     DVector<double> pW_;   // diagonal of W^k = ((G^k)^{-2})*((V^k)^{-1}) 

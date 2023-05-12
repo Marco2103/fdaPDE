@@ -113,14 +113,14 @@ using fdaPDE::testing::almost_equal;
 // }
 
 
-/* test 2
-   domain:       c-shaped
-   sampling:     locations != nodes
-   penalization: simple laplacian
-   covariates:   yes
-   BC:           no
-   order FE:     1
- */
+// /* test 2
+//    domain:       c-shaped
+//    sampling:     locations != nodes
+//    penalization: simple laplacian
+//    covariates:   yes
+//    BC:           no
+//    order FE:     1
+//  */
 
 
 // TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
@@ -193,14 +193,14 @@ using fdaPDE::testing::almost_equal;
 
 
 
-/* test 3
-   domain:       unit square [0,1] x [0,1]
-   sampling:     locations = nodes
-   penalization: costant coefficients PDE
-   covariates:   no
-   BC:           no
-   order FE:     1
- */
+// /* test 3
+//    domain:       unit square [0,1] x [0,1]
+//    sampling:     locations = nodes
+//    penalization: costant coefficients PDE
+//    covariates:   no
+//    BC:           no
+//    order FE:     1
+//  */
 
 
 // TEST(SQRPDE, Test3_CostantCoefficientsPDE_NonParametric_GeostatisticalAtNodes) {
@@ -277,77 +277,160 @@ using fdaPDE::testing::almost_equal;
 // }
 
 
-TEST(SQRPDE, Test5_Laplacian_NonParametric_GeostatisticalAtNodes) {
-  // define domain and regularizing PDE
-  MeshLoader<Mesh2D<>> domain("unit_square");
-  auto L = Laplacian();
-  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-  double alpha = 0.1; 
-  // use optimal lambda to avoid possible numerical issues
-  double lambda = 0.001;
-  std::string alpha_string = "01" ; 
-  SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
-  model.setLambdaS(lambda);
 
-  // load data from .csv files
-  CSVReader<double> reader{};
-  CSVFile<double> yFile; // observation file
-  yFile = reader.parseFile("data/models/SQRPDE/2D_test5/z.csv");
-  DMatrix<double> y = yFile.toEigen();
+// TEST(SQRPDE, Test7_Laplacian_NonParametric_GeostatisticalAtNodes) {
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("unit_square");
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-  // set model data
-  BlockFrame<double, int> df;
-  df.insert(OBSERVATIONS_BLK,  y);
-  // df.insert(SPACE_LOCATIONS_BLK, loc);
-  model.setData(df);
+//   double alpha = 0.5; 
+//   // use optimal lambda to avoid possible numerical issues
+//   double lambda = 0.001;
+//   std::string alpha_string = "5" ; 
+//   SQRPDE<decltype(problem), Sampling::GeoStatMeshNodes> model(problem, alpha);
+//   model.setLambdaS(lambda);
 
-  // solve smoothing problem
-  model.init();     
-  model.solve();
+//   // load data from .csv files
+//   CSVReader<double> reader{};
+//   CSVFile<double> yFile; // observation file
+//   yFile = reader.parseFile("data/models/SQRPDE/2D_test7/z.csv");
+//   DMatrix<double> y = yFile.toEigen();
 
-  /*   **  test correctness of computed results  **   */
+//   // set model data
+//   BlockFrame<double, int> df;
+//   df.insert(OBSERVATIONS_BLK,  y);
+//   // df.insert(SPACE_LOCATIONS_BLK, loc);
+//   model.setData(df);
+
+//   // solve smoothing problem
+//   model.init();     
+//   model.solve();
+
+//   /*   **  test correctness of computed results  **   */
   
-  // // \Psi matrix (sensible to locations != nodes)
-  // SpMatrix<double> expectedPsi;
-  // Eigen::loadMarket(expectedPsi, "data/models/SQRPDE/2D_test3/Psi.mtx");
-  // SpMatrix<double> computedPsi = model.Psi();
-  // EXPECT_TRUE( almost_equal(expectedPsi, computedPsi) );
+//   // // \Psi matrix (sensible to locations != nodes)
+//   // SpMatrix<double> expectedPsi;
+//   // Eigen::loadMarket(expectedPsi, "data/models/SQRPDE/2D_test3/Psi.mtx");
+//   // SpMatrix<double> computedPsi = model.Psi();
+//   // EXPECT_TRUE( almost_equal(expectedPsi, computedPsi) );
 
-  // // R0 matrix (discretization of identity operator)
-  // SpMatrix<double> expectedR0;
-  // Eigen::loadMarket(expectedR0,  "data/models/SQRPDE/2D_test3/R0.mtx");
-  // SpMatrix<double> computedR0 = model.R0();
-  // EXPECT_TRUE( almost_equal(expectedR0, computedR0) );
+//   // // R0 matrix (discretization of identity operator)
+//   // SpMatrix<double> expectedR0;
+//   // Eigen::loadMarket(expectedR0,  "data/models/SQRPDE/2D_test3/R0.mtx");
+//   // SpMatrix<double> computedR0 = model.R0();
+//   // EXPECT_TRUE( almost_equal(expectedR0, computedR0) );
 
-  // // R1 matrix (discretization of differential operator)
-  // SpMatrix<double> expectedR1;
-  // Eigen::loadMarket(expectedR1,  "data/models/SQRPDE/2D_test3/R1.mtx");
-  // SpMatrix<double> computedR1 = model.R1();
-  // EXPECT_TRUE( almost_equal(expectedR1, computedR1) );
+//   // // R1 matrix (discretization of differential operator)
+//   // SpMatrix<double> expectedR1;
+//   // Eigen::loadMarket(expectedR1,  "data/models/SQRPDE/2D_test3/R1.mtx");
+//   // SpMatrix<double> computedR1 = model.R1();
+//   // EXPECT_TRUE( almost_equal(expectedR1, computedR1) );
 
-  // estimate of spatial field \hat f
+//   // estimate of spatial field \hat f
 
-  // std::cout << "leggo sol " << std::endl ; 
-  // SpMatrix<double> expectedSolution;
-  // Eigen::loadMarket(expectedSolution, "data/models/SQRPDE/2D_test1/sol.mtx");
+//   // std::cout << "leggo sol " << std::endl ; 
+//   // SpMatrix<double> expectedSolution;
+//   // Eigen::loadMarket(expectedSolution, "data/models/SQRPDE/2D_test1/sol.mtx");
  
-  DMatrix<double> computedF = model.f();
-  std::size_t N = computedF.rows();
+//   DMatrix<double> computedF = model.f();
+//   std::size_t N = computedF.rows();
 
-  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream file("data/models/SQRPDE/2D_test5/solCpp_" + alpha_string + ".csv");
-  if (file.is_open()){
-    file << computedF.format(CSVFormat);
-    file.close();
-  }
+//   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file("data/models/SQRPDE/2D_test7/solCpp_" + alpha_string + ".csv");
+//   if (file.is_open()){
+//     file << computedF.format(CSVFormat);
+//     file.close();
+//   }
 
-  // std::cout << "Save temp " << std::endl ; 
-  // DMatrix<double> temp = DMatrix<double>(expectedSolution).topRows(N) ; 
-  // std::cout << "Almost equal " << std::endl ; 
-  // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
+//   // std::cout << "Save temp " << std::endl ; 
+//   // DMatrix<double> temp = DMatrix<double>(expectedSolution).topRows(N) ; 
+//   // std::cout << "Almost equal " << std::endl ; 
+//   // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
 
-}
+// }; 
+
+
+
+/* test 10
+   domain:       c-shaped
+   sampling:     locations != nodes
+   penalization: simple laplacian
+   covariates:   no
+   BC:           no
+   order FE:     1
+ */
+
+
+// TEST(SQRPDE, Test10_Laplacian_NonParametric_GeostatisticalAtLocations) {
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("c_shaped");
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+
+//   // define statistical model
+//   CSVReader<double> reader{};
+//   // load locations where data are sampled
+//   CSVFile<double> locFile;
+//   locFile = reader.parseFile("data/models/SQRPDE/2D_test10/locs.csv");
+//   DMatrix<double> loc = locFile.toEigen();
+
+//   double alpha = 0.1;
+//   // use optimal lambda to avoid possible numerical issues
+//   double lambda = 0.3981072 ; 
+//   std::string alpha_string = "01" ; 
+//   SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
+//   model.setLambdaS(lambda);
+
+  
+//   // load data from .csv files
+//   CSVFile<double> yFile; // observation file
+//   yFile = reader.parseFile("data/models/SQRPDE/2D_test10/z.csv");
+//   DMatrix<double> y = yFile.toEigen();
+
+//   // set model data
+//   BlockFrame<double, int> df;
+//   df.insert(OBSERVATIONS_BLK,  y);
+//   df.insert(SPACE_LOCATIONS_BLK, loc);
+//   model.setData(df);
+  
+//   // solve smoothing problem
+//   model.init();
+//   model.solve();
+
+//   /*   **  test correctness of computed results  **   */
+
+
+//   DMatrix<double> computedF = model.f();
+//   std::size_t N = computedF.rows();
+
+
+//   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file("data/models/SQRPDE/2D_test10/fCpp_" + alpha_string + ".csv");
+//   if (file.is_open()){
+//     file << computedF.format(CSVFormat);
+//     file.close();
+//   }
+
+
+//   DMatrix<double> computed_fn = model.Psi() * computedF;
+//   // std::size_t N_n = computed_fn.rows();
+
+
+//   const static Eigen::IOFormat CSVFormat_fn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file_fn("data/models/SQRPDE/2D_test10/fn_Cpp_" + alpha_string + ".csv");
+//   if (file_fn.is_open()){
+//     file_fn << computed_fn.format(CSVFormat_fn);
+//     file_fn.close();
+//   }
+
+
+  
+// }; 
+
+
 
 

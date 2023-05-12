@@ -9,6 +9,7 @@ void GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::solv
   
   // fpirls converged: extract matrix P and solution estimates
   W_ = fpirls.weights().asDiagonal();
+  // invXtWX = .. per GCV 
   f_ = fpirls.f();
   if(hasCovariates()) beta_ = fpirls.beta();
   return;

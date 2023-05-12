@@ -135,6 +135,8 @@ namespace models {
     // constructor
     Gaussian() = default;
 
+    // completa con pdf e le altre info
+
     void preprocess(DVector<double>& data) const { return; }
                       
     DMatrix<double> inv_link(const DMatrix<double>& x) const {
