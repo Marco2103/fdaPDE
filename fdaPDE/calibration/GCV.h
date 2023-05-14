@@ -75,6 +75,8 @@ namespace calibration{
       // return gcv at point
       double gcv_value = (n/std::pow(dor, 2))*( model_.norm(model_.fitted(), model_.y()) ) ;
       values_->emplace_back(gcv_value);
+      // per SQRPDE dobbiamo restituire la radice 
+      // commenta SQRPDE sta calcolando gcv^2 , poi radice nel wrapper 
       return gcv_value;
     }
 

@@ -76,6 +76,11 @@ namespace models{
         solver_.init_regularization();
         solver_.init_sampling();
 
+        // prepare data for solver, copy covariates if present
+      // BlockFrame<double, int> df = m_.data();
+      // if(m_.hasCovariates()) df.insert<double>(DESIGN_MATRIX_BLK, m_.X()); 
+      
+
 
       };
     
@@ -118,7 +123,7 @@ namespace models{
 
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2 
   double J = m_.compute_J_unpenalized(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // m_.lambdaS()*(g_.dot(m_.R0()*g_));  -> lambda?
-
+  // compute_J_unpen -> model_loss
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
 

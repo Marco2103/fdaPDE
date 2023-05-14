@@ -137,14 +137,14 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 }
 
 
-/* test 2
-   domain:       c-shaped
-   sampling:     locations != nodes
-   penalization: simple laplacian
-   covariates:   yes
-   BC:           no
-   order FE:     1
- */
+// /* test 2
+//    domain:       c-shaped
+//    sampling:     locations != nodes
+//    penalization: simple laplacian
+//    covariates:   yes
+//    BC:           no
+//    order FE:     1
+//  */
 
 
 // TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
@@ -217,14 +217,14 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 
 
 
-/* test 3
-   domain:       unit square [0,1] x [0,1]
-   sampling:     locations = nodes
-   penalization: costant coefficients PDE
-   covariates:   no
-   BC:           no
-   order FE:     1
- */
+// /* test 3
+//    domain:       unit square [0,1] x [0,1]
+//    sampling:     locations = nodes
+//    penalization: costant coefficients PDE
+//    covariates:   no
+//    BC:           no
+//    order FE:     1
+//  */
 
 
 // TEST(SQRPDE, Test3_CostantCoefficientsPDE_NonParametric_GeostatisticalAtNodes) {
