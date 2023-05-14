@@ -76,19 +76,13 @@ namespace models{
     void init_sampling(bool forced = false) {
       // compute once if not forced to recompute
 
-    std::cout << "Psi size: " << Psi_.size() << std::endl ;  
-
       if(Psi_.size() != 0 && forced == false) return;
       // preallocate space for Psi matrix
 
-      std::cout << "n " << std::endl; 
       std::size_t n = model().n_basis();
-
-      std::cout << "N " << std::endl; 
 
       std::size_t N = model().n_basis();
 
-      std::cout << "Resize  " << std::endl; 
       Psi_.resize(n, N);    
 
       // triplet list to fill sparse matrix
@@ -98,18 +92,13 @@ namespace models{
       // if data locations are equal to mesh nodes then \Psi is the identity matrix.
       // \psi_i(p_i) = 1 and \psi_i(p_j) = 0 \forall i \neq j
 
-      std::cout << "for " << std::endl; 
       for(std::size_t i = 0; i < n; ++i)
 	tripletList.emplace_back(i, i, 1.0);
       // finalize construction
-
-      std::cout << "set from triplets " << std::endl; 
       Psi_.setFromTriplets(tripletList.begin(), tripletList.end());
 
-      std::cout << "compressed  " << std::endl; 
       Psi_.makeCompressed();
-
-      std::cout << "finalize " << std::endl; 
+      
       finalize();
     }
     

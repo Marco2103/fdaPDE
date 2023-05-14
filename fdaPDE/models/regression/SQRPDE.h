@@ -35,14 +35,14 @@ namespace models{
     double alpha_;                                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
-    SpMatrix<double> A_{};                          // system matrix of non-parametric problem (2N x 2N matrix)
+    SpMatrix<double> A_{};                              // system matrix of non-parametric problem (2N x 2N matrix)
     fdaPDE::SparseLU<SpMatrix<double>> invA_{};         // factorization of matrix A
 
     DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence 
     DMatrix<double> XtWX_{}; 
     Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
 
-    DVector<double> py_{};                            // y - (1-2*alpha)|y - X*beta - f|
+    DVector<double> py_{};                              // y - (1-2*alpha)|y - X*beta - f|
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
@@ -87,6 +87,7 @@ namespace models{
 
     // getters
     const DiagMatrix<double>& W() const { return W_; } 
+    const DVector<double>& py() const { return py_; }
     const DMatrix<double>& XtWX() const { return XtWX_; }
     const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }

@@ -6,7 +6,7 @@ void ModelBase<Model>::init(){
 
   model().init_regularization(); // init regularization term
 
-  model().init_sampling(true);   // init \Psi matrix, always force recomputation  --> PROBLEMA QUI 
+  model().init_sampling(true);   // init \Psi matrix, always force recomputation  
   
   // analyze and set missing data
   model().analyze_nan();

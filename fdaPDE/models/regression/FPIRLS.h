@@ -90,6 +90,7 @@ namespace models{
       // algorithm stops when an enought small difference between two consecutive values of the J is recordered
       double J_old = tolerance_+1; double J_new = 0;
 
+       std::cout << "L2 norm Pseudo: " << std::endl; 
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
@@ -99,6 +100,7 @@ namespace models{
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
+  std::cout << (std::get<1>(pair)).squaredNorm() << std::endl; 
 	// update solver_ to change in the weight matrix
 	solver_.update_to_data();
 
@@ -124,9 +126,10 @@ namespace models{
       }
 
   if (k_ == max_iter_)
-    std::cout << "MAX ITER RAGGIUNTO " << std::endl ;  
+    std::cout << "MAX ITER RAGGIUNTO " << std::endl;  
 
-  std::cout << "Number of FPIRLS iterations: " << k_ << std::endl ; 
+  std::cout << "Number of FPIRLS iterations: " << k_ << std::endl;
+  std::cout << "Value of J at the last iteration: " <<  std::setprecision(16) << J_new << std::endl;  
 
       // store weight matrix at convergence
       W_ = std::get<0>(m_.compute(mu_));

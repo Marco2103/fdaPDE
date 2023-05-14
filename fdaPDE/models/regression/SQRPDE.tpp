@@ -1,11 +1,8 @@
-
 // finds a solution to the SQR-PDE smoothing problem
 template <typename PDE, Sampling SamplingDesign>
 void SQRPDE<PDE, SamplingDesign>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
-
-  std::cout << "inizio FPIRLS" << std::endl ; 
 
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
@@ -17,7 +14,6 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   if(hasCovariates()) {
     XtWX_ = X().transpose()*W_*X(); 
     invXtWX_ = XtWX_.partialPivLu();
-
   }
   
   //A_ =    fpirls.solver().A(); 
@@ -45,22 +41,23 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
   invR0_temp.compute(R0());
 
   // assemble system matrix 
-  std::cout << "Initialize A_temp " << std::endl ; 
+  std::cout << "Initialize A_temp " << std::endl; 
   SparseBlockMatrix<double,2,2>
     A_temp(PsiTD()*Psi()/n_obs(), lambdaS()*R1().transpose(),
       lambdaS()*R1(),     -lambdaS()*R0()            );
   // cache non-parametric matrix and its factorization for reuse
-  std::cout << "Initialize invA_temp " << std::endl ; 
-  fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
+  std::cout << "Initialize invA_temp " << std::endl; 
+  fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
   invA_temp.compute( A_temp.derived() );
+  std::cout << "Fine initialize invA_temp " << std::endl;
 
-  DVector<double> b_temp ; 
+  DVector<double> b_temp; 
   b_temp.resize(A_temp.rows());
   b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
-  b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs() ; 
+  b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
   BLOCK_FRAME_SANITY_CHECKS;
   DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-  DVector<double> fn = Psi()*f ; 
+  DVector<double> fn = Psi()*f; 
 
   return fn ; 
 }
@@ -72,7 +69,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   DVector<double> abs_res{} ;
   abs_res.resize(y().size()) ; 
 
-  double tol = 1e-6; 
+  double tol = 1e-8; 
   for(int i = 0; i < y().size(); ++i)
     abs_res(i) = std::abs(y()(i) - mu(i)) > tol ? std::abs( y()(i) - mu(i) ) : ( std::abs(y()(i) - mu(i)) + tol );   
 
