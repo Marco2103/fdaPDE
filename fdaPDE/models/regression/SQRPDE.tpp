@@ -6,10 +6,18 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
+  std::cout << "Chiamo fpirls.compute  " << std::endl ; 
+
+   matrix_abs_res.resize(n_obs(), max_iter_);
+  //  matrix_obs.resize(n_obs(), max_iter_);
+
   fpirls.compute();
   
+  std::cout << "Sono in SQRPDE " << std::endl ; 
   // fpirls converged: extract matrix P and solution estimates
   W_ =    fpirls.weights().asDiagonal();
+
+  // matrix_abs_res.resize(n_obs(), curr_iter_) ; 
 
   if(hasCovariates()) {
     XtWX_ = X().transpose()*W_*X(); 
@@ -27,6 +35,24 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   f_ = fpirls.f();
 
+  std::cout << "Salvo mu_init " << std::endl ; 
+
+  mu_init = fpirls.mu_initialized() ; 
+
+  matrix_pseudo.resize(n_obs() , max_iter_); 
+  matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
+  
+  matrix_weight.resize(n_obs() , max_iter_); 
+  matrix_weight = fpirls.matrix_weight_fpirls() ; 
+
+  // matrix_f.resize(n_obs() , max_iter_); 
+  // matrix_f = fpirls.matrix_f_fpirls() ;
+
+  matrix_beta.resize(q() , max_iter_); 
+  matrix_beta = fpirls.matrix_beta_fpirls() ; 
+
+  std::cout << " mu_init salvato" << std::endl ; 
+
   if(hasCovariates()) beta_ = fpirls.beta();
   return;
 }
@@ -37,30 +63,75 @@ template <typename PDE, Sampling SamplingDesign>
 DVector<double> 
 SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
 
+  std::cout << "Sono in initialize_mu " << std::endl ; 
+
+  // fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
+  // invR0_temp.compute(R0());
+
+  // assemble system matrix 
+  // std::cout << "Initialize A_temp " << std::endl ; 
+  // SparseBlockMatrix<double,2,2>
+  //   A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
+  //     lambdaS()*R1(),     -lambdaS()*R0()            );
+  // // cache non-parametric matrix and its factorization for reuse
+  // std::cout << "Initialize invA_temp " << std::endl ; 
+  // fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
+  // invA_temp.compute( A_temp.derived() );
+
+  // DVector<double> b_temp ; 
+  // b_temp.resize(A_temp.rows());
+  // b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
+  // b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs() ; 
+  // BLOCK_FRAME_SANITY_CHECKS;
+  // DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+  // DVector<double> fn = Psi()*f ; 
+
+
+  // implementazione diretta
+
   fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
   invR0_temp.compute(R0());
 
-  // assemble system matrix 
-  std::cout << "Initialize A_temp " << std::endl; 
-  SparseBlockMatrix<double,2,2>
-    A_temp(PsiTD()*Psi()/n_obs(), lambdaS()*R1().transpose(),
-      lambdaS()*R1(),     -lambdaS()*R0()            );
-  // cache non-parametric matrix and its factorization for reuse
-  std::cout << "Initialize invA_temp " << std::endl; 
-  fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
-  invA_temp.compute( A_temp.derived() );
-  std::cout << "Fine initialize invA_temp " << std::endl;
+  SpMatrix<double> A_temp{} ; 
+  // A_temp = PsiTD()*Psi()/n_obs() + 2*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
+  A_temp = PsiTD()*Psi() + 2*n_obs()*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
+  fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
+  // invA_temp.compute( A_temp.derived() );
 
-  DVector<double> b_temp; 
-  b_temp.resize(A_temp.rows());
-  b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
-  b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
-  BLOCK_FRAME_SANITY_CHECKS;
-  DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-  DVector<double> fn = Psi()*f; 
+  invA_temp.compute( A_temp );
+  
+  DVector<double> b_temp{} ; 
+  // b_temp = PsiTD()*y()/n_obs() ; 
+  b_temp = PsiTD()*y() ; 
+
+  DVector<double> f = (invA_temp.solve(b_temp)) ;
+  DVector<double> fn = Psi()*f ; 
+
+  std::cout << "Esco initialize_mu " << std::endl ; 
 
   return fn ; 
 }
+
+
+// template <typename PDE, Sampling SamplingDesign>
+// std::tuple<DVector<double>&, DVector<double>&>
+// SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
+//   // compute weight matrix and pseudo-observation vector
+//   DVector<double> abs_res{} ;
+//   abs_res.resize(y().size()) ; 
+
+//   double tol = 1e-8; 
+//   for(int i = 0; i < y().size(); ++i)
+//     abs_res(i) = (std::abs(y()(i) - mu(i)) > tol) ? (std::abs( y()(i) - mu(i) )) : ( std::abs(y()(i) - mu(i)) + tol );   
+
+//   // pW_ = (2*n_obs()*abs_res).cwiseInverse() ;  // .matrix();  // aggiunto .matrix()
+
+//   pW_ = (2*n_obs()*abs_res.array()).inverse().matrix() ; 
+  
+//   py_ = y() - (1 - 2*alpha_)*abs_res;
+//   return std::tie(pW_, py_);
+// }
+
 
 template <typename PDE, Sampling SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
@@ -69,15 +140,43 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   DVector<double> abs_res{} ;
   abs_res.resize(y().size()) ; 
 
-  double tol = 1e-8; 
-  for(int i = 0; i < y().size(); ++i)
-    abs_res(i) = std::abs(y()(i) - mu(i)) > tol ? std::abs( y()(i) - mu(i) ) : ( std::abs(y()(i) - mu(i)) + tol );   
+//  matrix_abs_res.resize(n_obs(), max_iter_);
+//  matrix_obs.resize(n_obs(), max_iter_);
 
-  pW_ = (2*n_obs()*abs_res).cwiseInverse();  
-  
-  py_ = y() - (1 - 2*alpha_)*abs_res;
+  double tol = 1e-6;    // modificata  
+  for(int i = 0; i < y().size(); ++i)
+    abs_res(i) = std::abs(y()(i) - mu(i)) ; 
+    // abs_res(i) = (std::abs(y()(i) - mu(i)) > tol) ? (std::abs( y()(i) - mu(i) )) : ( std::abs(y()(i) - mu(i)) + tol );   
+
+  // pW_ = (2*n_obs()*abs_res).cwiseInverse() ;  // .matrix();  // aggiunto .matrix()
+
+  std::cout << "curr_iter in compute is: " << curr_iter_ << std::endl ; 
+
+  matrix_abs_res.col(curr_iter_) = abs_res; 
+  // matrix_obs.col(curr_iter_) = y(); 
+  curr_iter_++;
+
+  // pW_ = (abs_res.array()).inverse().matrix(); //*(1/(2*n_obs()));  
+
+  std::cout << "Faccio il resize " << std::endl ; 
+  pW_.resize(n_obs());
+
+  std::cout << "Entro nel for " << std::endl ; 
+  for(int i = 0; i < y().size(); ++i) {
+    if (abs_res(i) < tol){
+      pW_(i) = ( 1./(abs_res(i)+tol) )/(2.*n_obs());
+
+    }    
+    else
+      pW_(i) = (1./abs_res(i))/(2.*n_obs()); 
+  }
+
+  std::cout << "Uscito dal for " << std::endl ; 
+  py_ = y() - (1 - 2.*alpha_)*abs_res;
   return std::tie(pW_, py_);
 }
+
+
 
 template <typename PDE, Sampling SamplingDesign>
 double

@@ -54,6 +54,12 @@ namespace models{
     DVector<double> beta_{};  // estimate of coefficient vector
     DVector<double> W_{};     // weight matrix
 
+    DVector<double> mu_init{};    // per debug -> da togliere 
+    DMatrix<double> matrix_pseudo{};
+    DMatrix<double> matrix_weight{}; 
+    DMatrix<double> matrix_beta{};
+    DMatrix<double> matrix_f{}; 
+
   public:
     // constructor
     FPIRLS(const Model& m, double tolerance, std::size_t max_iter)
@@ -64,7 +70,7 @@ namespace models{
         else{ // space-time
 	        solver_ = typename FPIRLS_internal_solver<Model>::type(m_.pde(), m_.time_domain());
 	      // in case of parabolic regularization derive initial condition from input model
-	        if constexpr(std::is_same<typename model_traits<Model_>::RegularizationType,
+	        if constexpr(std::is_same<typename model_traits<Model_>::RegularizationType,       // regularization,
 		        SpaceTimeParabolic>::value)
 	            solver_.setInitialCondition(m_.s());
         }
@@ -79,42 +85,59 @@ namespace models{
         // prepare data for solver, copy covariates if present
       // BlockFrame<double, int> df = m_.data();
       // if(m_.hasCovariates()) df.insert<double>(DESIGN_MATRIX_BLK, m_.X()); 
-      
 
+        matrix_pseudo.resize(m_.n_obs() , max_iter_); 
+        matrix_weight.resize(m_.n_obs() , max_iter_);
+        matrix_beta.resize(m_.q() , max_iter_);
+        matrix_f.resize(m_.n_obs() , max_iter_);
 
       };
     
     // executes the FPIRLS algorithm
     void compute() {
 
+      std::cout << "Sono in compute di FPIRLS, chiamo initialize_mu " << std::endl ; 
+
       static_assert(is_regression_model<Model>::value);  
       mu_ = m_.initialize_mu(); 
 
+      mu_init = mu_ ;    // da togliere
+  
       distribution_.preprocess(mu_);
           
       // algorithm stops when an enought small difference between two consecutive values of the J is recordered
       double J_old = tolerance_+1; double J_new = 0;
 
-       std::cout << "L2 norm Pseudo: " << std::endl; 
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
-	auto pair = m_.compute(mu_);
+  std::cout << "k in FPRLS is: " << k_ << std::endl ; 
+	auto pair = m_.compute(mu_);    // aggiunto un k in input 
 	// solve weighted least square problem
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
+
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
-  std::cout << (std::get<1>(pair)).squaredNorm() << std::endl; 
+  // std::cout << (std::get<1>(pair)).squaredNorm() << std::endl; 
+  matrix_pseudo.col(k_) = std::get<1>(pair) ; 
+  matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
 	// update solver_ to change in the weight matrix
+
 	solver_.update_to_data();
 
 	solver_.init_model(); 
 
 	solver_.solve();
 	// extract estimates from solver
+
 	f_ = solver_.f(); g_ = solver_.g();
-	if(m_.hasCovariates()) beta_ = solver_.beta();
+  // matrix_f.col(k_) = f_ ; 
+
+	if(m_.hasCovariates()) {
+    beta_ = solver_.beta();
+    matrix_beta.col(k_) = beta_ ; 
+  }
 	
 	// update value of \mu_
 	DVector<double> fitted = solver_.fitted(); // compute fitted values
@@ -122,9 +145,10 @@ namespace models{
 	mu_ = distribution_.inv_link(fitted);
 
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2 
-  double J = m_.compute_J_unpenalized(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // m_.lambdaS()*(g_.dot(m_.R0()*g_));  -> lambda?
+  double J = m_.compute_J_unpenalized(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // aggiunto il lambda
   // compute_J_unpen -> model_loss
 	// prepare for next iteration
+
 	k_++; J_old = J_new; J_new = J;
 
 
@@ -137,7 +161,10 @@ namespace models{
   std::cout << "Value of J at the last iteration: " <<  std::setprecision(16) << J_new << std::endl;  
 
       // store weight matrix at convergence
-      W_ = std::get<0>(m_.compute(mu_));
+      W_ = std::get<0>(m_.compute(mu_));    
+      
+
+      std::cout << "Ritorno da FPIRLS " << std::endl ; 
 
       return;
     } 
@@ -149,6 +176,12 @@ namespace models{
     const DVector<double>& g() const { return g_; }                                     // PDE misfit
     std::size_t n_iter() const { return k_ - 1; }                                       // number of iterations
     const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
+
+    const DVector<double>& mu_initialized() const { return mu_init; }    // per debug -> da togliere
+    const DMatrix<double>& matrix_pseudo_fpirls() const { return matrix_pseudo; }
+    const DMatrix<double>& matrix_weight_fpirls() const { return matrix_weight; } 
+    const DMatrix<double>& matrix_beta_fpirls() const { return matrix_beta; } 
+    const DMatrix<double>& matrix_f_fpirls() const { return matrix_f; } 
   };
   
 }}

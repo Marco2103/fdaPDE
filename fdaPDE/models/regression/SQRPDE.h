@@ -46,12 +46,25 @@ namespace models{
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 200;
-    double tol_ = 0.000001;     // 1e-6
+    std::size_t max_iter_ = 200;  
+    double tol_ = 1e-6;     // 1e-6
 
     // matrices related to woodbury decomposition
     DMatrix<double> U_{};
     DMatrix<double> V_{};  
+
+    DVector<double> mu_init{};  //  messo per debug -> da togliere
+    DMatrix<double> matrix_pseudo{};
+    DMatrix<double> matrix_weight{};
+    DMatrix<double> matrix_abs_res{};
+    DMatrix<double> matrix_obs{};
+    DMatrix<double> matrix_beta{};
+    DMatrix<double> matrix_f{};
+
+    SpMatrix<double> A_init_{}; 
+    DVector<double> b_init_{};
+
+    std::size_t curr_iter_ = 0;
 
   public:
     IMPORT_REGRESSION_SYMBOLS;
@@ -94,6 +107,15 @@ namespace models{
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
 
+    const DVector<double>& get_mu_init() const { return mu_init; }    // messo per debug -> da togliere
+    const DMatrix<double>& get_matrix_pseudo() const { return matrix_pseudo; } 
+    const DMatrix<double>& get_matrix_weight() const { return matrix_weight; } 
+    const DMatrix<double>& get_matrix_abs_res() const { return matrix_abs_res; } 
+    const DMatrix<double>& get_matrix_obs() const { return matrix_obs; }
+    const DMatrix<double>& get_matrix_beta() const { return matrix_beta; } 
+    const SpMatrix<double>& get_A_init() const { return A_init_ ; }
+    const DVector<double>& get_b_init() const { return b_init_ ; }
+    const DMatrix<double>& get_matrix_f() const { return matrix_f; } 
     
     virtual ~SQRPDE() = default;
   };
