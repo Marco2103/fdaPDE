@@ -47,7 +47,7 @@ namespace models{
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 200;  
-    double tol_ = 1e-6;     // 1e-6
+    double tol_ = 0.0002020;     // 1e-6
 
     // matrices related to woodbury decomposition
     DMatrix<double> U_{};

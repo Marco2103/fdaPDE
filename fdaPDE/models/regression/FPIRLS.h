@@ -86,17 +86,15 @@ namespace models{
       // BlockFrame<double, int> df = m_.data();
       // if(m_.hasCovariates()) df.insert<double>(DESIGN_MATRIX_BLK, m_.X()); 
 
-        matrix_pseudo.resize(m_.n_obs() , max_iter_); 
-        matrix_weight.resize(m_.n_obs() , max_iter_);
-        matrix_beta.resize(m_.q() , max_iter_);
-        matrix_f.resize(m_.n_obs() , max_iter_);
+        // matrix_pseudo.resize(m_.n_obs() , max_iter_); 
+        // matrix_weight.resize(m_.n_obs() , max_iter_);
+        // matrix_beta.resize(m_.q() , max_iter_);
+        // matrix_f.resize(m_.n_obs() , max_iter_);
 
       };
     
     // executes the FPIRLS algorithm
     void compute() {
-
-      std::cout << "Sono in compute di FPIRLS, chiamo initialize_mu " << std::endl ; 
 
       static_assert(is_regression_model<Model>::value);  
       mu_ = m_.initialize_mu(); 
@@ -112,7 +110,7 @@ namespace models{
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
-  std::cout << "k in FPRLS is: " << k_ << std::endl ; 
+  // std::cout << "k in FPRLS is: " << k_ << std::endl ; 
 	auto pair = m_.compute(mu_);    // aggiunto un k in input 
 	// solve weighted least square problem
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
@@ -120,8 +118,8 @@ namespace models{
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
   // std::cout << (std::get<1>(pair)).squaredNorm() << std::endl; 
-  matrix_pseudo.col(k_) = std::get<1>(pair) ; 
-  matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
+  // matrix_pseudo.col(k_) = std::get<1>(pair) ; 
+  // matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
 	// update solver_ to change in the weight matrix
 
 	solver_.update_to_data();
@@ -136,7 +134,7 @@ namespace models{
 
 	if(m_.hasCovariates()) {
     beta_ = solver_.beta();
-    matrix_beta.col(k_) = beta_ ; 
+    // matrix_beta.col(k_) = beta_ ; 
   }
 	
 	// update value of \mu_
@@ -162,9 +160,7 @@ namespace models{
 
       // store weight matrix at convergence
       W_ = std::get<0>(m_.compute(mu_));    
-      
-
-      std::cout << "Ritorno da FPIRLS " << std::endl ; 
+    
 
       return;
     } 

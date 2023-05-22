@@ -70,6 +70,9 @@ namespace calibration{
       double q = model_.q();          // number of covariates
       std::size_t n = model_.n_obs(); // number of observations      
       double dor = n - (q + trS);     // residual degrees of freedom
+      std::cout << "n in dor: " << n << std::endl ; 
+      std::cout << "trS in dor: " << trS << std::endl ; 
+      std::cout << "dor in dor: " << dor << std::endl ; 
       edfs_->emplace_back(q + trS);   // store equivalent degrees of freedom
       
       // return gcv at point

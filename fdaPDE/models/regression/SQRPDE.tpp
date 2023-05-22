@@ -4,16 +4,15 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
 
-  FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
+  std::cout << "Lambda: " << lambdaS() << std::endl ; 
 
-  std::cout << "Chiamo fpirls.compute  " << std::endl ; 
+  FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
    matrix_abs_res.resize(n_obs(), max_iter_);
   //  matrix_obs.resize(n_obs(), max_iter_);
 
   fpirls.compute();
   
-  std::cout << "Sono in SQRPDE " << std::endl ; 
   // fpirls converged: extract matrix P and solution estimates
   W_ =    fpirls.weights().asDiagonal();
 
@@ -35,23 +34,19 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   f_ = fpirls.f();
 
-  std::cout << "Salvo mu_init " << std::endl ; 
-
   mu_init = fpirls.mu_initialized() ; 
 
-  matrix_pseudo.resize(n_obs() , max_iter_); 
-  matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
+  // matrix_pseudo.resize(n_obs() , max_iter_); 
+  // matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
   
-  matrix_weight.resize(n_obs() , max_iter_); 
-  matrix_weight = fpirls.matrix_weight_fpirls() ; 
+  // matrix_weight.resize(n_obs() , max_iter_); 
+  // matrix_weight = fpirls.matrix_weight_fpirls() ; 
 
   // matrix_f.resize(n_obs() , max_iter_); 
   // matrix_f = fpirls.matrix_f_fpirls() ;
 
-  matrix_beta.resize(q() , max_iter_); 
-  matrix_beta = fpirls.matrix_beta_fpirls() ; 
-
-  std::cout << " mu_init salvato" << std::endl ; 
+  // matrix_beta.resize(q() , max_iter_); 
+  // matrix_beta = fpirls.matrix_beta_fpirls() ;  
 
   if(hasCovariates()) beta_ = fpirls.beta();
   return;
@@ -62,8 +57,6 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 template <typename PDE, Sampling SamplingDesign>
 DVector<double> 
 SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
-
-  std::cout << "Sono in initialize_mu " << std::endl ; 
 
   // fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
   // invR0_temp.compute(R0());
@@ -107,8 +100,6 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
   DVector<double> f = (invA_temp.solve(b_temp)) ;
   DVector<double> fn = Psi()*f ; 
 
-  std::cout << "Esco initialize_mu " << std::endl ; 
-
   return fn ; 
 }
 
@@ -150,18 +141,15 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
   // pW_ = (2*n_obs()*abs_res).cwiseInverse() ;  // .matrix();  // aggiunto .matrix()
 
-  std::cout << "curr_iter in compute is: " << curr_iter_ << std::endl ; 
+  // std::cout << "curr_iter in compute is: " << curr_iter_ << std::endl ; 
 
-  matrix_abs_res.col(curr_iter_) = abs_res; 
+  // matrix_abs_res.col(curr_iter_) = abs_res; 
   // matrix_obs.col(curr_iter_) = y(); 
   curr_iter_++;
 
   // pW_ = (abs_res.array()).inverse().matrix(); //*(1/(2*n_obs()));  
-
-  std::cout << "Faccio il resize " << std::endl ; 
   pW_.resize(n_obs());
 
-  std::cout << "Entro nel for " << std::endl ; 
   for(int i = 0; i < y().size(); ++i) {
     if (abs_res(i) < tol){
       pW_(i) = ( 1./(abs_res(i)+tol) )/(2.*n_obs());
@@ -170,8 +158,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
     else
       pW_(i) = (1./abs_res(i))/(2.*n_obs()); 
   }
-
-  std::cout << "Uscito dal for " << std::endl ; 
+ 
   py_ = y() - (1 - 2.*alpha_)*abs_res;
   return std::tie(pW_, py_);
 }
@@ -211,7 +198,7 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
 template <typename PDE, Sampling SamplingDesign>
 const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
   if(Q_.size() == 0){ // Q is computed on request since not needed in general
-    // compute Q = W(I - H) = W - W*X*(X*W*X^T)^{-1}*X^T*W
+    // compute Q = W(I - H) = W ( I - X*(X^T*W*X)^{-1}*X^T*W ) 
     Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
   }
   return Q_;
@@ -225,7 +212,7 @@ double SQRPDE<PDE, SamplingDesign>::norm
   double result = 0;
   for(std::size_t i = 0; i < obs.rows(); ++i)
     result += rho_alpha(obs.coeff(i,0) - fitted.coeff(i,0));
-  return result*result / obs.rows() ;
+  return result*result / n_obs() ;
 }
 
 // returns the pinball loss at a specific x 
