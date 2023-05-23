@@ -86,10 +86,10 @@ namespace models{
       // BlockFrame<double, int> df = m_.data();
       // if(m_.hasCovariates()) df.insert<double>(DESIGN_MATRIX_BLK, m_.X()); 
 
-        // matrix_pseudo.resize(m_.n_obs() , max_iter_); 
-        // matrix_weight.resize(m_.n_obs() , max_iter_);
-        // matrix_beta.resize(m_.q() , max_iter_);
-        // matrix_f.resize(m_.n_obs() , max_iter_);
+        matrix_pseudo.resize(m_.n_obs() , max_iter_); 
+        matrix_weight.resize(m_.n_obs() , max_iter_);
+        matrix_beta.resize(m_.q() , max_iter_);
+        matrix_f.resize(m_.n_obs() , max_iter_);
 
       };
     
@@ -108,6 +108,7 @@ namespace models{
 
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
+      //   while(k_ < max_iter_ && std::abs(J_new - 0.04472646666589305) > 1e-3){  --> to check a specific value of J 
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
   // std::cout << "k in FPRLS is: " << k_ << std::endl ; 
@@ -118,8 +119,8 @@ namespace models{
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
   // std::cout << (std::get<1>(pair)).squaredNorm() << std::endl; 
-  // matrix_pseudo.col(k_) = std::get<1>(pair) ; 
-  // matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
+  matrix_pseudo.col(k_) = std::get<1>(pair) ; 
+  matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
 	// update solver_ to change in the weight matrix
 
 	solver_.update_to_data();
@@ -134,7 +135,7 @@ namespace models{
 
 	if(m_.hasCovariates()) {
     beta_ = solver_.beta();
-    // matrix_beta.col(k_) = beta_ ; 
+    matrix_beta.col(k_) = beta_ ; 
   }
 	
 	// update value of \mu_

@@ -14,7 +14,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   fpirls.compute();
   
   // fpirls converged: extract matrix P and solution estimates
-  W_ =    fpirls.weights().asDiagonal();
+  W_ = fpirls.weights().asDiagonal();
 
   // matrix_abs_res.resize(n_obs(), curr_iter_) ; 
 
@@ -36,17 +36,17 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   mu_init = fpirls.mu_initialized() ; 
 
-  // matrix_pseudo.resize(n_obs() , max_iter_); 
-  // matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
+  matrix_pseudo.resize(n_obs() , max_iter_); 
+  matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
   
-  // matrix_weight.resize(n_obs() , max_iter_); 
-  // matrix_weight = fpirls.matrix_weight_fpirls() ; 
+  matrix_weight.resize(n_obs() , max_iter_); 
+  matrix_weight = fpirls.matrix_weight_fpirls() ; 
 
-  // matrix_f.resize(n_obs() , max_iter_); 
-  // matrix_f = fpirls.matrix_f_fpirls() ;
+  matrix_f.resize(n_obs() , max_iter_); 
+  matrix_f = fpirls.matrix_f_fpirls() ;
 
-  // matrix_beta.resize(q() , max_iter_); 
-  // matrix_beta = fpirls.matrix_beta_fpirls() ;  
+  matrix_beta.resize(q() , max_iter_); 
+  matrix_beta = fpirls.matrix_beta_fpirls() ;  
 
   if(hasCovariates()) beta_ = fpirls.beta();
   return;
@@ -143,7 +143,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
   // std::cout << "curr_iter in compute is: " << curr_iter_ << std::endl ; 
 
-  // matrix_abs_res.col(curr_iter_) = abs_res; 
+  matrix_abs_res.col(curr_iter_) = abs_res; 
   // matrix_obs.col(curr_iter_) = y(); 
   curr_iter_++;
 

@@ -38,16 +38,21 @@ namespace models{
     SpMatrix<double> A_{};                              // system matrix of non-parametric problem (2N x 2N matrix)
     fdaPDE::SparseLU<SpMatrix<double>> invA_{};         // factorization of matrix A
 
-    DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence 
-    DMatrix<double> XtWX_{}; 
-    Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
+    // Commento questi membri così stiamo usando quelli di RegressionBase
+    // DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence 
+    // DMatrix<double> XtWX_{}; 
+    // Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
+
+    using fdaPDE::models::RegressionBase<SQRPDE<PDE, SamplingDesign>>::W_ ;
+    using fdaPDE::models::RegressionBase<SQRPDE<PDE, SamplingDesign>>::XtWX_ ;
+    using fdaPDE::models::RegressionBase<SQRPDE<PDE, SamplingDesign>>::invXtWX_ ; 
 
     DVector<double> py_{};                              // y - (1-2*alpha)|y - X*beta - f|
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 200;  
-    double tol_ = 0.0002020;     // 1e-6
+    std::size_t max_iter_ = 2000;  
+    double tol_ = 1e-6;   // 0.0002020;     // 1e-6
 
     // matrices related to woodbury decomposition
     DMatrix<double> U_{};
@@ -99,9 +104,10 @@ namespace models{
     double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const ; 
 
     // getters
-    const DiagMatrix<double>& W() const { return W_; } 
+    // const DiagMatrix<double>& W() const { return W_; } 
     const DVector<double>& py() const { return py_; }
-    const DMatrix<double>& XtWX() const { return XtWX_; }
+    // const DMatrix<double>& XtWX() const { return XtWX_; }
+    // const Eigen::PartialPivLU<DMatrix<double>>& invXtWX() const { return invXtWX_; }
     const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }

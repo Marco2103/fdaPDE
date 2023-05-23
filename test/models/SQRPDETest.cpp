@@ -216,7 +216,7 @@ TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
 
   double alpha = 0.1;
   // use optimal lambda to avoid possible numerical issues
-  double lambda = 0.1; // 77827941003892 ; 
+  double lambda = 0.0177827941003892 ;  
   std::string alpha_string = "10" ; 
   SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
   model.setLambdaS(lambda);

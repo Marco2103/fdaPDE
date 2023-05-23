@@ -714,14 +714,14 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
   // Lambda vector
   std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test1_GCV/GCV_lambdasCpp_" + alpha_string + ".csv");
   for(std::size_t i = 0; i < lambdas.size(); ++i) 
-    fileGCV_lambda << lambdas[i] << "\n" ; 
+    fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
 
   fileGCV_lambda.close(); 
 
   // GCV scores
   std::ofstream fileGCV_scores("data/models/SQRPDE/2D_test1_GCV/GCV_scoresCpp_" + alpha_string + ".csv");
   for(std::size_t i = 0; i < GCV.values().size(); ++i) 
-    fileGCV_scores << std::sqrt(GCV.values()[i]) << "\n" ; 
+    fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
 
   fileGCV_scores.close(); 
 
@@ -729,10 +729,98 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
   // Edf
   std::ofstream fileGCV_edf("data/models/SQRPDE/2D_test1_GCV/GCV_edfCpp_" + alpha_string + ".csv");
   for(std::size_t i = 0; i < GCV.edfs().size(); ++i) 
-    fileGCV_edf << GCV.edfs()[i] << "\n" ; 
+    fileGCV_edf << std::setprecision(16) << GCV.edfs()[i] << "\n" ; 
 
   fileGCV_edf.close(); 
 
 
+}
+
+
+
+/* test 10
+   domain:       c-shaped
+   sampling:     locations != nodes
+   penalization: simple laplacian
+   covariates:   yes
+   BC:           no
+   order FE:     1
+   GCV optimization: grid stochastic
+ */
+TEST(GCV_SQRPDE, Test10_Laplacian_SemiParametric_GeostatisticalAtLocations_GridStochastic) {
+  // define domain and regularizing PDE
+  MeshLoader<Mesh2D<>> domain("c_shaped");
+  auto L = Laplacian();
+  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+
+  // define statistical model
+  CSVReader<double> reader{};
+  // load locations where data are sampled
+  CSVFile<double> locFile;
+  locFile = reader.parseFile("data/models/SQRPDE/2D_test2_GCV/locs.csv");
+  DMatrix<double> loc = locFile.toEigen();
+
+  // define statistical model
+  double alpha = 0.1; 
+  const std::string alpha_string = "10";
+  SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
+  
+  // load data from .csv files
+  CSVFile<double> yFile; // observation file
+  yFile = reader.parseFile  ("data/models/SQRPDE/2D_test2_GCV/z.csv");
+  DMatrix<double> y = yFile.toEigen();
+  CSVFile<double> XFile; // design matrix
+  XFile = reader.parseFile  ("data/models/SQRPDE/2D_test2_GCV/X.csv");
+  DMatrix<double> X = XFile.toEigen();
+
+  // set model data
+  BlockFrame<double, int> df;
+  df.insert(OBSERVATIONS_BLK,  y);
+  df.insert(DESIGN_MATRIX_BLK, X);
+  df.insert(SPACE_LOCATIONS_BLK, loc);
+  model.setData(df);
+  model.init(); // init model
+
+  // define grid of lambda values
+  std::vector<SVector<1>> lambdas;
+  for(double x = -3.0; x <= 3.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  // lambdas.push_back(SVector<1>(0.003162277660168379));
+  
+  // define GCV calibrator
+  GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
+  GridOptimizer<1> opt;
+  
+  ScalarField<1, decltype(GCV)> obj(GCV);
+  opt.optimize(obj, lambdas); // optimize gcv field
+  SVector<1> best_lambda = opt.optimum();
+
+  std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl ; 
+  // check optimal lambda
+  // EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[4][0]) );
+
+
+  // Lambda vector
+  std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test2_GCV/GCV_lambdasCpp_" + alpha_string + ".csv");
+  for(std::size_t i = 0; i < lambdas.size(); ++i) 
+    fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
+
+  fileGCV_lambda.close(); 
+
+  // GCV scores
+  std::ofstream fileGCV_scores("data/models/SQRPDE/2D_test2_GCV/GCV_scoresCpp_" + alpha_string + ".csv");
+  for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+    fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+
+  fileGCV_scores.close(); 
+
+
+  // Edf
+  std::ofstream fileGCV_edf("data/models/SQRPDE/2D_test2_GCV/GCV_edfCpp_" + alpha_string + ".csv");
+  for(std::size_t i = 0; i < GCV.edfs().size(); ++i) 
+    fileGCV_edf << std::setprecision(16) << GCV.edfs()[i] << "\n" ; 
+
+  fileGCV_edf.close();
+  
 }
 
