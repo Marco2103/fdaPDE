@@ -74,6 +74,7 @@ namespace models {
     const DVector<double>& f() const { return f_; }; // estimate of spatial field
     const DVector<double>& g() const { return g_; }; // PDE misfit
     const DVector<double>& beta() const { return beta_; }; // estimate of regression coefficients
+    // getters to Woodbury decomposition matrices
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
 
@@ -99,9 +100,9 @@ namespace models {
     // (Called by ModelBase::setData() and executed after initialization of the block frame)
     void update_to_data() {
       // default to homoscedastic observations
-      DVector<double> W = DVector<double>::Ones(Base::n_obs());
+      DVector<double> W = DVector<double>::Ones(Base::n_locs());
       if(hasWeights()){ // update observations' weights if provided
-	for(std::size_t i = 0; i < Base::n_obs(); ++i)
+	for(std::size_t i = 0; i < Base::n_locs(); ++i)
 	  W[idx()(i,0)] = df_.template get<double>(WEIGHTS_BLK).coeff(idx()(i,0),0);
       }
       W_ = W.asDiagonal();
@@ -116,7 +117,7 @@ namespace models {
         
     // computes fitted values \hat y = \Psi*f_ + X*beta_
     DMatrix<double> fitted() const {
-      DMatrix<double> hat_y = SamplingBase::B()*f_;
+      DMatrix<double> hat_y = SamplingBase::Psi(not_nan_corrected())*f_;
       if(hasCovariates()) hat_y += X()*beta_;
       return hat_y;
     }

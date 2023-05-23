@@ -4,12 +4,9 @@ void ModelBase<Model>::init(){
   init_pde();                    // init pde object
   model().init_regularization(); // init regularization term
   model().init_sampling(true);   // init \Psi matrix, always force recomputation
-  
-  // analyze and set missing data
-  model().analyze_nan();
-  model().set_nan();
-  
-  model().init_model();          // init model
+
+  // init model's internals
+  model().init_model();
 }
 
 // a trait to detect if a model requires a preprocessing step
@@ -23,15 +20,17 @@ struct requires_update_to_data<
 
 // set model's data from blockframe
 template <typename Model>
-void ModelBase<Model>::setData(const BlockFrame<double, int>& df) {  
+void ModelBase<Model>::setData(const BlockFrame<double, int>& df, bool reindex) {  
   df_ = df;
-  // insert an index row (if not yet present)
-  if(!df_.hasBlock(INDEXES_BLK)){
+  // insert an index row (if not yet present or requested)
+  if(!df_.hasBlock(INDEXES_BLK) || reindex){
     std::size_t n = df_.rows();
     DMatrix<int> idx(n,1);
     for(std::size_t i = 0; i < n; ++i) idx(i,0) = i;
     df_.insert(INDEXES_BLK, idx);
   }
+  model().analyze_nan(); // analyze missing data
+
   // update model to data, if requested
   if constexpr(requires_update_to_data<Model>::value) model().update_to_data();
   return;
@@ -41,10 +40,10 @@ void ModelBase<Model>::setData(const BlockFrame<double, int>& df) {
 template <typename Model>
 void ModelBase<Model>::analyze_nan() {
   BLOCK_FRAME_SANITY_CHECKS;
-  nan_idxs_.clear(); // empty nan vector
+  nan_idxs_.clear(); // empty nan set
   for(std::size_t i = 0; i < n_obs(); ++i){
-    if(std::isnan(y()(i,0))){ // requires -ffast-math compiler flag to be disabled, NaN not detected otherwise
-      nan_idxs_.emplace_back(i);
+    if(std::isnan(y()(i,0))){ // requires -ffast-math compiler flag to be disabled
+      nan_idxs_.insert(i);
       df_.get<double>(OBSERVATIONS_BLK)(i,0) = 0.0; // zero out NaN
     }
   }
