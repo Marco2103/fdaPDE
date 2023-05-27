@@ -14,7 +14,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   fpirls.compute();
   
   // fpirls converged: extract matrix P and solution estimates
-  W_ = fpirls.weights().asDiagonal();
+  // W_ = fpirls.weights().asDiagonal();
+  W_ = fpirls.solver().W();
 
   // matrix_abs_res.resize(n_obs(), curr_iter_) ; 
 
@@ -23,8 +24,10 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
     invXtWX_ = XtWX_.partialPivLu();
   }
   
-  //A_ =    fpirls.solver().A(); 
+  // A_ =    fpirls.solver().A(); 
+  // invA_.compute(A_); 
   invA_ = fpirls.solver().invA();
+  
 
   if(hasCovariates()) {
     U_ =    fpirls.solver().U(); 
@@ -32,7 +35,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   }
 
-  f_ = fpirls.f();
+  f_ = fpirls.solver().f();
+  g_ = fpirls.solver().g();   // per completezza (non sappiamo se lo usa)
 
   mu_init = fpirls.mu_initialized() ; 
 
@@ -48,7 +52,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   matrix_beta.resize(q() , max_iter_); 
   matrix_beta = fpirls.matrix_beta_fpirls() ;  
 
-  if(hasCovariates()) beta_ = fpirls.beta();
+  if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
 }
 
@@ -58,47 +62,45 @@ template <typename PDE, Sampling SamplingDesign>
 DVector<double> 
 SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
 
-  // fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
-  // invR0_temp.compute(R0());
+  fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
+  invR0_temp.compute(R0());
 
   // assemble system matrix 
-  // std::cout << "Initialize A_temp " << std::endl ; 
-  // SparseBlockMatrix<double,2,2>
-  //   A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
-  //     lambdaS()*R1(),     -lambdaS()*R0()            );
-  // // cache non-parametric matrix and its factorization for reuse
-  // std::cout << "Initialize invA_temp " << std::endl ; 
-  // fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
-  // invA_temp.compute( A_temp.derived() );
+  SparseBlockMatrix<double,2,2>
+    A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
+      lambdaS()*R1(),     -lambdaS()*R0()            );
+  // cache non-parametric matrix and its factorization for reuse 
+  fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
+  invA_temp.compute( A_temp.derived() );
 
-  // DVector<double> b_temp ; 
-  // b_temp.resize(A_temp.rows());
-  // b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
-  // b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs() ; 
-  // BLOCK_FRAME_SANITY_CHECKS;
-  // DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-  // DVector<double> fn = Psi()*f ; 
+  DVector<double> b_temp ; 
+  b_temp.resize(A_temp.rows());
+  b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
+  b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs() ; 
+  BLOCK_FRAME_SANITY_CHECKS;
+  DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+  DVector<double> fn = Psi()*f ; 
 
 
   // implementazione diretta
 
-  fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
-  invR0_temp.compute(R0());
+  // fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
+  // invR0_temp.compute(R0());
 
-  SpMatrix<double> A_temp{} ; 
-  // A_temp = PsiTD()*Psi()/n_obs() + 2*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
-  A_temp = PsiTD()*Psi() + 2*n_obs()*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
-  fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
-  // invA_temp.compute( A_temp.derived() );
+  // SpMatrix<double> A_temp{} ; 
+  // // A_temp = PsiTD()*Psi()/n_obs() + 2*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
+  // A_temp = PsiTD()*Psi() + 2*n_obs()*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
+  // fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
+  // // invA_temp.compute( A_temp.derived() );
 
-  invA_temp.compute( A_temp );
+  // invA_temp.compute( A_temp );
   
-  DVector<double> b_temp{} ; 
-  // b_temp = PsiTD()*y()/n_obs() ; 
-  b_temp = PsiTD()*y() ; 
+  // DVector<double> b_temp{} ; 
+  // // b_temp = PsiTD()*y()/n_obs() ; 
+  // b_temp = PsiTD()*y() ; 
 
-  DVector<double> f = (invA_temp.solve(b_temp)) ;
-  DVector<double> fn = Psi()*f ; 
+  // DVector<double> f = (invA_temp.solve(b_temp)) ;
+  // DVector<double> fn = Psi()*f ; 
 
   return fn ; 
 }
@@ -135,6 +137,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 //  matrix_obs.resize(n_obs(), max_iter_);
 
   double tol = 1e-6;    // modificata  
+
   for(int i = 0; i < y().size(); ++i)
     abs_res(i) = std::abs(y()(i) - mu(i)) ; 
     // abs_res(i) = (std::abs(y()(i) - mu(i)) > tol) ? (std::abs( y()(i) - mu(i) )) : ( std::abs(y()(i) - mu(i)) + tol );   
@@ -143,9 +146,9 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
   // std::cout << "curr_iter in compute is: " << curr_iter_ << std::endl ; 
 
-  matrix_abs_res.col(curr_iter_) = abs_res; 
+  // matrix_abs_res.col(curr_iter_) = abs_res; 
   // matrix_obs.col(curr_iter_) = y(); 
-  curr_iter_++;
+  // curr_iter_++;
 
   // pW_ = (abs_res.array()).inverse().matrix(); //*(1/(2*n_obs()));  
   pW_.resize(n_obs());
@@ -197,10 +200,11 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
 // involving Q can be substituted with the more efficient routine lmbQ(), which is part of iRegressionModel interface)
 template <typename PDE, Sampling SamplingDesign>
 const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
-  if(Q_.size() == 0){ // Q is computed on request since not needed in general
+  // if(Q_.size() == 0){ // Q is computed on request since not needed in general
     // compute Q = W(I - H) = W ( I - X*(X^T*W*X)^{-1}*X^T*W ) 
     Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
-  }
+    // W_inQ_ = W() ; 
+  // }
   return Q_;
 }
 

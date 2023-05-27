@@ -10,6 +10,7 @@ void SRPDE<PDE, SamplingDesign>::init_model() {
       lambdaS()*R1(),     lambdaS()*R0()            );
   // cache non-parametric matrix and its factorization for reuse
   A_ = A.derived();
+ 
   invA_.compute(A_);
   // prepare rhs of linear system
   b_.resize(A_.rows());
@@ -72,10 +73,10 @@ const DMatrix<double>& SRPDE<PDE, SamplingDesign>::T() {
 // involving Q can be substituted with the more efficient routine lmbQ(), which is part of iRegressionModel interface)
 template <typename PDE, Sampling SamplingDesign>
 const DMatrix<double>& SRPDE<PDE, SamplingDesign>::Q() {
-  if(Q_.size() == 0){ // Q is computed on request since not needed in general
+  // if(Q_.size() == 0){ // Q is computed on request since not needed in general
     // compute Q = W(I - H) = W - W*X*(X*W*X^T)^{-1}*X^T*W
-    Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
-  }
+  Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
+  // }
   return Q_;
 }
 

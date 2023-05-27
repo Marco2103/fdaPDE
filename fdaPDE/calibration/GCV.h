@@ -51,7 +51,8 @@ namespace calibration{
     GCV(M& model, std::size_t r) : model_(model), trS_(model_, r) {};
     template <typename U = trS_evaluation_strategy,
 	      typename std::enable_if<std::is_same<U, StochasticEDF<M>>::value,int>::type = 0>
-    GCV(M& model, std::size_t r, std::size_t seed) : model_(model), trS_(model_, r, seed) {};
+    GCV(M& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::Woodbury ) : model_(model), trS_(model_, r, seed, method) {};
+    // cambiato l'ultimo constructor per passare il parametro Woodbury/Cholesky 
 
     // evaluates the analytical expression of gcv at \lambda (called by any type of GCV optimization)
     //

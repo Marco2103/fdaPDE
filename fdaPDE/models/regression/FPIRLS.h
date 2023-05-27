@@ -49,10 +49,10 @@ namespace models{
     
     DVector<double> mu_{};    // \mu^k = [ \mu^k_1, ..., \mu^k_n ] : mean vector at step k
     // parameters at convergece
-    DVector<double> f_{};     // estimate of non-parametric spatial field
+    // DVector<double> f_{};     // estimate of non-parametric spatial field
     DVector<double> g_{};     // PDE misfit
-    DVector<double> beta_{};  // estimate of coefficient vector
-    DVector<double> W_{};     // weight matrix
+    // DVector<double> beta_{};  // estimate of coefficient vector
+    // DVector<double> W_{};     // weight matrix
 
     DVector<double> mu_init{};    // per debug -> da togliere 
     DMatrix<double> matrix_pseudo{};
@@ -111,18 +111,17 @@ namespace models{
       //   while(k_ < max_iter_ && std::abs(J_new - 0.04472646666589305) > 1e-3){  --> to check a specific value of J 
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
-  // std::cout << "k in FPRLS is: " << k_ << std::endl ; 
 	auto pair = m_.compute(mu_);    // aggiunto un k in input 
 	// solve weighted least square problem
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
-
+ 
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
   // std::cout << (std::get<1>(pair)).squaredNorm() << std::endl; 
   matrix_pseudo.col(k_) = std::get<1>(pair) ; 
   matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
 	// update solver_ to change in the weight matrix
-
+ 
 	solver_.update_to_data();
 
 	solver_.init_model(); 
@@ -130,13 +129,14 @@ namespace models{
 	solver_.solve();
 	// extract estimates from solver
 
-	f_ = solver_.f(); g_ = solver_.g();
-  // matrix_f.col(k_) = f_ ; 
+	// f_ = solver_.f(); 
+  g_ = solver_.g();
+  // // matrix_f.col(k_) = f_ ; 
 
-	if(m_.hasCovariates()) {
-    beta_ = solver_.beta();
-    matrix_beta.col(k_) = beta_ ; 
-  }
+	// if(m_.hasCovariates()) {
+  //   beta_ = solver_.beta();
+  //   matrix_beta.col(k_) = beta_ ; 
+  // }
 	
 	// update value of \mu_
 	DVector<double> fitted = solver_.fitted(); // compute fitted values
@@ -153,6 +153,7 @@ namespace models{
 
       }
 
+
   if (k_ == max_iter_)
     std::cout << "MAX ITER RAGGIUNTO " << std::endl;  
 
@@ -160,16 +161,25 @@ namespace models{
   std::cout << "Value of J at the last iteration: " <<  std::setprecision(16) << J_new << std::endl;  
 
       // store weight matrix at convergence
-      W_ = std::get<0>(m_.compute(mu_));    
-    
+      // W_ = std::get<0>(m_.compute(mu_));    
+
+      auto pair = m_.compute(mu_);    
+
+      solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
+      solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
+      
+      solver_.update_to_data();
+
+      solver_.init_model();
+          
 
       return;
     } 
 
     // getters 
-    const DVector<double>& weights() const { return W_; }                               // weights matrix W at convergence
-    const DVector<double>& beta() const { return beta_; }                               // estimate of coefficient vector 
-    const DVector<double>& f() const { return f_; }                                     // estimate of spatial field 
+    // const DVector<double>& weights() const { return W_; }                               // weights matrix W at convergence
+    // const DVector<double>& beta() const { return beta_; }                               // estimate of coefficient vector 
+    // const DVector<double>& f() const { return f_; }                                     // estimate of spatial field 
     const DVector<double>& g() const { return g_; }                                     // PDE misfit
     std::size_t n_iter() const { return k_ - 1; }                                       // number of iterations
     const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  

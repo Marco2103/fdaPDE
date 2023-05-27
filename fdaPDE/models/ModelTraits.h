@@ -142,7 +142,10 @@ namespace models{
   using Base::f_;            /* estimate of the nonparametric part of the model */       \
   using Base::g_;            /* PDE misfit */				                 \
   using Base::beta_;         /* estimate of coefficient vector for parametric part */    \
-
+  using Base::W_;            /* estimate of the nonparametric part of the model */       \
+  using Base::XtWX_;            /* PDE misfit */				                 \
+  using Base::invXtWX_;         /* estimate of coefficient vector for parametric part */    \
+  
   // macro for the import of some common CRTP functionalities. Requires a Model
   // type to be in the scope of this macro
 #define DEFINE_CRTP_MODEL_UTILS						         \

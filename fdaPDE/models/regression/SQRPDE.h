@@ -36,22 +36,23 @@ namespace models{
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
     SpMatrix<double> A_{};                              // system matrix of non-parametric problem (2N x 2N matrix)
-    fdaPDE::SparseLU<SpMatrix<double>> invA_{};         // factorization of matrix A
+    fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
 
     // Commento questi membri così stiamo usando quelli di RegressionBase
     // DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence 
+    // DiagMatrix<double> W_inQ_{};
     // DMatrix<double> XtWX_{}; 
     // Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
 
-    using fdaPDE::models::RegressionBase<SQRPDE<PDE, SamplingDesign>>::W_ ;
-    using fdaPDE::models::RegressionBase<SQRPDE<PDE, SamplingDesign>>::XtWX_ ;
-    using fdaPDE::models::RegressionBase<SQRPDE<PDE, SamplingDesign>>::invXtWX_ ; 
+    // using RegressionBase<SQRPDE<PDE, SamplingDesign>>::W_ ;
+    // using RegressionBase<SQRPDE<PDE, SamplingDesign>>::XtWX_ ;
+    // using RegressionBase<SQRPDE<PDE, SamplingDesign>>::invXtWX_ ; 
 
     DVector<double> py_{};                              // y - (1-2*alpha)|y - X*beta - f|
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 2000;  
+    std::size_t max_iter_ = 200;  
     double tol_ = 1e-6;   // 0.0002020;     // 1e-6
 
     // matrices related to woodbury decomposition
@@ -65,9 +66,6 @@ namespace models{
     DMatrix<double> matrix_obs{};
     DMatrix<double> matrix_beta{};
     DMatrix<double> matrix_f{};
-
-    SpMatrix<double> A_init_{}; 
-    DVector<double> b_init_{};
 
     std::size_t curr_iter_ = 0;
 
@@ -105,10 +103,11 @@ namespace models{
 
     // getters
     // const DiagMatrix<double>& W() const { return W_; } 
+    // const DiagMatrix<double>& W_inQ() const { return W_inQ_; } 
     const DVector<double>& py() const { return py_; }
     // const DMatrix<double>& XtWX() const { return XtWX_; }
     // const Eigen::PartialPivLU<DMatrix<double>>& invXtWX() const { return invXtWX_; }
-    const SpMatrix<double>& A() const { return A_; }
+    // const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
@@ -119,8 +118,6 @@ namespace models{
     const DMatrix<double>& get_matrix_abs_res() const { return matrix_abs_res; } 
     const DMatrix<double>& get_matrix_obs() const { return matrix_obs; }
     const DMatrix<double>& get_matrix_beta() const { return matrix_beta; } 
-    const SpMatrix<double>& get_A_init() const { return A_init_ ; }
-    const DVector<double>& get_b_init() const { return b_init_ ; }
     const DMatrix<double>& get_matrix_f() const { return matrix_f; } 
     
     virtual ~SQRPDE() = default;
