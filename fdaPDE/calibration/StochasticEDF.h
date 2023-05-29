@@ -7,7 +7,7 @@
 using fdaPDE::core::NLA::SMW;
 #include "../models/regression/RegressionBase.h"
 using fdaPDE::models::is_regression_model;
-#include <Eigen/Cholesky>
+#include <Eigen/Cholesky>   // aggiunto 
 
 namespace fdaPDE {
 namespace calibration{
@@ -82,31 +82,25 @@ namespace calibration{
       else // semi-parametric model
         Bs_.topRows(n) = - model_.PsiTD()*model_.lmbQ(Us_);
 
-      
       DMatrix<double> sol; // room for problem solution
       if(!model_.hasCovariates()){ // nonparametric case
         sol = model_.invA().solve(Bs_);
       }else{
         if (method_ == StochasticEDFMethod::Woodbury) {
-          std::cout << "Woodbury " << std::endl ; 
+          std::cout << "Woodbury " << std::endl; 
           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
           sol = SMW<>().solve(model_.invA(), model_.U(), model_.XtWX(), model_.V(), Bs_);
         }
         else {   // Cholesky
-          std::cout << "Cholesky " << std::endl ; 
+          std::cout << "Cholesky " << std::endl; 
           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
 
-          // direct implementation
-          std::cout << "Assemblo la prima parte della matrice " << std::endl ; 
-          auto mat1 = model_.PsiTD()*model_.lmbQ(model_.Psi()) ;
-          std::cout << "Assemblo la seconda parte della matrice " << std::endl ; 
-          auto mat2 =  model_.lambdaS()*model_.pen(); 
-          std::cout << "Assemblata " << std::endl ; 
-          auto mat3 = model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.lambdaS()*model_.pen() ; 
-          std::cout << "Sommata " << std::endl ; 
-          auto A_Chol = (model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.lambdaS()*model_.pen()).llt() ; // .solve( Bs_.topRows(n) ) ;   // Cholesky decomposition of A (= L Lt)
+          // direct implementation: RED FLAG LUMINOSA
+          Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
+          lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.lambdaS()*model_.pen() ); 
+          sol = lltOfA.solve(- Bs_.topRows(n)); 
      
-          // block implementation
+          // block implementation: 
           // SparseBlockMatrix<double,2,2>
           // A(model_.PsiTD()*model_.W()*model_.Psi(), model_.lambdaS()*model_.R1().transpose(),
           //   model_.lambdaS()*model_.R1(),     -model_.lambdaS()*model_.R0()            );
