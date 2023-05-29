@@ -652,7 +652,9 @@ using fdaPDE::testing::almost_equal;
 
 
 
+/*
 
+*/
 
 
 
@@ -663,7 +665,7 @@ using fdaPDE::testing::almost_equal;
 
 
 /* test 9
-   domain:       unit square [1,1] x [1,1] (coarse)
+   domain:       unit square [0,1] x [0,1] (coarse)
    sampling:     locations = nodes
    penalization: simple laplacian
    covariates:   no
@@ -738,7 +740,7 @@ using fdaPDE::testing::almost_equal;
 // }
 
 /* test 10
-   domain:       unit square [1,1] x [1,1] (coarse)
+   domain:       unit square [0,1] x [0,1] (coarse)
    sampling:     locations = nodes
    penalization: simple laplacian
    covariates:   no
@@ -992,8 +994,6 @@ using fdaPDE::testing::almost_equal;
 // }
 
 
-
-
 /* test 13
    domain:       c-shaped
    sampling:     locations != nodes
@@ -1079,7 +1079,7 @@ using fdaPDE::testing::almost_equal;
   
 // }
 
-/* test 13
+/* test 14
    domain:       c-shaped
    sampling:     locations != nodes
    penalization: simple laplacian
@@ -1130,8 +1130,8 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
   
   // define GCV calibrator
   std::size_t seed = 509875;
-  // GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, 100, seed);    // Woodbury
-  GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, 100, seed, StochasticEDFMethod::Cholesky);       // Cholesky 
+  GCV<decltype(model), StochasticEDF<decltype(model)>> 
+    GCV(model, 100, seed, StochasticEDFMethod::Cholesky); 
   GridOptimizer<1> opt;
   
   ScalarField<1, decltype(GCV)> obj(GCV);
@@ -1143,7 +1143,7 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
   // EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[4][0]) );
 
   // Lambda vector
-  // std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test12_GCV/Stochastic_Woodbury/GCV_lambdasCpp_" + alpha_string + ".csv");
+  //std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test12_GCV/Stochastic_Woodbury/GCV_lambdasCpp_" + alpha_string + ".csv");
   std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test12_GCV/Stochastic_Cholesky/GCV_lambdasCpp_" + alpha_string + ".csv");
   for(std::size_t i = 0; i < lambdas.size(); ++i) 
     fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
@@ -1151,7 +1151,7 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
   fileGCV_lambda.close(); 
 
   // GCV scores
-  // std::ofstream fileGCV_scores("data/models/SQRPDE/2D_test12_GCV/Stochastic_Woodbury/GCV_scoresCpp_" + alpha_string + ".csv");
+  //std::ofstream fileGCV_scores("data/models/SQRPDE/2D_test12_GCV/Stochastic_Woodbury/GCV_scoresCpp_" + alpha_string + ".csv");
   std::ofstream fileGCV_scores("data/models/SQRPDE/2D_test12_GCV/Stochastic_Cholesky/GCV_scoresCpp_" + alpha_string + ".csv");
   for(std::size_t i = 0; i < GCV.values().size(); ++i) 
     fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
@@ -1160,7 +1160,7 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 
 
   // Edf
-  // std::ofstream fileGCV_edf("data/models/SQRPDE/2D_test12_GCV/Stochastic_Woodbury/GCV_edfCpp_" + alpha_string + ".csv");
+  //std::ofstream fileGCV_edf("data/models/SQRPDE/2D_test12_GCV/Stochastic_Woodbury/GCV_edfCpp_" + alpha_string + ".csv");
   std::ofstream fileGCV_edf("data/models/SQRPDE/2D_test12_GCV/Stochastic_Cholesky/GCV_edfCpp_" + alpha_string + ".csv");
   for(std::size_t i = 0; i < GCV.edfs().size(); ++i) 
     fileGCV_edf << std::setprecision(16) << GCV.edfs()[i] << "\n" ; 
