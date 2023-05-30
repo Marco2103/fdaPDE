@@ -95,7 +95,7 @@ namespace calibration{
           std::cout << "Cholesky " << std::endl; 
           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
 
-          // direct implementation: RED FLAG LUMINOSA
+          // direct implementation: 
           Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
           lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.lambdaS()*model_.pen() ); 
           sol = lltOfA.solve(- Bs_.topRows(n)); 
