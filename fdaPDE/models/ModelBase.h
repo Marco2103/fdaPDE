@@ -38,24 +38,19 @@ namespace models {
     void setDirichletBC(SpMatrix<double>& A, DMatrix<double>& b);
     void setData(const BlockFrame<double, int>& df, bool reindex = false); // initialize model's data by copying the supplied BlockFrame
     BlockFrame<double, int>& data() { return df_; }  // direct write-access to model's internal data storage
-    void setLambda(const SVector<model_traits<Model>::n_lambda>& lambda) { lambda_ = lambda; } 
+    void setLambda(const SVector<model_traits<Model>::n_lambda>& lambda) { lambda_ = lambda; }
     void setPDE(const PDE& pde) { pde_ = std::make_shared<PDE>(pde); }
     
     // getters
     const BlockFrame<double, int>& data() const { return df_; }
-    const DMatrix<double>& y() const { return df_.get<double>(OBSERVATIONS_BLK); } // observation vector y
     const DMatrix<int>& idx() const { return df_.get<int>(INDEXES_BLK); } // data indices
     // informations related to discretization of regularization term
     const PDE& pde() const { return *pde_; } // regularizing term Lf - u (defined on some domain \Omega)
     const Mesh<M,N,K>& domain() const { return pde_->domain(); }
     std::size_t n_basis() const { return pde_->domain().dof(); }; // number of basis functions used in space discretization
-    std::size_t n_obs() const { return df_.rows(); } // number of observations
     std::size_t n_locs() const { return model().n_spatial_locs()*model().n_temporal_locs(); } // number of observations' locations
     const ADT<M,N,K>& gse() { if(gse_ == nullptr){ gse_ = std::make_shared<ADT<M,N,K>>(domain()); } return *gse_; }
     SVector<model_traits<Model>::n_lambda> lambda() const { return lambda_; }
-    bool hasNaN() const { return nan_idxs_.size() != 0; } // true if there are missing data
-    const std::unordered_set<std::size_t>& nan_idxs() const { return nan_idxs_; } // return indeces where data are missing
-    void analyze_nan();
     
     // abstract part of the interface, must be implemented by concrete models
     virtual void solve() = 0; // finds a solution to the problem, whatever the problem is.
@@ -66,7 +61,6 @@ namespace models {
     std::shared_ptr<ADT<M,N,K>> gse_; // geometric search engine
     BlockFrame<double, int> df_; // blockframe for data storage
     SVector<model_traits<Model>::n_lambda> lambda_; // vector of smoothing parameters
-    std::unordered_set<std::size_t> nan_idxs_; // indexes of missing observations
     
     // getter to underlying model object
     inline Model& model() { return static_cast<Model&>(*this); }
