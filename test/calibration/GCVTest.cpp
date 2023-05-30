@@ -15,7 +15,6 @@ using fdaPDE::models::SRPDE;
 #include "../fdaPDE/models/regression/SQRPDE.h"
 using fdaPDE::models::SQRPDE;
 #include "../fdaPDE/models/SamplingDesign.h"
-using fdaPDE::models::Sampling;
 #include "../fdaPDE/calibration/GCV.h"
 using fdaPDE::calibration::GCV;
 using fdaPDE::calibration::ExactGCV;
@@ -50,8 +49,8 @@ using fdaPDE::testing::almost_equal;
 //   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   SRPDE<decltype(problem), fdaPDE::models::Sampling::GeoStatMeshNodes>  model(problem);
+  // define statistical model
+  SRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes>  model(problem);
   
 //   // load data from .csv files
 //   CSVReader<double> reader{};
@@ -115,8 +114,8 @@ using fdaPDE::testing::almost_equal;
 //   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   SRPDE<decltype(problem), fdaPDE::models::Sampling::GeoStatMeshNodes>  model(problem);
+  // define statistical model
+  SRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes>  model(problem);
   
 //   // load data from .csv files
 //   CSVReader<double> reader{};
@@ -680,34 +679,39 @@ using fdaPDE::testing::almost_equal;
 //   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   double alpha = 0.1; 
-//   const std::string alpha_string = "10";
-//   SQRPDE<decltype(problem), fdaPDE::models::Sampling::GeoStatMeshNodes> model(problem, alpha);
+  // define statistical model
+  CSVReader<double> reader{};
+  // load locations where data are sampled
+  CSVFile<double> locFile;
+  locFile = reader.parseFile("data/models/SRPDE/2D_test2/locs.csv");
+  DMatrix<double> loc = locFile.toEigen();
+
+  // define statistical model
+ m SRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem);
+  odel.set_spatial_locations(loc);
   
-//   // load data from .csv files
-//   CSVReader<double> reader{};
-//   CSVFile<double> yFile; // observation file
-//   yFile = reader.parseFile("data/models/SQRPDE/2D_test1_GCV/z.csv");  // stiamo usando i dati skewed
-//   DMatrix<double> y = yFile.toEigen();
+  // load data from .csv files
+  CSVFile<double> yFile; // observation file
+  yFile = reader.parseFile  ("data/models/SRPDE/2D_test2/z.csv");
+  DMatrix<double> y = yFile.toEigen();
+  CSVFile<double> XFile; // design matrix
+  XFile = reader.parseFile  ("data/models/SRPDE/2D_test2/X.csv");
+  DMatrix<double> X = XFile.toEigen();
 
-//   // set model data
-//   BlockFrame<double, int> df;
-//   df.insert(OBSERVATIONS_BLK, y);
-//   model.setData(df);
-//   model.init(); // init model
+  // set model data
+  BlockFrame<double, int> df;
+  df.insert(OBSERVATIONS_BLK,  y);
+  df.insert(DESIGN_MATRIX_BLK, X);
+  model.setData(df);
+  model.init(); // init model
 
-//   // define grid of lambda values
-//   std::vector<SVector<1>> lambdas;
-//   for(double x = -6.0; x <= -3.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  // define grid of lambda values
+  std::vector<SVector<1>> lambdas;
+  for(double x = -3.0; x <= 3.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10,x)));
   
-//   // define GCV function and optimize
-//   GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
-//   GridOptimizer<1> opt;
-
-//   ScalarField<1, decltype(GCV)> obj(GCV);
-//   opt.optimize(obj, lambdas); // optimize gcv field
-//   SVector<1> best_lambda = opt.optimum();
+  // define GCV calibrator
+  GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
+  GridOptimizer<1> opt;
   
 //   std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl ; 
 //   // check optimal lambda
@@ -755,26 +759,31 @@ using fdaPDE::testing::almost_equal;
 //   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   double alpha = 0.1; 
-//   const std::string alpha_string = "10";
-//   SQRPDE<decltype(problem), fdaPDE::models::Sampling::GeoStatMeshNodes> model(problem, alpha);
+  // define statistical model
+  CSVReader<double> reader{};
+  // load locations where data are sampled
+  CSVFile<double> locFile;
+  locFile = reader.parseFile("data/models/SRPDE/2D_test2/locs.csv");
+  DMatrix<double> loc = locFile.toEigen();
+
+  // define statistical model
+  SRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem);
+  model.set_spatial_locations(loc);
   
-//   // load data from .csv files
-//   CSVReader<double> reader{};
-//   CSVFile<double> yFile; // observation file
-//   yFile = reader.parseFile("data/models/SQRPDE/2D_test1_GCV/z.csv");  // stiamo usando i dati skewed
-//   DMatrix<double> y = yFile.toEigen();
+  // load data from .csv files
+  CSVFile<double> yFile; // observation file
+  yFile = reader.parseFile  ("data/models/SRPDE/2D_test2/z.csv");
+  DMatrix<double> y = yFile.toEigen();
+  CSVFile<double> XFile; // design matrix
+  XFile = reader.parseFile  ("data/models/SRPDE/2D_test2/X.csv");
+  DMatrix<double> X = XFile.toEigen();
 
-//   // set model data
-//   BlockFrame<double, int> df;
-//   df.insert(OBSERVATIONS_BLK, y);
-//   model.setData(df);
-//   model.init(); // init model
-
-//   // define grid of lambda values
-//   std::vector<SVector<1>> lambdas;
-//   for(double x = -6.0; x <= -3.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  // set model data
+  BlockFrame<double, int> df;
+  df.insert(OBSERVATIONS_BLK,  y);
+  df.insert(DESIGN_MATRIX_BLK, X);
+  model.setData(df);
+  model.init(); // init model
 
 //   // define GCV calibrator
 //   std::size_t seed = 476813;
@@ -835,33 +844,22 @@ using fdaPDE::testing::almost_equal;
 //   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   CSVReader<double> reader{};
-//   // load locations where data are sampled
-//   CSVFile<double> locFile;
-//   locFile = reader.parseFile("data/models/SQRPDE/2D_test2_GCV/locs.csv");
-//   DMatrix<double> loc = locFile.toEigen();
-
-//   // define statistical model
-//   double alpha = 0.1; 
-//   const std::string alpha_string = "10";
-//   SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
+  // non unitary diffusion tensor
+  SMatrix<2> K;
+  K << 1,0,0,4;
+  auto L = Laplacian(K); // anisotropic diffusion
   
-//   // load data from .csv files
-//   CSVFile<double> yFile; // observation file
-//   yFile = reader.parseFile  ("data/models/SQRPDE/2D_test2_GCV/z.csv");
-//   DMatrix<double> y = yFile.toEigen();
-//   CSVFile<double> XFile; // design matrix
-//   XFile = reader.parseFile  ("data/models/SQRPDE/2D_test2_GCV/X.csv");
-//   DMatrix<double> X = XFile.toEigen();
+  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // set model data
-//   BlockFrame<double, int> df;
-//   df.insert(OBSERVATIONS_BLK,  y);
-//   df.insert(DESIGN_MATRIX_BLK, X);
-//   df.insert(SPACE_LOCATIONS_BLK, loc);
-//   model.setData(df);
-//   model.init(); // init model
+  // define statistical model
+  SRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem);
+  
+  // load data from .csv files
+  CSVReader<double> reader{};
+  CSVFile<double> yFile; // observation file
+  yFile = reader.parseFile("data/models/SRPDE/2D_test5/y.csv");
+  DMatrix<double> y = yFile.toEigen();
 
 //   // define grid of lambda values
 //   std::vector<SVector<1>> lambdas;
@@ -922,33 +920,22 @@ using fdaPDE::testing::almost_equal;
 //   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   CSVReader<double> reader{};
-//   // load locations where data are sampled
-//   CSVFile<double> locFile;
-//   locFile = reader.parseFile("data/models/SQRPDE/2D_test2_GCV/locs.csv");
-//   DMatrix<double> loc = locFile.toEigen();
-
-//   // define statistical model
-//   double alpha = 0.1; 
-//   const std::string alpha_string = "10";
-//   SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
+  // non unitary diffusion tensor
+  SMatrix<2> K;
+  K << 1,0,0,4;
+  auto L = Laplacian(K); // anisotropic diffusion
   
-//   // load data from .csv files
-//   CSVFile<double> yFile; // observation file
-//   yFile = reader.parseFile  ("data/models/SQRPDE/2D_test2_GCV/z.csv");
-//   DMatrix<double> y = yFile.toEigen();
-//   CSVFile<double> XFile; // design matrix
-//   XFile = reader.parseFile  ("data/models/SQRPDE/2D_test2_GCV/X.csv");
-//   DMatrix<double> X = XFile.toEigen();
+  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // set model data
-//   BlockFrame<double, int> df;
-//   df.insert(OBSERVATIONS_BLK,  y);
-//   df.insert(DESIGN_MATRIX_BLK, X);
-//   df.insert(SPACE_LOCATIONS_BLK, loc);
-//   model.setData(df);
-//   model.init(); // init model
+  // define statistical model
+  SRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem);
+  
+  // load data from .csv files
+  CSVReader<double> reader{};
+  CSVFile<double> yFile; // observation file
+  yFile = reader.parseFile("data/models/SRPDE/2D_test5/y.csv"); // load file for unit square coarse!
+  DMatrix<double> y = yFile.toEigen();
 
 //   // define grid of lambda values
 //   std::vector<SVector<1>> lambdas;
@@ -1017,10 +1004,9 @@ TEST(GCV_SQRPDE, Test13_Laplacian_SemiParametric_GeostatisticalAtLocations_GridE
   locFile = reader.parseFile("data/models/SQRPDE/2D_test12_GCV/locs.csv");
   DMatrix<double> loc = locFile.toEigen();
 
-  // define statistical model
-  double alpha = 0.1; 
-  const std::string alpha_string = "10";
-  SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
+  double lambda = std::pow(0.1, 3);
+  SRPDE<decltype(problem), fdaPDE::models::Areal> model(problem);
+  model.set_spatial_locations(areal);
   
   // load data from .csv files
   CSVFile<double> yFile; // observation file
@@ -1032,9 +1018,7 @@ TEST(GCV_SQRPDE, Test13_Laplacian_SemiParametric_GeostatisticalAtLocations_GridE
 
   // set model data
   BlockFrame<double, int> df;
-  df.insert(OBSERVATIONS_BLK,  y);
-  df.insert(DESIGN_MATRIX_BLK, X);
-  df.insert(SPACE_LOCATIONS_BLK, loc);
+  df.insert(OBSERVATIONS_BLK, y);
   model.setData(df);
   model.init(); // init model
 
@@ -1103,9 +1087,14 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
   DMatrix<double> loc = locFile.toEigen();
 
   // define statistical model
-  double alpha = 0.1; 
-  const std::string alpha_string = "10";
-  SQRPDE<decltype(problem), Sampling::GeoStatLocations> model(problem, alpha);
+  CSVReader<int> int_reader{};
+  CSVFile<int> arealFile; // incidence matrix for specification of subdomains
+  arealFile = int_reader.parseFile("data/models/SRPDE/2D_test4/incidence_matrix.csv");
+  DMatrix<int> areal = arealFile.toEigen();
+
+  double lambda = std::pow(0.1, 3);
+  SRPDE<decltype(problem), fdaPDE::models::Areal> model(problem);
+  model.set_spatial_locations(areal);
   
   // load data from .csv files
   CSVFile<double> yFile; // observation file
@@ -1117,9 +1106,7 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 
   // set model data
   BlockFrame<double, int> df;
-  df.insert(OBSERVATIONS_BLK,  y);
-  df.insert(DESIGN_MATRIX_BLK, X);
-  df.insert(SPACE_LOCATIONS_BLK, loc);
+  df.insert(OBSERVATIONS_BLK, y);
   model.setData(df);
   model.init(); // init model
 

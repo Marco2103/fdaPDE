@@ -19,15 +19,18 @@ namespace models{
 
   // trait to select model type to use in the internal loop of FPIRLS
   template <typename Model>
-  struct FPIRLS_internal_solver {
+  class FPIRLS_internal_solver {
+  private:
     typedef typename std::decay<Model>::type Model_;
+    typedef typename model_traits<Model_>::PDE            PDE;
+    typedef typename model_traits<Model_>::sampling       sampling;
+    typedef typename model_traits<Model_>::solver         solver;
+    typedef typename model_traits<Model_>::regularization regularization;
+  public:
     using type = typename std::conditional<
       !is_space_time<Model_>::value,
-      // space-only problem
-      SRPDE <typename model_traits<Model_>::PDE, model_traits<Model_>::sampling>,
-      // space-time problem
-      STRPDE<typename model_traits<Model_>::PDE, typename model_traits<Model_>::RegularizationType,
-	     model_traits<Model_>::sampling, model_traits<Model_>::solver>
+      SRPDE <PDE, sampling>, // space-only problem
+      STRPDE<PDE, regularization, sampling, solver> // space-time problem
       >::type;
   };
   
@@ -64,28 +67,27 @@ namespace models{
     // constructor
     FPIRLS(const Model& m, double tolerance, std::size_t max_iter)
       : m_(m), tolerance_(tolerance), max_iter_(max_iter) {
-        // Define solver 
-        if constexpr(!is_space_time<Model>::value) // space-only
-	        solver_ = typename FPIRLS_internal_solver<Model>::type(m_.pde());
-        else{ // space-time
-	        solver_ = typename FPIRLS_internal_solver<Model>::type(m_.pde(), m_.time_domain());
-	      // in case of parabolic regularization derive initial condition from input model
-	        if constexpr(std::is_same<typename model_traits<Model_>::RegularizationType,       // regularization,
-		        SpaceTimeParabolic>::value)
-	            solver_.setInitialCondition(m_.s());
-        }
-        // Initialize solver
-        solver_.setLambda(m_.lambda());
-        solver_.init_pde();
-        // prepare data for solver_, copy covariates if present
-        solver_.data() = m_.data();
-        solver_.init_regularization();
-        solver_.init_sampling();
+      // define internal problem solver
+      if constexpr(!is_space_time<Model>::value) // space-only
+	solver_ = typename FPIRLS_internal_solver<Model>::type(m_.pde());
+      else{ // space-time
+	solver_ = typename FPIRLS_internal_solver<Model>::type(m_.pde(), m_.time_domain());
+	// in case of parabolic regularization derive initial condition from input model
+	if constexpr(is_space_time_parabolic<Model_>::value)
+	  solver_.setInitialCondition(m_.s());
+	// in case of separable regularization set possible temporal locations
+	if constexpr(is_space_time_separable<Model_>::value)
+	  solver_.set_temporal_locations(m_.time_locs());
+      }
+      // solver initialization
+      solver_.data() = m_.data();
+      solver_.setLambda(m_.lambda());
+      solver_.set_spatial_locations(m_.locs());
+      solver_.init_pde();
+      solver_.init_regularization();
+      solver_.init_sampling();
 
-        // prepare data for solver, copy covariates if present
-      // BlockFrame<double, int> df = m_.data();
-      // if(m_.hasCovariates()) df.insert<double>(DESIGN_MATRIX_BLK, m_.X()); 
-
+        // Debug 
         matrix_pseudo.resize(m_.n_obs() , max_iter_); 
         matrix_weight.resize(m_.n_obs() , max_iter_);
         matrix_beta.resize(m_.q() , max_iter_);
@@ -102,7 +104,7 @@ namespace models{
       mu_init = mu_ ;    // da togliere
   
       distribution_.preprocess(mu_);
-          
+      
       // algorithm stops when an enought small difference between two consecutive values of the J is recordered
       double J_old = tolerance_+1; double J_new = 0;
 
@@ -114,19 +116,15 @@ namespace models{
 	auto pair = m_.compute(mu_);    // aggiunto un k in input 
 	// solve weighted least square problem
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
- 
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
-  // std::cout << (std::get<1>(pair)).squaredNorm() << std::endl; 
   matrix_pseudo.col(k_) = std::get<1>(pair) ; 
   matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
-	// update solver_ to change in the weight matrix
- 
-	solver_.update_to_data();
-
+	// update solver to change in the weight matrix
+	solver_.init_data();
 	solver_.init_model(); 
-
 	solver_.solve();
+	
 	// extract estimates from solver
 
 	// f_ = solver_.f(); 
@@ -168,7 +166,7 @@ namespace models{
       solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
       solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
       
-      solver_.update_to_data();
+      solver_.init_data();
 
       solver_.init_model();
           
@@ -177,6 +175,7 @@ namespace models{
     } 
 
     // getters 
+    //const DVector<double>& mu() const { return mu_; } // mean vector at convergence
     // const DVector<double>& weights() const { return W_; }                               // weights matrix W at convergence
     // const DVector<double>& beta() const { return beta_; }                               // estimate of coefficient vector 
     // const DVector<double>& f() const { return f_; }                                     // estimate of spatial field 
