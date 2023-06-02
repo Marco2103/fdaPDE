@@ -88,10 +88,10 @@ namespace models{
       solver_.init_sampling();
 
         // Debug 
-        matrix_pseudo.resize(m_.n_obs() , max_iter_); 
-        matrix_weight.resize(m_.n_obs() , max_iter_);
-        matrix_beta.resize(m_.q() , max_iter_);
-        matrix_f.resize(m_.n_obs() , max_iter_);
+        // matrix_pseudo.resize(m_.n_obs() , max_iter_); 
+        // matrix_weight.resize(m_.n_obs() , max_iter_);
+        // matrix_beta.resize(m_.q() , max_iter_);
+        // matrix_f.resize(m_.n_obs() , max_iter_);
 
       };
     
@@ -99,7 +99,9 @@ namespace models{
     void compute() {
 
       static_assert(is_regression_model<Model>::value);  
+      std::cout << "Initialize mu " << std::endl ; 
       mu_ = m_.initialize_mu(); 
+      std::cout << "Finito initialize mu " << std::endl ; 
 
       mu_init = mu_ ;    // da togliere
   
@@ -118,8 +120,8 @@ namespace models{
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
-  matrix_pseudo.col(k_) = std::get<1>(pair) ; 
-  matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
+  // matrix_pseudo.col(k_) = std::get<1>(pair) ; 
+  // matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
 	// update solver to change in the weight matrix
 	solver_.init_data();
 	solver_.init_model(); 

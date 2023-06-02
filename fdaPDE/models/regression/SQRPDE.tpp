@@ -1,5 +1,5 @@
 // finds a solution to the SQR-PDE smoothing problem
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 void SQRPDE<PDE, SamplingDesign>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
@@ -8,7 +8,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
-   matrix_abs_res.resize(n_obs(), max_iter_);
+  // matrix_abs_res.resize(n_obs(), max_iter_);
   //  matrix_obs.resize(n_obs(), max_iter_);
 
   fpirls.compute();
@@ -25,7 +25,6 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   }
   
   // A_ =    fpirls.solver().A(); 
-  // invA_.compute(A_); 
   invA_ = fpirls.solver().invA();
   
 
@@ -40,17 +39,17 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   mu_init = fpirls.mu_initialized() ; 
 
-  matrix_pseudo.resize(n_obs() , max_iter_); 
-  matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
+  // matrix_pseudo.resize(n_obs() , max_iter_); 
+  // matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
   
-  matrix_weight.resize(n_obs() , max_iter_); 
-  matrix_weight = fpirls.matrix_weight_fpirls() ; 
+  // matrix_weight.resize(n_obs() , max_iter_); 
+  // matrix_weight = fpirls.matrix_weight_fpirls() ; 
 
-  matrix_f.resize(n_obs() , max_iter_); 
-  matrix_f = fpirls.matrix_f_fpirls() ;
+  // matrix_f.resize(n_obs() , max_iter_); 
+  // matrix_f = fpirls.matrix_f_fpirls() ;
 
-  matrix_beta.resize(q() , max_iter_); 
-  matrix_beta = fpirls.matrix_beta_fpirls() ;  
+  // matrix_beta.resize(q() , max_iter_); 
+  // matrix_beta = fpirls.matrix_beta_fpirls() ;  
 
   if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
@@ -58,7 +57,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
 
 // Non-parametric and semi-parametric cases coincide here, since beta^(0) = 0
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 DVector<double> 
 SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
 
@@ -80,7 +79,6 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
   BLOCK_FRAME_SANITY_CHECKS;
   DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
   DVector<double> fn = Psi()*f ; 
-
 
   // implementazione diretta
 
@@ -106,27 +104,8 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
 }
 
 
-// template <typename PDE, Sampling SamplingDesign>
-// std::tuple<DVector<double>&, DVector<double>&>
-// SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
-//   // compute weight matrix and pseudo-observation vector
-//   DVector<double> abs_res{} ;
-//   abs_res.resize(y().size()) ; 
 
-//   double tol = 1e-8; 
-//   for(int i = 0; i < y().size(); ++i)
-//     abs_res(i) = (std::abs(y()(i) - mu(i)) > tol) ? (std::abs( y()(i) - mu(i) )) : ( std::abs(y()(i) - mu(i)) + tol );   
-
-//   // pW_ = (2*n_obs()*abs_res).cwiseInverse() ;  // .matrix();  // aggiunto .matrix()
-
-//   pW_ = (2*n_obs()*abs_res.array()).inverse().matrix() ; 
-  
-//   py_ = y() - (1 - 2*alpha_)*abs_res;
-//   return std::tie(pW_, py_);
-// }
-
-
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
 SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   // compute weight matrix and pseudo-observation vector
@@ -168,7 +147,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
 
 
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 double
 SQRPDE<PDE, SamplingDesign>::compute_J_unpenalized(const DVector<double>& mu) {
   
@@ -181,7 +160,7 @@ SQRPDE<PDE, SamplingDesign>::compute_J_unpenalized(const DVector<double>& mu) {
 
 // required to support GCV based smoothing parameter selection
 // in case of an SRPDE model we have T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
   // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
   if(R_.size() == 0){
@@ -198,7 +177,7 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
 
 // Q is computed on demand only when it is needed by GCV and cached for fast reacess (in general operations
 // involving Q can be substituted with the more efficient routine lmbQ(), which is part of iRegressionModel interface)
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
   // if(Q_.size() == 0){ // Q is computed on request since not needed in general
     // compute Q = W(I - H) = W ( I - X*(X^T*W*X)^{-1}*X^T*W ) 
@@ -210,7 +189,7 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
 
 
 // returns the numerator of the GCV score 
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 double SQRPDE<PDE, SamplingDesign>::norm
 (const DMatrix<double>& fitted, const DMatrix<double>& obs) const {   // CONTROLLA ORDINE degli input 
   double result = 0;
@@ -220,7 +199,7 @@ double SQRPDE<PDE, SamplingDesign>::norm
 }
 
 // returns the pinball loss at a specific x 
-template <typename PDE, Sampling SamplingDesign>
+template <typename PDE, typename SamplingDesign>
 double SQRPDE<PDE, SamplingDesign>::rho_alpha(const double& x) const{
   return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
 }

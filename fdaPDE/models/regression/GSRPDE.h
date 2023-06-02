@@ -18,14 +18,14 @@ namespace fdaPDE{
 namespace models{
 
   // base class for GSRPDE model
-  template <typename PDE, typename RegularizationType, Sampling SamplingDesign,
-	    SolverType Solver, typename Distribution = Gaussian>
+  template <typename PDE, typename RegularizationType, typename SamplingDesign,
+	    typename Solver, typename Distribution = Gaussian>
   class GSRPDE : public RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>>, public iGCV {
     // compile time checks
     static_assert(std::is_base_of<PDEBase, PDE>::value);
   private:
     typedef RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>> Base;
-    DiagMatrix<double> W_;  // possiamo toglierla
+    // DiagMatrix<double> W_;  // possiamo toglierla
     Distribution distribution_{};
     DVector<double> py_; // \tilde y^k = G^k(y-u^k) + \theta^k
     DVector<double> pW_; // diagonal of W^k = ((G^k)^{-2})*((V^k)^{-1}) 

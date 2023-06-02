@@ -8,6 +8,8 @@
 #include "../../core/FEM/PDE.h"
 using fdaPDE::core::FEM::PDEBase;
 #include "../ModelBase.h"
+#include "../ModelTraits.h"
+#include "../ModelMacros.h"
 #include "../../core/NLA/SparseBlockMatrix.h"
 using fdaPDE::core::NLA::SparseBlockMatrix;
 #include "../../core/NLA/SMW.h"
@@ -25,7 +27,7 @@ using fdaPDE::models::FPIRLS ;
 namespace fdaPDE{
 namespace models{
   
-  template <typename PDE, Sampling SamplingDesign>
+  template <typename PDE, typename SamplingDesign>
   class SQRPDE : public RegressionBase<SQRPDE<PDE, SamplingDesign>>, public iGCV {
     // compile time checks
     static_assert(std::is_base_of<PDEBase, PDE>::value);
@@ -55,9 +57,9 @@ namespace models{
     std::size_t max_iter_ = 200;  
     double tol_ = 0.0002020;     // 1e-6
 
-    // matrices related to woodbury decomposition
-    DMatrix<double> U_{};
-    DMatrix<double> V_{};  
+    // matrices related to woodbury decomposition -> tolte perchè lui le ha aggiunte in RegressionBase
+    // DMatrix<double> U_{};
+    // DMatrix<double> V_{};  
 
     DVector<double> mu_init{};  //  messo per debug -> da togliere
     DMatrix<double> matrix_pseudo{};
@@ -122,16 +124,20 @@ namespace models{
     
     virtual ~SQRPDE() = default;
   };
-  
-  template <typename PDE_, Sampling SamplingDesign>
-  struct model_traits<SQRPDE<PDE_, SamplingDesign>> {
+ 
+
+ template <typename PDE_, typename SamplingDesign_>
+  struct model_traits<SQRPDE<PDE_, SamplingDesign_>> {
     typedef PDE_ PDE;
-    typedef SpaceOnly RegularizationType;
-    static constexpr Sampling sampling = SamplingDesign;
-    static constexpr SolverType solver = SolverType::Monolithic;
+    typedef SpaceOnly regularization;
+    typedef SamplingDesign_ sampling;
+    typedef MonolithicSolver solver;
     static constexpr int n_lambda = 1;
   };
- 
+
+  // sqrpde trait
+  template <typename Model>
+  struct is_sqrpde { static constexpr bool value = is_instance_of<Model, SQRPDE>::value; };
 
 #include "SQRPDE.tpp"
 }}

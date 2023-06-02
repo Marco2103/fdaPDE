@@ -8,10 +8,11 @@ void GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::solv
   fpirls.compute();
   
   // fpirls converged: extract matrix P and solution estimates
-  W_ = fpirls.weights().asDiagonal();
+  W_ = fpirls.solver().W();
+
   // invXtWX = .. per GCV 
-  f_ = fpirls.f();
-  if(hasCovariates()) beta_ = fpirls.beta();
+  f_ = fpirls.solver().f();
+  if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
 }
 
@@ -29,8 +30,8 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute(c
 }
 
 
-template <typename PDE, typename RegularizationType, Sampling SamplingDesign,
-	  SolverType Solver, typename Distribution>
+template <typename PDE, typename RegularizationType, typename SamplingDesign,
+	  typename Solver, typename Distribution>
 DVector<double>
 GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::initialize_mu() const {
   
@@ -38,8 +39,8 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::initializ
 }
 
 // I:
-template <typename PDE, typename RegularizationType, Sampling SamplingDesign,
-	  SolverType Solver, typename Distribution>
+template <typename PDE, typename RegularizationType, typename SamplingDesign,
+	  typename Solver, typename Distribution>
 double
 GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute_J_unpenalized(const DVector<double>& mu) {
   

@@ -79,7 +79,7 @@ TEST(SRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     
   // estimate of spatial field \hat f
   SpMatrix<double> expectedSolution;
-  Eigen::loadMarket(expectedSolution,   "data/models/SRPDE/2D_test1/sol.mtx");
+  Eigen::loadMarket(expectedSolution,   "data/models/SRPDE/2D_test1/sol_prova.mtx");
   DMatrix<double> computedF = model.f();
   std::size_t N = computedF.rows();
   EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );

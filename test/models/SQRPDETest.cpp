@@ -13,7 +13,6 @@ using fdaPDE::core::FEM::SpaceVaryingAdvection;
 #include "../fdaPDE/models/regression/SQRPDE.h"
 using fdaPDE::models::SQRPDE;
 #include "../fdaPDE/models/SamplingDesign.h"
-using fdaPDE::models::Sampling;
 #include "../../fdaPDE/models/regression/Distributions.h"
 
 #include "../utils/MeshLoader.h"
@@ -183,6 +182,16 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     filef.close();
   }
 
+  // // estimate of spatial field \hat f
+  // std::cout << "Leggo fR.mtx " << std::endl ; 
+  // SpMatrix<double> expectedSolution;
+  // Eigen::loadMarket(expectedSolution,   "data/models/SQRPDE/2D_test1/fR.mtx");
+  // std::cout << "Letto fR.mtx " << std::endl ; 
+  // DMatrix<double> computedF = model.f();
+  // std::size_t N = computedF.rows();
+  // std::cout << "Faccio almost_equal " << std::endl ; 
+  // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
+
 }
 
 
@@ -196,123 +205,123 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 //  */
 
 
-TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
-  // define domain and regularizing PDE
-  MeshLoader<Mesh2D<>> domain("c_shaped");
-  auto L = Laplacian();
-  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+// TEST(SQRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("c_shaped");
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-  // define statistical model
-  CSVReader<double> reader{};
-  // load locations where data are sampled
-  CSVFile<double> locFile;
-  locFile = reader.parseFile("data/models/SQRPDE/2D_test2/locs.csv");
-  DMatrix<double> loc = locFile.toEigen();
+//   // define statistical model
+//   CSVReader<double> reader{};
+//   // load locations where data are sampled
+//   CSVFile<double> locFile;
+//   locFile = reader.parseFile("data/models/SQRPDE/2D_test13/locs.csv");
+//   DMatrix<double> loc = locFile.toEigen();
 
-  double alpha = 0.1;
-  // use optimal lambda to avoid possible numerical issues
-  double lambda = 100000 ;  
-  std::string alpha_string = "10" ; 
-  SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
-  model.setLambdaS(lambda);
-  model.set_spatial_locations(loc);
-
-  
-  // load data from .csv files
-  CSVFile<double> yFile; // observation file
-  yFile = reader.parseFile("data/models/SQRPDE/2D_test2/z.csv");
-  DMatrix<double> y = yFile.toEigen();
-  CSVFile<double> XFile; // design matrix
-  XFile = reader.parseFile("data/models/SQRPDE/2D_test2/X.csv");
-  DMatrix<double> X = XFile.toEigen();
-
-  // set model data
-  BlockFrame<double, int> df;
-  df.insert(OBSERVATIONS_BLK,  y);
-  df.insert(DESIGN_MATRIX_BLK, X);
-  
-  model.setData(df);
-  
-  // solve smoothing problem
-  model.init();
-  model.solve();
-
-  /*   **  test correctness of computed results  **   */
-
-  // // Initial mu (the vector returned by initialize_mu)  
-  // DVector<double> computedInit = model.get_mu_init();
-  // const static Eigen::IOFormat CSVFormatInit(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream fileInit("data/models/SQRPDE/2D_test2/mu_initCpp_" + alpha_string + ".csv");
-  // if (fileInit.is_open()){
-  //   fileInit << computedInit.format(CSVFormatInit);
-  //   fileInit.close();
-  // }
+//   double alpha = 0.5;
+//   // use optimal lambda to avoid possible numerical issues
+//   double lambda = 3162.27766016838 ;  
+//   std::string alpha_string = "50" ; 
+//   SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
+//   model.setLambdaS(lambda);
+//   model.set_spatial_locations(loc);
 
   
-  // // Matrix of pseudo observations 
-  // DMatrix<double> computed_matrix_pseudo = model.get_matrix_pseudo(); 
-  // const static Eigen::IOFormat CSVFormatpseudo(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_pseudo("data/models/SQRPDE/2D_test2/matrix_pseudoCpp_" + alpha_string + ".csv");
-  // if(file_pseudo.is_open()){
-  //   file_pseudo << computed_matrix_pseudo.format(CSVFormatpseudo) << '\n' ; 
-  // }
+//   // load data from .csv files
+//   CSVFile<double> yFile; // observation file
+//   yFile = reader.parseFile("data/models/SQRPDE/2D_test13/z.csv");
+//   DMatrix<double> y = yFile.toEigen();
+//   CSVFile<double> XFile; // design matrix
+//   XFile = reader.parseFile("data/models/SQRPDE/2D_test13/X.csv");
+//   DMatrix<double> X = XFile.toEigen();
 
-  // // Matrix of weights
-  // DMatrix<double> computed_matrix_weights = model.get_matrix_weight(); 
-  // const static Eigen::IOFormat CSVFormatweights(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_weights("data/models/SQRPDE/2D_test2/matrix_weightsCpp_" + alpha_string + ".csv");
-  // if(file_weights.is_open()){
-  //   file_weights << computed_matrix_weights.format(CSVFormatweights) << '\n' ; 
-  // }
-
-  // Matrix of weights at convergence 
-  DMatrix<double> W_conv = model.W(); 
-  const static Eigen::IOFormat CSVFormatW(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream file_W("data/models/SQRPDE/2D_test2/matrix_WCpp_" + alpha_string + ".csv");
-  if(file_W.is_open()){
-    file_W << W_conv.format(CSVFormatW) << '\n' ; 
-  }
-
-
-  // // Matrix of abs_res
-  // DMatrix<double> computed_abs_res = model.get_matrix_abs_res(); 
-  // const static Eigen::IOFormat CSVFormatabsres(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_absres("data/models/SQRPDE/2D_test2/matrix_absresCpp_" + alpha_string + ".csv");
-  // if(file_absres.is_open()){
-  //   file_absres << computed_abs_res.format(CSVFormatabsres) << '\n' ; 
-  // }
-
-
-  // // Matrix of beta
-  // DMatrix<double> computed_allbeta = model.get_matrix_beta() ; 
-  // const static Eigen::IOFormat CSVFormatAllBeta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_allBeta("data/models/SQRPDE/2D_test2/matrix_betaCpp_" + alpha_string + ".csv");
-  // if(file_allBeta.is_open()){
-  //   file_allBeta << computed_allbeta.format(CSVFormatAllBeta) << '\n' ; 
-  // }
-
-
-  // Save solution 
-  DMatrix<double> computedfn = model.Psi()*model.f();
-  std::size_t n = computedfn.rows();
-
-  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream file("data/models/SQRPDE/2D_test2/fnCpp_" + alpha_string + ".csv");
-  if (file.is_open()){
-    file << computedfn.format(CSVFormat);
-    file.close();
-  }
-
-  DVector<double> computedBeta = model.beta();
-  const static Eigen::IOFormat CSVFormat_beta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream file_beta("data/models/SQRPDE/2D_test2/betaCpp_" + alpha_string + ".csv");
-  if (file_beta.is_open()){
-    file_beta << computedBeta.format(CSVFormat_beta);
-    file_beta.close();
-  }
+//   // set model data
+//   BlockFrame<double, int> df;
+//   df.insert(OBSERVATIONS_BLK,  y);
+//   df.insert(DESIGN_MATRIX_BLK, X);
   
-}; 
+//   model.setData(df);
+  
+//   // solve smoothing problem
+//   model.init();
+//   model.solve();
+
+//   /*   **  test correctness of computed results  **   */
+
+//   // // Initial mu (the vector returned by initialize_mu)  
+//   // DVector<double> computedInit = model.get_mu_init();
+//   // const static Eigen::IOFormat CSVFormatInit(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   // std::ofstream fileInit("data/models/SQRPDE/2D_test2/mu_initCpp_" + alpha_string + ".csv");
+//   // if (fileInit.is_open()){
+//   //   fileInit << computedInit.format(CSVFormatInit);
+//   //   fileInit.close();
+//   // }
+
+  
+//   // // Matrix of pseudo observations 
+//   // DMatrix<double> computed_matrix_pseudo = model.get_matrix_pseudo(); 
+//   // const static Eigen::IOFormat CSVFormatpseudo(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   // std::ofstream file_pseudo("data/models/SQRPDE/2D_test2/matrix_pseudoCpp_" + alpha_string + ".csv");
+//   // if(file_pseudo.is_open()){
+//   //   file_pseudo << computed_matrix_pseudo.format(CSVFormatpseudo) << '\n' ; 
+//   // }
+
+//   // // Matrix of weights
+//   // DMatrix<double> computed_matrix_weights = model.get_matrix_weight(); 
+//   // const static Eigen::IOFormat CSVFormatweights(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   // std::ofstream file_weights("data/models/SQRPDE/2D_test2/matrix_weightsCpp_" + alpha_string + ".csv");
+//   // if(file_weights.is_open()){
+//   //   file_weights << computed_matrix_weights.format(CSVFormatweights) << '\n' ; 
+//   // }
+
+//   // // Matrix of weights at convergence 
+//   // DMatrix<double> W_conv = model.W(); 
+//   // const static Eigen::IOFormat CSVFormatW(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   // std::ofstream file_W("data/models/SQRPDE/2D_test2/matrix_WCpp_" + alpha_string + ".csv");
+//   // if(file_W.is_open()){
+//   //   file_W << W_conv.format(CSVFormatW) << '\n' ; 
+//   // }
+
+
+//   // // Matrix of abs_res
+//   // DMatrix<double> computed_abs_res = model.get_matrix_abs_res(); 
+//   // const static Eigen::IOFormat CSVFormatabsres(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   // std::ofstream file_absres("data/models/SQRPDE/2D_test2/matrix_absresCpp_" + alpha_string + ".csv");
+//   // if(file_absres.is_open()){
+//   //   file_absres << computed_abs_res.format(CSVFormatabsres) << '\n' ; 
+//   // }
+
+
+//   // // Matrix of beta
+//   // DMatrix<double> computed_allbeta = model.get_matrix_beta() ; 
+//   // const static Eigen::IOFormat CSVFormatAllBeta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   // std::ofstream file_allBeta("data/models/SQRPDE/2D_test2/matrix_betaCpp_" + alpha_string + ".csv");
+//   // if(file_allBeta.is_open()){
+//   //   file_allBeta << computed_allbeta.format(CSVFormatAllBeta) << '\n' ; 
+//   // }
+
+
+//   // Save solution 
+//   DMatrix<double> computedfn = model.Psi()*model.f();
+//   std::size_t n = computedfn.rows();
+
+//   const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file("data/models/SQRPDE/2D_test13/fnCpp_" + alpha_string + ".csv");
+//   if (file.is_open()){
+//     file << computedfn.format(CSVFormat);
+//     file.close();
+//   }
+
+//   DVector<double> computedBeta = model.beta();
+//   const static Eigen::IOFormat CSVFormat_beta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//   std::ofstream file_beta("data/models/SQRPDE/2D_test13/betaCpp_" + alpha_string + ".csv");
+//   if (file_beta.is_open()){
+//     file_beta << computedBeta.format(CSVFormat_beta);
+//     file_beta.close();
+//   }
+  
+// }; 
 
 
 
