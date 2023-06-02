@@ -55,7 +55,8 @@ namespace models{
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 200;  
-    double tol_ = 0.0002020;     // 1e-6
+    double tol_weights_; 
+    double tol_;
 
     // matrices related to woodbury decomposition -> tolte perchè lui le ha aggiunte in RegressionBase
     // DMatrix<double> U_{};
@@ -121,6 +122,12 @@ namespace models{
     const DMatrix<double>& get_matrix_obs() const { return matrix_obs; }
     const DMatrix<double>& get_matrix_beta() const { return matrix_beta; } 
     const DMatrix<double>& get_matrix_f() const { return matrix_f; } 
+
+    // M: 
+    void setTolerances(double tol_weigths, double tol_FPIRLS) { 
+      tol_weights_ = tol_weigths; 
+      tol_ = tol_FPIRLS; 
+    }
     
     virtual ~SQRPDE() = default;
   };

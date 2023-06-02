@@ -44,19 +44,21 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-  double alpha = 0.1; 
-  const std::string alpha_string = "10"; 
+  double alpha = 0.5; 
+  const std::string alpha_string = "50"; 
   const std::string TestNumber = "1"; 
-  // use optimal lambda to avoid possible numerical issues
-  double lambda = 0.00001;     // from R code 
 
   SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
-  model.setLambdaS(lambda);
 
   // load data from .csv files
   CSVReader<double> reader{};
   CSVFile<double> yFile; // observation file
-  yFile = reader.parseFile("data/models/SQRPDE/2D_test" + TestNumber + "/z.csv");
+  // yFile = reader.parseFile("data/models/SQRPDE/2D_test" + TestNumber + "/z.csv");
+  std::string data_macro_strategy_type = "skewed"; 
+  std::string data_strategy_type = "B"; 
+  yFile = reader.parseFile("C:/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared/R/Our/data/Test_" 
+                  + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+                  "/z.csv");
   DMatrix<double> y = yFile.toEigen();
 
   // set model data
@@ -64,136 +66,52 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   df.insert(OBSERVATIONS_BLK,  y);
   model.setData(df);
 
-  // solve smoothing problem
-  model.init();     
-  model.solve();
+  std::vector<double> seq_tol_weights = {0.00000001, 0.0000001, 0.000001}; 
+  std::vector<std::string> seq_tol_weights_string = {"1e-08", "1e-07", "1e-06"}; 
+
+  std::vector<double> seq_tol_FPIRLS = {0.000000001, 0.00000001, 0.0000001, 0.000001, 0.00001};
+  std::vector<std::string> seq_tol_FPIRLS_string = {"1e-09", "1e-08", "1e-07", "1e-06", "1e-05"}; 
+
+  std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
+
+  CSVFile<double> lambdaCSV; 
+
+  for(int i = 0; i < seq_tol_weights.size(); ++i ){
+    for(int j = 0; j < seq_tol_FPIRLS.size(); ++j){
+
+      // use optimal lambda to avoid possible numerical issues
+      lambdaCSV = reader.parseFile("C:/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared/R/Our/data/Test_" + 
+                  TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+                  "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
+                  "/" + lin_sys_solver + "/LambdaR_" + alpha_string + ".csv");     // from R 
+      DMatrix<double> lambda = lambdaCSV.toEigen();
+      model.setLambdaS(lambda(1,1));
+
+      // solve smoothing problem
+      model.setTolerances(seq_tol_weights[i], seq_tol_FPIRLS[j]); 
+      model.init();     
+      model.solve();
+
+      // Save C++ solution 
+      DMatrix<double> computedF = model.f();
+      const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+      // std::ofstream filef("data/models/SQRPDE/2D_test1/fnCpp_" + alpha_string + ".csv");
+      std::ofstream filef("C:/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared/R/Our/data/Test_" 
+                  + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+                  "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
+                  "/" + lin_sys_solver + "/fnCpp_" + alpha_string + ".csv");
+
+      if (filef.is_open()){
+        filef << computedF.format(CSVFormatf);
+        filef.close();
+      }
 
 
-  /*   **  test correctness of computed results  **   */
-  
-  // \Psi matrix (sensible to locations != nodes)
-  // SpMatrix<double> expectedPsi;
-  // Eigen::loadMarket(expectedPsi, "data/models/SQRPDE/2D_test" + TestNumber + "/psiR_" + alpha_string + ".mtx");
-  // SpMatrix<double> computedPsi = model.Psi();
-  // Eigen::saveMarket(computedPsi, "data/models/SQRPDE/2D_test" + TestNumber + "/psiCpp_" + alpha_string + ".mtx");
-  // EXPECT_TRUE( almost_equal(expectedPsi, computedPsi) );
-  // => OK 
-  // Nota: stiamo salvando Psi come symmetric nel formato mtx, anche se in generale non lo è 
-          // (in questo caso sì perchè è diagonale)     
-
-  // // R0 matrix (discretization of identity operator)
-  // SpMatrix<double> expectedR0;
-  // Eigen::loadMarket(expectedR0, "data/models/SQRPDE/2D_test" + TestNumber + "/R0R_" + alpha_string + ".mtx");
-  // SpMatrix<double> computedR0 = model.R0();
-  // EXPECT_TRUE( almost_equal(expectedR0, computedR0) );
-  // Eigen::saveMarket(computedR0, "data/models/SQRPDE/2D_test" + TestNumber + "_skewed/R0Cpp_" + alpha_string + ".mtx");  
-
-  // // R1 matrix (discretization of differential operator)
-  // SpMatrix<double> expectedR1;
-  // Eigen::loadMarket(expectedR1,  "data/models/SQRPDE/2D_test1/R1R_10.mtx");
-  // SpMatrix<double> computedR1 = model.R1();
-  // EXPECT_TRUE( almost_equal(expectedR1, computedR1) );
-  // Eigen::saveMarket(computedR1, "data/models/SQRPDE/2D_test" + TestNumber + "_skewed/R1Cpp_" + alpha_string + ".mtx");
-
-  // // Non-parametric system matrix 
-  // SpMatrix<double> computedA = model.A(); 
-  // Eigen::saveMarket(computedA, "data/models/SQRPDE/2D_test" + TestNumber + "/ACpp_" + alpha_string + ".mtx");
-
-  // // Pseudo-observations  
-  // DVector<double> computedPseudo = model.py();
-  // const static Eigen::IOFormat CSVFormatPseudo(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream filePseudo("data/models/SQRPDE/2D_test1_skewed/PseudoCpp_" + alpha_string + ".csv");
-  // if (filePseudo.is_open()){
-  //   filePseudo << computedPseudo.format(CSVFormatPseudo);
-  //   filePseudo.close();
-  // }
-
-
-  // // Initial mu (the vector returned by initialize_mu)  
-  // DVector<double> computedInit = model.get_mu_init();
-  // const static Eigen::IOFormat CSVFormatInit(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream fileInit("data/models/SQRPDE/2D_test1_skewed/mu_initCpp_" + alpha_string + ".csv");
-  // if (fileInit.is_open()){
-  //   fileInit << computedInit.format(CSVFormatInit);
-  //   fileInit.close();
-  // }
-
-  // // Matrix of pseudo observations 
-  // DMatrix<double> computed_matrix_pseudo = model.get_matrix_pseudo(); 
-  // const static Eigen::IOFormat CSVFormatpseudo(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_pseudo("data/models/SQRPDE/2D_test1_skewed/matrix_pseudoCpp_" + alpha_string + ".csv");
-  // if(file_pseudo.is_open()){
-  //   file_pseudo << computed_matrix_pseudo.format(CSVFormatpseudo) << '\n' ; 
-  // }
-
-  // // Matrix of weights
-  // DMatrix<double> computed_matrix_weights = model.get_matrix_weight(); 
-  // const static Eigen::IOFormat CSVFormatweights(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_weights("data/models/SQRPDE/2D_test1_skewed/matrix_weightsCpp_" + alpha_string + ".csv");
-  // if(file_weights.is_open()){
-  //   file_weights << computed_matrix_weights.format(CSVFormatweights) << '\n' ; 
-  // }
-
-
-  // // Matrix of f
-  // DMatrix<double> computed_matrix_f = model.get_matrix_f() ;  
-  // const static Eigen::IOFormat CSVFormatMatrixf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_matrixf("data/models/SQRPDE/2D_test1_skewed/matrix_fCpp_" + alpha_string + ".csv");
-  // if(file_matrixf.is_open()){
-  //   file_matrixf << computed_matrix_f.format(CSVFormatMatrixf) << '\n' ; 
-  // }
-
-  // // Matrix of abs_res
-  // DMatrix<double> computed_abs_res = model.get_matrix_abs_res(); 
-  // const static Eigen::IOFormat CSVFormatabsres(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_absres("data/models/SQRPDE/2D_test1_skewed/matrix_absresCpp_" + alpha_string + ".csv");
-  // if(file_absres.is_open()){
-  //   file_absres << computed_abs_res.format(CSVFormatabsres) << '\n' ; 
-  // }
-
-  // // Matrix of obs
-  // DMatrix<double> computed_obs = model.get_matrix_obs(); 
-  // const static Eigen::IOFormat CSVFormataobs(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  // std::ofstream file_obs("data/models/SQRPDE/2D_test1_skewed/matrix_obsCpp_" + alpha_string + ".csv");
-  // if(file_obs.is_open()){
-  //   file_obs << computed_obs.format(CSVFormataobs) << '\n' ; 
-  // }
-
-  // Penalty matrix 
-  // SpMatrix<double> computedP = model.pen(); 
-  // Eigen::saveMarket(computedP, "data/models/SQRPDE/2D_test" + TestNumber + "_skewed/PCpp_" + alpha_string + ".mtx");
-
-  // // estimate of spatial field \hat f
-  // SpMatrix<double> expectedSolution;
-  // Eigen::loadMarket(expectedSolution, "data/models/SQRPDE/2D_test1/fR_10.mtx");
- 
-  // DMatrix<double> computedF = model.f();
-  // std::size_t N = computedF.rows();
-
-  // std::cout << "Almost equal " << std::endl ; 
-  // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
-
-  // Save C++ solution 
-  DMatrix<double> computedF = model.f();
-  const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-  std::ofstream filef("data/models/SQRPDE/2D_test1/fnCpp_" + alpha_string + ".csv");
-  if (filef.is_open()){
-    filef << computedF.format(CSVFormatf);
-    filef.close();
+    }
   }
 
-  // // estimate of spatial field \hat f
-  // std::cout << "Leggo fR.mtx " << std::endl ; 
-  // SpMatrix<double> expectedSolution;
-  // Eigen::loadMarket(expectedSolution,   "data/models/SQRPDE/2D_test1/fR.mtx");
-  // std::cout << "Letto fR.mtx " << std::endl ; 
-  // DMatrix<double> computedF = model.f();
-  // std::size_t N = computedF.rows();
-  // std::cout << "Faccio almost_equal " << std::endl ; 
-  // EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
 
 }
-
 
 // /* test 2
 //    domain:       c-shaped
