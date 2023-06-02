@@ -54,12 +54,14 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   CSVReader<double> reader{};
   CSVFile<double> yFile; // observation file
   // yFile = reader.parseFile("data/models/SQRPDE/2D_test" + TestNumber + "/z.csv");
-  std::string data_macro_strategy_type = "skewed"; 
+  std::string data_macro_strategy_type = "skewed_data"; 
   std::string data_strategy_type = "B"; 
-  yFile = reader.parseFile("C:/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared/R/Our/data/Test_" 
+  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+  yFile = reader.parseFile(R_path + "/R/Our/data/Test_" 
                   + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-                  "/z.csv");
+                  "/z.csv");             
   DMatrix<double> y = yFile.toEigen();
+
 
   // set model data
   BlockFrame<double, int> df;
@@ -75,17 +77,19 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
 
   CSVFile<double> lambdaCSV; 
+  DMatrix<double> lambda; 
 
   for(int i = 0; i < seq_tol_weights.size(); ++i ){
     for(int j = 0; j < seq_tol_FPIRLS.size(); ++j){
 
       // use optimal lambda to avoid possible numerical issues
-      lambdaCSV = reader.parseFile("C:/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared/R/Our/data/Test_" + 
+      lambdaCSV = reader.parseFile(R_path + "/R/Our/data/Test_" + 
                   TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
                   "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
                   "/" + lin_sys_solver + "/LambdaR_" + alpha_string + ".csv");     // from R 
-      DMatrix<double> lambda = lambdaCSV.toEigen();
-      model.setLambdaS(lambda(1,1));
+      
+      lambda = lambdaCSV.toEigen();
+      model.setLambdaS(lambda(0,0));
 
       // solve smoothing problem
       model.setTolerances(seq_tol_weights[i], seq_tol_FPIRLS[j]); 
@@ -96,7 +100,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
       DMatrix<double> computedF = model.f();
       const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
       // std::ofstream filef("data/models/SQRPDE/2D_test1/fnCpp_" + alpha_string + ".csv");
-      std::ofstream filef("C:/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared/R/Our/data/Test_" 
+      std::ofstream filef(R_path + "/R/Our/data/Test_" 
                   + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
                   "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
                   "/" + lin_sys_solver + "/fnCpp_" + alpha_string + ".csv");
