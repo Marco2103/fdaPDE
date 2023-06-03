@@ -38,6 +38,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   g_ = fpirls.solver().g();   // per completezza (non sappiamo se lo usa)
 
   mu_init = fpirls.mu_initialized() ; 
+  Jfinal_sqrpde_ = fpirls.J_final();
+  niter_sqrpde_ = fpirls.n_iter();
 
   // matrix_pseudo.resize(n_obs() , max_iter_); 
   // matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;

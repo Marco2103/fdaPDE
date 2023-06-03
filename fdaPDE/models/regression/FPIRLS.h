@@ -63,6 +63,8 @@ namespace models{
     DMatrix<double> matrix_beta{};
     DMatrix<double> matrix_f{}; 
 
+    double Jfinal_;
+
   public:
     // constructor
     FPIRLS(const Model& m, double tolerance, std::size_t max_iter)
@@ -159,6 +161,8 @@ namespace models{
 
   std::cout << "Number of FPIRLS iterations: " << k_ << std::endl;
   std::cout << "Value of J at the last iteration: " <<  std::setprecision(16) << J_new << std::endl;  
+  
+  Jfinal_ = J_new;
 
       // store weight matrix at convergence
       // W_ = std::get<0>(m_.compute(mu_));    
@@ -182,7 +186,7 @@ namespace models{
     // const DVector<double>& beta() const { return beta_; }                               // estimate of coefficient vector 
     // const DVector<double>& f() const { return f_; }                                     // estimate of spatial field 
     const DVector<double>& g() const { return g_; }                                     // PDE misfit
-    std::size_t n_iter() const { return k_ - 1; }                                       // number of iterations
+    std::size_t n_iter() const { return k_ ; }                                       // number of iterations
     const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
 
     const DVector<double>& mu_initialized() const { return mu_init; }    // per debug -> da togliere
@@ -190,6 +194,7 @@ namespace models{
     const DMatrix<double>& matrix_weight_fpirls() const { return matrix_weight; } 
     const DMatrix<double>& matrix_beta_fpirls() const { return matrix_beta; } 
     const DMatrix<double>& matrix_f_fpirls() const { return matrix_f; } 
+    const double& J_final() const { return Jfinal_; } 
   };
   
 }}

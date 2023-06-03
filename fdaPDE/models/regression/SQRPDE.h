@@ -58,6 +58,9 @@ namespace models{
     double tol_weights_; 
     double tol_;
 
+    double Jfinal_sqrpde_;
+    std::size_t niter_sqrpde_;
+
     // matrices related to woodbury decomposition -> tolte perchè lui le ha aggiunte in RegressionBase
     // DMatrix<double> U_{};
     // DMatrix<double> V_{};  
@@ -122,6 +125,8 @@ namespace models{
     const DMatrix<double>& get_matrix_obs() const { return matrix_obs; }
     const DMatrix<double>& get_matrix_beta() const { return matrix_beta; } 
     const DMatrix<double>& get_matrix_f() const { return matrix_f; } 
+    const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 
+    const std::size_t& niter_sqrpde() const { return niter_sqrpde_; } 
 
     // M: 
     void setTolerances(double tol_weigths, double tol_FPIRLS) { 
