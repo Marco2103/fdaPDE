@@ -115,9 +115,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   abs_res.resize(y().size()) ; 
 
 //  matrix_abs_res.resize(n_obs(), max_iter_);
-//  matrix_obs.resize(n_obs(), max_iter_);
-
-  double tol = 1e-6;    // modificata  
+//  matrix_obs.resize(n_obs(), max_iter_); 
 
   for(int i = 0; i < y().size(); ++i)
     abs_res(i) = std::abs(y()(i) - mu(i)) ; 
@@ -135,8 +133,8 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   pW_.resize(n_obs());
 
   for(int i = 0; i < y().size(); ++i) {
-    if (abs_res(i) < tol){
-      pW_(i) = ( 1./(abs_res(i)+tol) )/(2.*n_obs());
+    if (abs_res(i) < tol_weights_){
+      pW_(i) = ( 1./(abs_res(i)+ tol_weights_ ) )/(2.*n_obs());
 
     }    
     else
