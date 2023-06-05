@@ -71,8 +71,8 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
     A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
       lambdaS()*R1(),     -lambdaS()*R0()            );
   // cache non-parametric matrix and its factorization for reuse 
-  fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
-  invA_temp.compute( A_temp.derived() );
+  fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
+  invA_temp.compute( A_temp );
 
   DVector<double> b_temp ; 
   b_temp.resize(A_temp.rows());

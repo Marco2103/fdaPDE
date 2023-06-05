@@ -88,6 +88,7 @@ namespace models{
       solver_.init_pde();
       solver_.init_regularization();
       solver_.init_sampling();
+      solver_.init_nan();
 
         // Debug 
         // matrix_pseudo.resize(m_.n_obs() , max_iter_); 
