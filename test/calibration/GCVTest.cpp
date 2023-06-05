@@ -705,27 +705,27 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
   // EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[4][0]) );
 
 
-  // Lambda vector
-  std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test1_GCV/Eaxct/GCV_lambdasCpp_" + alpha_string + ".csv");
-  for(std::size_t i = 0; i < lambdas.size(); ++i) 
-    fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
+  // // Lambda vector
+  // std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test1_GCV/Eaxct/GCV_lambdasCpp_" + alpha_string + ".csv");
+  // for(std::size_t i = 0; i < lambdas.size(); ++i) 
+  //   fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
 
-  fileGCV_lambda.close(); 
+  // fileGCV_lambda.close(); 
 
-  // GCV scores
-  std::ofstream fileGCV_scores("data/models/SQRPDE/2D_test1_GCV/Exact/GCV_scoresCpp_" + alpha_string + ".csv");
-  for(std::size_t i = 0; i < GCV.values().size(); ++i) 
-    fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+  // // GCV scores
+  // std::ofstream fileGCV_scores("data/models/SQRPDE/2D_test1_GCV/Exact/GCV_scoresCpp_" + alpha_string + ".csv");
+  // for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+  //   fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
 
-  fileGCV_scores.close(); 
+  // fileGCV_scores.close(); 
 
 
-  // Edf
-  std::ofstream fileGCV_edf("data/models/SQRPDE/2D_test1_GCV/Exact/GCV_edfCpp_" + alpha_string + ".csv");
-  for(std::size_t i = 0; i < GCV.edfs().size(); ++i) 
-    fileGCV_edf << std::setprecision(16) << GCV.edfs()[i] << "\n" ; 
+  // // Edf
+  // std::ofstream fileGCV_edf("data/models/SQRPDE/2D_test1_GCV/Exact/GCV_edfCpp_" + alpha_string + ".csv");
+  // for(std::size_t i = 0; i < GCV.edfs().size(); ++i) 
+  //   fileGCV_edf << std::setprecision(16) << GCV.edfs()[i] << "\n" ; 
 
-  fileGCV_edf.close(); 
+  // fileGCV_edf.close(); 
 
 
 }

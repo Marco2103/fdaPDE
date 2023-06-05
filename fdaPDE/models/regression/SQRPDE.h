@@ -24,6 +24,10 @@ using fdaPDE::models::RegressionBase;
 #include "FPIRLS.h"
 using fdaPDE::models::FPIRLS ; 
 
+// For log1exp
+#include<Rcpp.h>
+#include<Rmath.h>
+
 namespace fdaPDE{
 namespace models{
   
