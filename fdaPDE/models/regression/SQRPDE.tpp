@@ -200,13 +200,14 @@ double SQRPDE<PDE, SamplingDesign>::norm
 
 // returns the pinball loss at a specific x 
 template <typename PDE, typename SamplingDesign>
-double SQRPDE<PDE, SamplingDesign>::rho_alpha(const double& x, const double& eps = 0.0) const{
-  if(eps < std::numeric_limits<double>::epsilon){
-    return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
-  } else{
-    return (alpha_ - 1)*x + eps*log1pexp(x / eps);  
-  }
+double SQRPDE<PDE, SamplingDesign>::rho_alpha(const double& x) const{  // , const double& eps = 0.0) const{
+  // if(eps < std::numeric_limits<double>::epsilon){
+  //   return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
+  // } else{
+  //   return (alpha_ - 1)*x + eps*log1pexp(x / eps);  
+  // }
 
+  return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
   
 }
 

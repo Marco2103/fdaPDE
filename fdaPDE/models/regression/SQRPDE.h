@@ -25,8 +25,8 @@ using fdaPDE::models::RegressionBase;
 using fdaPDE::models::FPIRLS ; 
 
 // For log1exp
-#include<Rcpp.h>
-#include<Rmath.h>
+// #include<Rcpp.h>
+// #include<Rmath.h>
 
 namespace fdaPDE{
 namespace models{
@@ -58,7 +58,7 @@ namespace models{
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 200;  
+    std::size_t max_iter_ = 500;  
     double tol_weights_; 
     double tol_;
 
