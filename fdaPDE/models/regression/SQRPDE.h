@@ -58,7 +58,7 @@ namespace models{
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 500;  
+    std::size_t max_iter_ = 200;  
     double tol_weights_; 
     double tol_;
 

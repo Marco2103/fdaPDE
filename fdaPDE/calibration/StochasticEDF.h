@@ -36,9 +36,9 @@ namespace calibration{
 
   public:
     // constructor
-    StochasticEDF( Model& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::Woodbury)
+    StochasticEDF(Model& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::Woodbury)
       : model_(model), r_(r), seed_(seed), method_(method) {}
-    StochasticEDF( Model& model, std::size_t r, StochasticEDFMethod method = StochasticEDFMethod::Woodbury)
+    StochasticEDF(Model& model, std::size_t r, StochasticEDFMethod method = StochasticEDFMethod::Woodbury)
       : StochasticEDF(model, r, std::random_device()(), method) {}
 
     // ATT: abbiamo rimosso il qualifier "const" quando passa il modello (come in ExatEDF) perchè ora qui chiamiamo anche model_.Q()

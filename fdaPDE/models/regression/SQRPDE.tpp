@@ -204,7 +204,7 @@ double SQRPDE<PDE, SamplingDesign>::rho_alpha(const double& x) const{  // , cons
   // if(eps < std::numeric_limits<double>::epsilon){
   //   return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
   // } else{
-  //   return (alpha_ - 1)*x + eps*log1pexp(x / eps);  
+  //   return (alpha_ - 1)*x + eps*std::log1p(std::exp(x / eps));  
   // }
 
   return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
