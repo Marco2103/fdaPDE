@@ -306,14 +306,14 @@ TEST(SQRPDE, Test5_Laplacian_SemiParametric_GeostatisticalAtNodes) {
   CSVFile<double> yFile; // observation file
   CSVFile<double> XFile; // covariates file
   // yFile = reader.parseFile("data/models/SQRPDE/2D_test" + TestNumber + "/z.csv");
-  std::string data_macro_strategy_type = "skewed_data"; 
-  std::string data_strategy_type = "E"; 
+  std::string data_macro_strategy_type = "matern_data"; 
+  std::string data_strategy_type = "F"; 
 
   // Marco
-  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+  // std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
   // Ilenia 
-  // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+  std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
   
   yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
                   TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
@@ -332,11 +332,11 @@ TEST(SQRPDE, Test5_Laplacian_SemiParametric_GeostatisticalAtNodes) {
   df.insert(DESIGN_MATRIX_BLK, X);
   model.setData(df);
 
-  std::vector<double> seq_tol_weights = {0.00000001, 0.0000001, 0.000001}; 
-  std::vector<std::string> seq_tol_weights_string = {"1e-08", "1e-07", "1e-06"}; 
+  std::vector<double> seq_tol_weights = {0.000001};   // {0.00000001, 0.000001}; 
+  std::vector<std::string> seq_tol_weights_string = {"1e-06"};  // {"1e-08","1e-06"}; 
 
-  std::vector<double> seq_tol_FPIRLS = {0.000000001, 0.00000001, 0.0000001, 0.000001};
-  std::vector<std::string> seq_tol_FPIRLS_string = {"1e-09", "1e-08", "1e-07", "1e-06"}; 
+  std::vector<double> seq_tol_FPIRLS = { 0.0000001};  // {0.000000001, 0.00000001, 0.0000001, 0.000001};
+  std::vector<std::string> seq_tol_FPIRLS_string = {"1e-07"};   // {"1e-09", "1e-08", "1e-07", "1e-06"}; 
 
   std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
 
@@ -350,7 +350,7 @@ TEST(SQRPDE, Test5_Laplacian_SemiParametric_GeostatisticalAtNodes) {
       lambdaCSV = reader.parseFile(R_path + "/R/Our/data/Test_" + 
                   TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
                   "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
-                  "/" + lin_sys_solver + "/LambdaR_" + alpha_string + ".csv");     // from R 
+                  "/" + lin_sys_solver + "/LambdaCpp_" + alpha_string + ".csv");     // switched to Cpp
       
       lambda = lambdaCSV.toEigen();
       model.setLambdaS(lambda(0,0));
