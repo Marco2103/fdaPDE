@@ -93,8 +93,8 @@ namespace models{
         // Debug 
         // matrix_pseudo.resize(m_.n_obs() , max_iter_); 
         // matrix_weight.resize(m_.n_obs() , max_iter_);
-        // matrix_beta.resize(m_.q() , max_iter_);
-        // matrix_f.resize(m_.n_obs() , max_iter_);
+        matrix_beta.resize(m_.q() , max_iter_);
+        matrix_f.resize(m_.n_obs() , max_iter_);
 
       };
     
@@ -134,12 +134,12 @@ namespace models{
 
 	// f_ = solver_.f(); 
   g_ = solver_.g();
-  // // matrix_f.col(k_) = f_ ; 
+  matrix_f.col(k_) = m_.Psi()*solver_.f(); 
 
-	// if(m_.hasCovariates()) {
-  //   beta_ = solver_.beta();
-  //   matrix_beta.col(k_) = beta_ ; 
-  // }
+	if(m_.hasCovariates()) {
+
+    matrix_beta.col(k_) = solver_.beta(); 
+  }
 	
 	// update value of \mu_
 	DVector<double> fitted = solver_.fitted(); // compute fitted values
@@ -151,6 +151,7 @@ namespace models{
   // compute_J_unpen -> model_loss
 	// prepare for next iteration
 
+  std::cout << J << std::endl ; 
 	k_++; J_old = J_new; J_new = J;
 
 

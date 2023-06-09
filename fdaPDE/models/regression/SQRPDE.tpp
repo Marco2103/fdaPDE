@@ -47,11 +47,11 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   // matrix_weight.resize(n_obs() , max_iter_); 
   // matrix_weight = fpirls.matrix_weight_fpirls() ; 
 
-  // matrix_f.resize(n_obs() , max_iter_); 
-  // matrix_f = fpirls.matrix_f_fpirls() ;
+  matrix_f.resize(n_obs() , max_iter_); 
+  matrix_f = fpirls.matrix_f_fpirls() ;
 
-  // matrix_beta.resize(q() , max_iter_); 
-  // matrix_beta = fpirls.matrix_beta_fpirls() ;  
+  matrix_beta.resize(q() , max_iter_); 
+  matrix_beta = fpirls.matrix_beta_fpirls() ;  
 
   if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
