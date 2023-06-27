@@ -57,12 +57,6 @@ namespace models{
     // DVector<double> beta_{};  // estimate of coefficient vector
     // DVector<double> W_{};     // weight matrix
 
-    DVector<double> mu_init{};    // per debug -> da togliere 
-    DMatrix<double> matrix_pseudo{};
-    DMatrix<double> matrix_weight{}; 
-    DMatrix<double> matrix_beta{};
-    DMatrix<double> matrix_f{}; 
-
     double Jfinal_;
 
   public:
@@ -90,23 +84,13 @@ namespace models{
       solver_.init_sampling();
       solver_.init_nan();
 
-        // Debug 
-        // matrix_pseudo.resize(m_.n_obs() , max_iter_); 
-        // matrix_weight.resize(m_.n_obs() , max_iter_);
-        matrix_beta.resize(m_.q() , max_iter_);
-        matrix_f.resize(m_.n_obs() , max_iter_);
-
       };
     
     // executes the FPIRLS algorithm
     void compute() {
 
-      static_assert(is_regression_model<Model>::value);  
-      std::cout << "Initialize mu " << std::endl ; 
+      static_assert(is_regression_model<Model>::value);   
       mu_ = m_.initialize_mu(); 
-      std::cout << "Finito initialize mu " << std::endl ; 
-
-      mu_init = mu_ ;    // da togliere
   
       distribution_.preprocess(mu_);
       
@@ -123,8 +107,7 @@ namespace models{
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
-  // matrix_pseudo.col(k_) = std::get<1>(pair) ; 
-  // matrix_weight.col(k_) = std::get<0>(pair); //.diagonal() ; 
+
 	// update solver to change in the weight matrix
 	solver_.init_data();
 	solver_.init_model(); 
@@ -134,7 +117,6 @@ namespace models{
 
 	// f_ = solver_.f(); 
   g_ = solver_.g();
-  matrix_f.col(k_) = m_.Psi()*solver_.f(); 
 
 	if(m_.hasCovariates()) {
 
@@ -147,11 +129,10 @@ namespace models{
 	mu_ = distribution_.inv_link(fitted);
 
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2 
-  double J = m_.compute_J_unpenalized(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // aggiunto il lambda
-  // compute_J_unpen -> model_loss
-	// prepare for next iteration
+  double J = m_.model_loss(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // aggiunto il lambda
+  
 
-  std::cout << J << std::endl ; 
+	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
 
 
@@ -191,11 +172,6 @@ namespace models{
     std::size_t n_iter() const { return k_ ; }                                       // number of iterations
     const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
 
-    const DVector<double>& mu_initialized() const { return mu_init; }    // per debug -> da togliere
-    const DMatrix<double>& matrix_pseudo_fpirls() const { return matrix_pseudo; }
-    const DMatrix<double>& matrix_weight_fpirls() const { return matrix_weight; } 
-    const DMatrix<double>& matrix_beta_fpirls() const { return matrix_beta; } 
-    const DMatrix<double>& matrix_f_fpirls() const { return matrix_f; } 
     const double& J_final() const { return Jfinal_; } 
   };
   

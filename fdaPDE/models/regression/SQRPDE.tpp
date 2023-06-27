@@ -8,16 +8,11 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
-  // matrix_abs_res.resize(n_obs(), max_iter_);
-  //  matrix_obs.resize(n_obs(), max_iter_);
-
   fpirls.compute();
   
   // fpirls converged: extract matrix P and solution estimates
   // W_ = fpirls.weights().asDiagonal();
   W_ = fpirls.solver().W();
-
-  // matrix_abs_res.resize(n_obs(), curr_iter_) ; 
 
   if(hasCovariates()) {
     XtWX_ = X().transpose()*W_*X(); 
@@ -36,22 +31,9 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   f_ = fpirls.solver().f();
   g_ = fpirls.solver().g();   // per completezza (non sappiamo se lo usa)
-
-  mu_init = fpirls.mu_initialized() ; 
+ 
   Jfinal_sqrpde_ = fpirls.J_final();
   niter_sqrpde_ = fpirls.n_iter();
-
-  // matrix_pseudo.resize(n_obs() , max_iter_); 
-  // matrix_pseudo = fpirls.matrix_pseudo_fpirls() ;
-  
-  // matrix_weight.resize(n_obs() , max_iter_); 
-  // matrix_weight = fpirls.matrix_weight_fpirls() ; 
-
-  matrix_f.resize(n_obs() , max_iter_); 
-  matrix_f = fpirls.matrix_f_fpirls() ;
-
-  matrix_beta.resize(q() , max_iter_); 
-  matrix_beta = fpirls.matrix_beta_fpirls() ;  
 
   if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
@@ -114,22 +96,9 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   DVector<double> abs_res{} ;
   abs_res.resize(y().size()) ; 
 
-//  matrix_abs_res.resize(n_obs(), max_iter_);
-//  matrix_obs.resize(n_obs(), max_iter_); 
-
   for(int i = 0; i < y().size(); ++i)
-    abs_res(i) = std::abs(y()(i) - mu(i)) ; 
-    // abs_res(i) = (std::abs(y()(i) - mu(i)) > tol) ? (std::abs( y()(i) - mu(i) )) : ( std::abs(y()(i) - mu(i)) + tol );   
+    abs_res(i) = std::abs(y()(i) - mu(i)) ;   
 
-  // pW_ = (2*n_obs()*abs_res).cwiseInverse() ;  // .matrix();  // aggiunto .matrix()
-
-  // std::cout << "curr_iter in compute is: " << curr_iter_ << std::endl ; 
-
-  // matrix_abs_res.col(curr_iter_) = abs_res; 
-  // matrix_obs.col(curr_iter_) = y(); 
-  // curr_iter_++;
-
-  // pW_ = (abs_res.array()).inverse().matrix(); //*(1/(2*n_obs()));  
   pW_.resize(n_obs());
 
   for(int i = 0; i < y().size(); ++i) {
@@ -149,7 +118,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
 template <typename PDE, typename SamplingDesign>
 double
-SQRPDE<PDE, SamplingDesign>::compute_J_unpenalized(const DVector<double>& mu) {
+SQRPDE<PDE, SamplingDesign>::model_loss(const DVector<double>& mu) {
   
   // compute value of functional J given mu: /(2*n) 
     return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm() ;    // serve .matrix() dopo cwiseSqrt() ? 

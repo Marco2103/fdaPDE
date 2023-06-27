@@ -50,10 +50,6 @@ namespace models{
     // DMatrix<double> XtWX_{}; 
     // Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
 
-    // using RegressionBase<SQRPDE<PDE, SamplingDesign>>::W_ ;
-    // using RegressionBase<SQRPDE<PDE, SamplingDesign>>::XtWX_ ;
-    // using RegressionBase<SQRPDE<PDE, SamplingDesign>>::invXtWX_ ; 
-
     DVector<double> py_{};                              // y - (1-2*alpha)|y - X*beta - f|
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
@@ -69,15 +65,6 @@ namespace models{
     // DMatrix<double> U_{};
     // DMatrix<double> V_{};  
 
-    DVector<double> mu_init{};  //  messo per debug -> da togliere
-    DMatrix<double> matrix_pseudo{};
-    DMatrix<double> matrix_weight{};
-    DMatrix<double> matrix_abs_res{};
-    DMatrix<double> matrix_obs{};
-    DMatrix<double> matrix_beta{};
-    DMatrix<double> matrix_f{};
-
-    std::size_t curr_iter_ = 0;
 
   public:
     IMPORT_REGRESSION_SYMBOLS;
@@ -99,7 +86,8 @@ namespace models{
     // returns a pair of references to W^k and \tilde y^k
     std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
 
-    double compute_J_unpenalized(const DVector<double>& mu); // private or public?
+    // model_loss computes the unpenalized loss (it is called by FPIRLS)
+    double model_loss(const DVector<double>& mu); // private or public?
 
     DVector<double> initialize_mu() const ; 
 
@@ -122,13 +110,6 @@ namespace models{
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
 
-    const DVector<double>& get_mu_init() const { return mu_init; }    // messo per debug -> da togliere
-    const DMatrix<double>& get_matrix_pseudo() const { return matrix_pseudo; } 
-    const DMatrix<double>& get_matrix_weight() const { return matrix_weight; } 
-    const DMatrix<double>& get_matrix_abs_res() const { return matrix_abs_res; } 
-    const DMatrix<double>& get_matrix_obs() const { return matrix_obs; }
-    const DMatrix<double>& get_matrix_beta() const { return matrix_beta; } 
-    const DMatrix<double>& get_matrix_f() const { return matrix_f; } 
     const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 
     const std::size_t& niter_sqrpde() const { return niter_sqrpde_; } 
 

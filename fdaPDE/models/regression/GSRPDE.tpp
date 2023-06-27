@@ -42,7 +42,7 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::initializ
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 double
-GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute_J_unpenalized(const DVector<double>& mu) {
+GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::model_loss(const DVector<double>& mu) {
   
   // compute value of functional J given mu: \norm{V^{-1/2}(y - \mu)}^2 
 	DVector<double> V = distribution_.variance(mu).array().sqrt().inverse().matrix();

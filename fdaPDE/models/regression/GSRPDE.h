@@ -60,7 +60,7 @@ namespace models{
     std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
 
     // I:
-    double compute_J_unpenalized(const DVector<double>& mu); 
+    double model_loss(const DVector<double>& mu); 
 
     DVector<double> initialize_mu() const ; 
     
