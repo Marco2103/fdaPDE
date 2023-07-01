@@ -41,12 +41,13 @@ namespace models{
     double alpha_;                                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
-    SpMatrix<double> A_{};                              // system matrix of non-parametric problem (2N x 2N matrix)
+    // SpMatrix<double> A_{};                         // system matrix of non-parametric problem (2N x 2N matrix)
+                                                      // non è usata da nessuna parte, va salvata comunque o la togliamo?
+
     fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
 
     // Commento questi membri così stiamo usando quelli di RegressionBase
-    // DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence 
-    // DiagMatrix<double> W_inQ_{};
+    // DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence
     // DMatrix<double> XtWX_{}; 
     // Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
 
@@ -58,6 +59,7 @@ namespace models{
     double tol_weights_; 
     double tol_;
 
+    // Debug
     double Jfinal_sqrpde_;
     std::size_t niter_sqrpde_;
 
@@ -101,24 +103,27 @@ namespace models{
 
     // getters
     // const DiagMatrix<double>& W() const { return W_; } 
-    // const DiagMatrix<double>& W_inQ() const { return W_inQ_; } 
-    const DVector<double>& py() const { return py_; }
     // const DMatrix<double>& XtWX() const { return XtWX_; }
     // const Eigen::PartialPivLU<DMatrix<double>>& invXtWX() const { return invXtWX_; }
+    
+    // const DVector<double>& py() const { return py_; }    debug
+
     // const SpMatrix<double>& A() const { return A_; }
+
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
 
+    // Debug
     const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 
     const std::size_t& niter_sqrpde() const { return niter_sqrpde_; } 
-
-    // M: 
     void setTolerances(double tol_weigths, double tol_FPIRLS) { 
       tol_weights_ = tol_weigths; 
       tol_ = tol_FPIRLS; 
     }
     
+
+
     virtual ~SQRPDE() = default;
   };
  

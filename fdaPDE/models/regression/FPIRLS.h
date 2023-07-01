@@ -57,7 +57,7 @@ namespace models{
     // DVector<double> beta_{};  // estimate of coefficient vector
     // DVector<double> W_{};     // weight matrix
 
-    double Jfinal_;
+    double Jfinal_;   // Debug
 
   public:
     // constructor
@@ -118,11 +118,6 @@ namespace models{
 	// f_ = solver_.f(); 
   g_ = solver_.g();
 
-	if(m_.hasCovariates()) {
-
-    matrix_beta.col(k_) = solver_.beta(); 
-  }
-	
 	// update value of \mu_
 	DVector<double> fitted = solver_.fitted(); // compute fitted values
 
@@ -145,20 +140,11 @@ namespace models{
   std::cout << "Number of FPIRLS iterations: " << k_ << std::endl;
   std::cout << "Value of J at the last iteration: " <<  std::setprecision(16) << J_new << std::endl;  
   
-  Jfinal_ = J_new;
+  Jfinal_ = J_new;    // Debug
 
       // store weight matrix at convergence
       // W_ = std::get<0>(m_.compute(mu_));    
-
-      auto pair = m_.compute(mu_);    
-
-      solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
-      solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
       
-      solver_.init_data();
-
-      solver_.init_model();
-          
 
       return;
     } 
@@ -168,7 +154,7 @@ namespace models{
     // const DVector<double>& weights() const { return W_; }                               // weights matrix W at convergence
     // const DVector<double>& beta() const { return beta_; }                               // estimate of coefficient vector 
     // const DVector<double>& f() const { return f_; }                                     // estimate of spatial field 
-    const DVector<double>& g() const { return g_; }                                     // PDE misfit
+    const DVector<double>& g() const { return g_; }                                        // PDE misfit
     std::size_t n_iter() const { return k_ ; }                                       // number of iterations
     const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
 

@@ -9,6 +9,7 @@ using fdaPDE::core::NLA::SMW;
 using fdaPDE::models::is_regression_model;
 #include <Eigen/Cholesky>   // aggiunto 
 
+
 namespace fdaPDE {
 namespace calibration{
 
@@ -96,9 +97,15 @@ namespace calibration{
           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
 
           // direct implementation: 
+          // Compute R
+          fdaPDE::SparseLU<SpMatrix<double>> invR0_temp_{};
+          invR0_temp_.compute(model_.R0());
+
           Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
-          lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.lambdaS()*model_.pen() ); 
+          lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen()); 
           sol = lltOfA.solve(- Bs_.topRows(n)); 
+
+
      
           // block implementation: 
           // SparseBlockMatrix<double,2,2>
