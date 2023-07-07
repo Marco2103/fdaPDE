@@ -58,10 +58,10 @@ namespace models{
     // init sampling data structures
     void init_sampling(bool forced = false) {
       // compute once if not forced to recompute
-
+      std::cout << "Dentro init_sampling " << std::endl ; 
       if(Psi_.size() != 0 && forced == false) return;
       // preallocate space for Psi matrix
-
+std::cout << "define n,N" << std::endl ; 
       std::size_t n = model().n_basis();
 
       std::size_t N = model().n_basis();
@@ -119,14 +119,18 @@ namespace models{
       // a point is evaluated non-zero at most a number of times equal to the number of basis over a mesh element
       tripletList.reserve(n*ct_nnodes(Model::M, Model::K));
 
+      std::cout << "gse " << std::endl ; 
       auto gse = model().gse(); // geometric search engine
       // cycle over all locations
       for(std::size_t i = 0; i < locs_.rows(); ++i){ 
+        std::cout << "i " << i << std::endl ; 
 	SVector<model_traits<Model>::PDE::local_dimension> p_i(locs_.row(i));
 	// search element containing the point
+  std::cout << "search " << locs_.row(i) << std::endl ; 
 	auto e = gse.search(p_i);
 	// update \Psi matrix
 	for(std::size_t j = 0; j < model().pde().basis()[e->ID()].size(); ++j){
+    std::cout << "j " << i << std::endl ; 
 	  std::size_t h = e->nodeIDs()[j]; // column index of \Psi matrix
 	  // extract \phi_h from basis
 	  auto psi_h = model().pde().basis()[e->ID()][j];

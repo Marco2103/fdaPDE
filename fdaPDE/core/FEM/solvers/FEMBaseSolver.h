@@ -51,26 +51,38 @@ namespace FEM{
     template <unsigned int M, unsigned int N, unsigned int R, typename E,
 	      typename F, typename B, typename I, typename S>
     void init(const PDE<M,N,R,E,F,B,I,S>& pde) {
+      std::cout << "assembler " << std::endl; 
       Assembler<M, N, R, B, I> assembler(pde.domain(), pde.integrator()); // create assembler object
       // fill discretization matrix for current operator
+      std::cout << "R1 " << std::endl; 
       R1_ = assembler.assemble(pde.bilinearForm());
       R1_.makeCompressed();
     
       // fill forcing vector
+      
       std::size_t n = pde.domain().dof(); // degrees of freedom in space
+      std::cout << "n " << n << std::endl; 
       std::size_t m; // number of time points
     
       if constexpr(!std::is_base_of<ScalarBase, F>::value){
+        std::cout << "Entrati " << std::endl;
 	m = pde.forcingData().cols();
+  std::cout << "m " << m << std::endl; 
+  std::cout << "resize force " << std::endl; 
 	force_.resize(n*m, 1);
+  std::cout << "forcing term " << std::endl;
+  std::cout << "dim " << pde.forcingData().col(0).size() << std::endl ; 
 	force_.block(0,0, n,1) = assembler.forcingTerm(pde.forcingData().col(0));
+  std::cout << "fine forcing term " << std::endl;
       }else{
 	// TODO: find a way to allow for space-time callable forcing. We cannot deduce the number of time points
 	// from a ScalarField<> object, have to request an additional parameter which contains the number of time points m
 	// and must force user to supply a space-time field (a field with an integer parameter t which is incremented by
 	// solver during its operations... maybe a TimeField<> specialization of ScalarField<> ?? )
 	m = 1;
+  std::cout << "resize force 2 " << std::endl; 
 	force_.resize(n*m, 1);
+  std::cout << "forcing term 2 " << std::endl; 
 	force_.block(0,0, n,1) = assembler.forcingTerm(pde.forcingData());
       }
       // iterate over time steps if a space-time PDE is supplied
@@ -80,6 +92,7 @@ namespace FEM{
 	}
       }
 
+      std::cout << "R0 " << std::endl; 
       // compute mass matrix [R0]_{ij} = \int_{\Omega} \phi_i \phi_j by discretization of the identity operator
       R0_ = assembler.assemble(Identity());
       init_ = true;
