@@ -68,17 +68,12 @@ template <unsigned int M, unsigned int N, unsigned int R, typename B, typename I
 template <typename F>
 Eigen::Matrix<double, Eigen::Dynamic, 1> Assembler<M,N,R,B,I>::forcingTerm(const F& f) {
   // allocate space for result vector
-  std::cout << "Entrato in forcingTerm " << std::endl ; 
   Eigen::Matrix<double, Eigen::Dynamic, 1> result{};
   result.resize(dof_, 1); // there are as many basis functions as degrees of freedom on the mesh
-  std::cout << "dim result " << result.size() << std::endl ; 
   result.fill(0); // init result vector to zero
 
   // build forcing vector
-  std::cout << "Inizio for " << result.size() << std::endl ;
-  std::cout << "n_basis " << n_basis << std::endl ;
   size_t count_element = 0;
-  std::cout << "Number mesh elements " << mesh_.elements() << std::endl;
   for(const auto& e : mesh_){
      count_element++;
      
@@ -90,7 +85,5 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> Assembler<M,N,R,B,I>::forcingTerm(const
     
      }
   }
-  std::cout << "Fine for " << result.size() << std::endl ;
-  std::cout << "dim result " << result.size() << std::endl ; 
   return result;
 }

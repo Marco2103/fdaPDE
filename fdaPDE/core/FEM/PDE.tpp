@@ -49,9 +49,7 @@ template <unsigned int M, unsigned int N, unsigned int R, typename E,
 void PDE<M,N,R,E,F,B,I,S>::init() {
   // precomputes some quantites of interest for high level users of FEM.
   // Do not solve the PDE (which means no linear system is solved) for a lower computational cost.
-  std::cout << "Here init pde" << std::endl; 
   solver_.init(*this);
-  std::cout << "Here fine pde" << std::endl;
   return;
 }
 
