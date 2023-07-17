@@ -670,104 +670,107 @@ using namespace std::chrono;
    GCV optimization: grid exact
    Correspondent in R: Test_1 
  */
-// TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) {
-//   // define domain and regularizing PDE
-//   MeshLoader<Mesh2D<>> domain("unit_square"); 
-//   auto L = Laplacian();
-//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) {
+  // define domain and regularizing PDE
+  MeshLoader<Mesh2D<>> domain("unit_square"); 
+  auto L = Laplacian();
+  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   double alpha = 0.1; 
-//   const std::string alpha_string = "10";
-//   const std::string TestNumber = "1"; 
-//   SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
+  // define statistical model
+  double alpha = 0.1; 
+  unsigned int alpha_int = alpha*100; 
+  const std::string alpha_string = std::to_string(alpha_int); 
+  const std::string TestNumber = "1"; 
+  SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
 
-//   // Marco
-//   // std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+  // Marco
+  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-//   // Ilenia 
-//   std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
-  
-//   // load data from .csv files
-//   CSVReader<double> reader{};
-//   CSVFile<double> yFile; // observation file
-//   std::string data_macro_strategy_type = "skewed_data"; 
-//   std::string data_strategy_type = "B"; 
-//   yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
-//                   TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-//                   "/z.csv");             
-//   DMatrix<double> y = yFile.toEigen();
-  
-//   // set model data
-//   BlockFrame<double, int> df;
-//   df.insert(OBSERVATIONS_BLK, y);
-//   model.setData(df);
-//   model.init(); // init model
+  // Ilenia 
+  // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
 
-//   // define grid of lambda values
-//   std::vector<SVector<1>> lambdas;
-//   for(double x = -4.0; x <= -1.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  std::string data_macro_strategy_type = "matern_data"; 
+  std::string data_strategy_type = "F"; 
+  double tol_weights = 0.000001; 
+  std::string tol_weights_string = "1e-06"; 
 
-//   std::vector<double> seq_tol_weights = {0.00000001, 0.000001}; 
-//   std::vector<std::string> seq_tol_weights_string = {"1e-08",  "1e-06"}; 
+  double tol_FPIRLS = 0.000001;
+  std::string tol_FPIRLS_string = "1e-06"; 
+  std::string stopping_type = "our"; 
 
-//   std::vector<double> seq_tol_FPIRLS = {0.000000001, 0.00000001, 0.0000001, 0.000001};
-//   std::vector<std::string> seq_tol_FPIRLS_string = {"1e-09", "1e-08", "1e-07", "1e-06"}; 
+  std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
 
-//   std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
+  unsigned int M = 10;   // number of simulations
 
-  
-// for(int i = 0; i < seq_tol_weights.size(); ++i ){
-//     for(int j = 0; j < seq_tol_FPIRLS.size(); ++j){
+  // define grid of lambda values
+  std::vector<SVector<1>> lambdas;
+  for(double x = -7.0; x <= -5.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
 
-//       model.setTolerances(seq_tol_weights[i], seq_tol_FPIRLS[j]); 
-  
-//       // define GCV function and optimize
-//       GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
-//       GridOptimizer<1> opt;
+  for(unsigned int m = 1; m <= M; ++m){
 
-//       ScalarField<1, decltype(GCV)> obj(GCV);
-//       opt.optimize(obj, lambdas); // optimize gcv field
-//       SVector<1> best_lambda = opt.optimum();
-      
-//       std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl ; 
-//       // check optimal lambda
-//       // EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[4][0]) );
+    std::cout << "Simulation " << m << std::endl; 
 
+    // load data from .csv files
+    CSVReader<double> reader{};
+    CSVFile<double> yFile; // observation file
+    yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
+                    TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+                    "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+                    "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/z.csv");             
+    DMatrix<double> y = yFile.toEigen();
+    
+    // set model data
+    BlockFrame<double, int> df;
+    df.insert(OBSERVATIONS_BLK, y);
+    model.setData(df);
+    model.init(); // init model
 
-//       // // Lambda vector
-//       // std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test1_GCV/Eaxct/GCV_lambdasCpp_" + alpha_string + ".csv");
-//       // for(std::size_t i = 0; i < lambdas.size(); ++i) 
-//       //   fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
+    model.setTolerances(tol_weights, tol_FPIRLS); 
+    model.setMassLumping(true); 
 
-//       // fileGCV_lambda.close(); 
+    // define GCV function and optimize
+    GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
+    GridOptimizer<1> opt;
 
-//       // GCV scores
-//       std::ofstream fileGCV_scores(R_path + "/R/Our/data/Test_" 
-//                   + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-//                   "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
-//                   "/" + lin_sys_solver + "/GCV/Exact/GCV_scoresCpp_" + alpha_string + ".csv");
-//       for(std::size_t i = 0; i < GCV.values().size(); ++i) 
-//         fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+    ScalarField<1, decltype(GCV)> obj(GCV);
+    opt.optimize(obj, lambdas); // optimize gcv field
+    SVector<1> best_lambda = opt.optimum();
+    
+    // Lambda opt
+    std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl;
+    std::ofstream fileLambdaopt(R_path + "/R/Our/data/Test_" 
+                + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+                "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+                "/" + lin_sys_solver  + "/sim_" + std::to_string(m) + "/LambdaCpp.csv");
+    if (fileLambdaopt.is_open()){
+      fileLambdaopt << best_lambda[0];
+      fileLambdaopt.close();
+    }
 
-//       fileGCV_scores.close(); 
+    // GCV scores
+    std::ofstream fileGCV_scores(R_path + "/R/Our/data/Test_" 
+                + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+                "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+                "/" + lin_sys_solver  + "/sim_" + std::to_string(m) + "/GCV/Exact/GCV_scoresCpp.csv");
+    for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+      fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+    fileGCV_scores.close(); 
 
+    DVector<double> invR0_Cpp = model.lumped_invR0().diagonal();
+    const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    std::ofstream fileLumped(R_path + "/R/Our/data/Test_" + 
+              TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+              "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+              "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/lumped_invR0_Cpp.csv");
+    if (fileLumped.is_open()){
+      fileLumped << invR0_Cpp.format(CSVFormat) << '\n';
+      fileLumped.close();
+    }
+  }
+ 
 
-//       // Edf
-//       std::ofstream fileGCV_edf(R_path + "/R/Our/data/Test_" 
-//                   + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-//                   "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
-//                   "/" + lin_sys_solver + "/GCV/Exact/GCV_edfCpp_" + alpha_string + ".csv");
-//       for(std::size_t i = 0; i < GCV.edfs().size(); ++i) 
-//         fileGCV_edf << std::setprecision(16) << GCV.edfs()[i] << "\n" ; 
-
-//       fileGCV_edf.close(); 
-//     }
-// }
-
-
-// }
+}
 
 
 /* test 10
@@ -2056,112 +2059,112 @@ using namespace std::chrono;
    GCV optimization: grid exact
    Correspondent in R: Test_7
  */
-TEST(GCV_SQRPDE, Test19_Laplacian_SemiParametric_GeostatisticalAtLocations_GridExact) {
-  // define domain and regularizing PDE
-  MeshLoader<Mesh3D<>> domain("unit_sphere");
+// TEST(GCV_SQRPDE, Test19_Laplacian_SemiParametric_GeostatisticalAtLocations_GridExact) {
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh3D<>> domain("unit_sphere");
 
-  auto L = Laplacian();
-  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*6, 1);
-  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*6, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
 
-  double alpha = 0.1; 
-  const std::string alpha_string = "10"; 
-  const std::string TestNumber = "7"; 
+//   double alpha = 0.1; 
+//   const std::string alpha_string = "10"; 
+//   const std::string TestNumber = "7"; 
 
-  SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
+//   SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
 
-  // load data from .csv files
-  CSVReader<double> reader{};
-  CSVFile<double> yFile; 
-  CSVFile<double> XFile;
-  DMatrix<double> y;  
-  DMatrix<double> X;
-  DMatrix<double> loc;
-  CSVFile<double> locFile; // observation file
+//   // load data from .csv files
+//   CSVReader<double> reader{};
+//   CSVFile<double> yFile; 
+//   CSVFile<double> XFile;
+//   DMatrix<double> y;  
+//   DMatrix<double> X;
+//   DMatrix<double> loc;
+//   CSVFile<double> locFile; // observation file
 
-  // Marco
-  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+//   // Marco
+//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-  // Ilenia 
-  //std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+//   // Ilenia 
+//   //std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
   
-  double tol_weights = 0.000001; 
-  std::string tol_weights_string = "1e-06";
+//   double tol_weights = 0.000001; 
+//   std::string tol_weights_string = "1e-06";
 
-  double tol_FPIRLS = 0.000001; 
-  std::string tol_FPIRLS_string = "1e-06"; 
+//   double tol_FPIRLS = 0.000001; 
+//   std::string tol_FPIRLS_string = "1e-06"; 
 
-  // define grid of lambda values
-  std::vector<SVector<1>> lambdas;
-  for(double x = -5.0; x <= -1.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+//   // define grid of lambda values
+//   std::vector<SVector<1>> lambdas;
+//   for(double x = -5.0; x <= -1.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
 
-  unsigned int M = 30;
+//   unsigned int M = 30;
 
-  // load locations where data are sampled
-  locFile = reader.parseFile(R_path + "/R/Our/data/Test_" 
-                      + TestNumber + "/alpha_" + alpha_string + "/locs.csv");
+//   // load locations where data are sampled
+//   locFile = reader.parseFile(R_path + "/R/Our/data/Test_" 
+//                       + TestNumber + "/alpha_" + alpha_string + "/locs.csv");
 
-  loc = locFile.toEigen();
-  model.set_spatial_locations(loc); 
+//   loc = locFile.toEigen();
+//   model.set_spatial_locations(loc); 
 
-  for(std::size_t m=1; m<=M; m++) {
+//   for(std::size_t m=1; m<=M; m++) {
 
-    yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
-                    TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/z.csv");             
-    y = yFile.toEigen();
+//     yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
+//                     TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/z.csv");             
+//     y = yFile.toEigen();
 
-    XFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
-                    TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/X.csv");             
-    X = XFile.toEigen();
+//     XFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
+//                     TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/X.csv");             
+//     X = XFile.toEigen();
 
-    // set model data
-    BlockFrame<double, int> df;
-    df.insert(OBSERVATIONS_BLK, y);
-    df.insert(DESIGN_MATRIX_BLK, X);
+//     // set model data
+//     BlockFrame<double, int> df;
+//     df.insert(OBSERVATIONS_BLK, y);
+//     df.insert(DESIGN_MATRIX_BLK, X);
 
-    model.setData(df);
-    model.init(); // init model
+//     model.setData(df);
+//     model.init(); // init model
 
-    model.setTolerances(tol_weights, tol_FPIRLS); 
+//     model.setTolerances(tol_weights, tol_FPIRLS); 
 
-    // define GCV function and optimize
-    GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
-    GridOptimizer<1> opt;
+//     // define GCV function and optimize
+//     GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
+//     GridOptimizer<1> opt;
 
-    ScalarField<1, decltype(GCV)> obj(GCV);
-    opt.optimize(obj, lambdas); // optimize gcv field
-    SVector<1> best_lambda = opt.optimum();
+//     ScalarField<1, decltype(GCV)> obj(GCV);
+//     opt.optimize(obj, lambdas); // optimize gcv field
+//     SVector<1> best_lambda = opt.optimum();
     
-    std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl; 
-    // Lambda opt
-    std::ofstream fileLambdaopt(R_path + "/R/Our/data/Test_" + 
-                    TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + 
-                    "/LambdaCpp.csv");
-    if (fileLambdaopt.is_open()){
-      fileLambdaopt << best_lambda[0];
-      fileLambdaopt.close();
-    }
+//     std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl; 
+//     // Lambda opt
+//     std::ofstream fileLambdaopt(R_path + "/R/Our/data/Test_" + 
+//                     TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + 
+//                     "/LambdaCpp.csv");
+//     if (fileLambdaopt.is_open()){
+//       fileLambdaopt << best_lambda[0];
+//       fileLambdaopt.close();
+//     }
 
 
-    // Lambda vector
-    std::ofstream fileGCV_lambda(R_path + "/R/Our/data/Test_" + 
-                TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/GCV/GCV_lambdasCpp.csv");
-    for(std::size_t i = 0; i < lambdas.size(); ++i) 
-      fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
+//     // Lambda vector
+//     std::ofstream fileGCV_lambda(R_path + "/R/Our/data/Test_" + 
+//                 TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/GCV/GCV_lambdasCpp.csv");
+//     for(std::size_t i = 0; i < lambdas.size(); ++i) 
+//       fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
 
-    fileGCV_lambda.close(); 
+//     fileGCV_lambda.close(); 
 
-    // GCV scores
-    std::ofstream fileGCV_scores(R_path + "/R/Our/data/Test_" + 
-                TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/GCV/GCV_scoresCpp.csv");
-    for(std::size_t i = 0; i < GCV.values().size(); ++i) 
-      fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+//     // GCV scores
+//     std::ofstream fileGCV_scores(R_path + "/R/Our/data/Test_" + 
+//                 TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + "/GCV/GCV_scoresCpp.csv");
+//     for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+//       fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
 
-    fileGCV_scores.close(); 
+//     fileGCV_scores.close(); 
 
-  }
+//   }
 
-}
+// }
 
 

@@ -51,7 +51,7 @@ namespace calibration{
     GCV(M& model, std::size_t r) : model_(model), trS_(model_, r) {};
     template <typename U = trS_evaluation_strategy,
 	      typename std::enable_if<std::is_same<U, StochasticEDF<M>>::value,int>::type = 0>
-    GCV(M& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::Woodbury ) : model_(model), trS_(model_, r, seed, method) {};
+    GCV(M& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::Woodbury) : model_(model), trS_(model_, r, seed, method) {};
     // cambiato l'ultimo constructor per passare il parametro Woodbury/Cholesky 
 
     // evaluates the analytical expression of gcv at \lambda (called by any type of GCV optimization)
@@ -71,8 +71,6 @@ namespace calibration{
       double q = model_.q();          // number of covariates
       std::size_t n = model_.n_obs(); // number of observations      
       double dor = n - (q + trS);     // residual degrees of freedom
-      std::cout << "trS in dor: " << trS << std::endl ; 
-      std::cout << "dor in dor: " << dor << std::endl ; 
       edfs_->emplace_back(q + trS);   // store equivalent degrees of freedom
       
       // return gcv at point
@@ -150,7 +148,13 @@ namespace calibration{
     //       g = R1^T*R0^{-1}*u
     //     t = dS*y
     double a(){
-      DMatrix<double> g = model_.R1().transpose()*model_.invR0().solve(model_.u());
+      DMatrix<double> g; 
+      if(!model_.massLumping()){
+        g = model_.R1().transpose()*model_.invR0().solve(model_.u());
+      } else{ 
+        g = model_.R1().transpose()*model_.lumped_invR0()*model_.u();   // M
+      }
+    
       // cache h and p since needed for computation of second derivative
       h_ = (model_.lambdaS()*L_ - DMatrix<double>::Identity(model_.n_locs(), model_.n_locs()))*(trS_.invT_).solve(g);
       p_ = model_.Psi()*h_ - dS_*model_.y();

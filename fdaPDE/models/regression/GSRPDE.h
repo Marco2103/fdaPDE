@@ -33,6 +33,7 @@ namespace models{
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 15;
     double tol_ = 0.0002020;
+
   public:
     IMPORT_REGRESSION_SYMBOLS;
     using Base::lambdaS; // smoothing parameter in space    
@@ -50,7 +51,10 @@ namespace models{
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    
+
+    // getter 
+    const bool massLumping() const { return Base::massLumping(); }  // M 
+
     // ModelBase implementation
     void init_model() { return; }
     virtual void solve(); // finds a solution to the smoothing problem

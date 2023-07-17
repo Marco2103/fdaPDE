@@ -12,6 +12,7 @@ namespace calibration{
   class iGCV {
   protected:
     fdaPDE::SparseLU<SpMatrix<double>> invR0_{};
+    DiagMatrix<double> lumped_invR0_{};    // M 
     DMatrix<double> R_{}; // R = R1^T*R0^{-1}*R1
     DMatrix<double> T_{}; // T = \Psi^T*Q*\Psi + \lambda*R
     DMatrix<double> Q_{}; // Q_ = I - H, whatever H is for the model
@@ -29,6 +30,7 @@ namespace calibration{
 
     // utilities
     fdaPDE::SparseLU<SpMatrix<double>>& invR0() { return invR0_; };
+    DiagMatrix<double>& lumped_invR0() { return lumped_invR0_; };  // M 
     const DMatrix<double>& R() { return R_; } 
     virtual ~iGCV() = default;
   };

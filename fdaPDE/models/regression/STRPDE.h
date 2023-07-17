@@ -42,6 +42,7 @@ namespace models{
     DVector<double> b_{};  // right hand side of problem's linear system (1 x 2N vector)
 
     SpMatrix<double> P_; // Pt \kron R0
+
   public:
     // import commonly defined symbols from base
     IMPORT_REGRESSION_SYMBOLS;

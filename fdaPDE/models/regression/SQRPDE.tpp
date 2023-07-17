@@ -4,7 +4,9 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
 
-  std::cout << "Lambda: " << lambdaS() << std::endl ; 
+  std::cout << std::endl;
+  std::cout << "Lambda: " << lambdaS() << std::endl; 
+  
 
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
@@ -45,16 +47,13 @@ template <typename PDE, typename SamplingDesign>
 DVector<double> 
 SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
 
-  fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
-  invR0_temp.compute(R0());
-
   // assemble system matrix 
   SparseBlockMatrix<double,2,2>
     A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
       lambdaS()*R1(),     -lambdaS()*R0()            );
   // cache non-parametric matrix and its factorization for reuse 
   fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
-  invA_temp.compute( A_temp );
+  invA_temp.compute(A_temp);
 
   DVector<double> b_temp ; 
   b_temp.resize(A_temp.rows());
@@ -103,7 +102,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
   for(int i = 0; i < y().size(); ++i) {
     if (abs_res(i) < tol_weights_){
-      pW_(i) = ( 1./(abs_res(i)+ tol_weights_ ) )/(2.*n_obs());
+      pW_(i) = ( 1./(abs_res(i) + tol_weights_ ) )/(2.*n_obs());
 
     }    
     else
@@ -133,8 +132,20 @@ template <typename PDE, typename SamplingDesign>
 const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
   // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
   if(R_.size() == 0){
-    invR0_.compute(R0());
-    R_ = R1().transpose()*invR0_.solve(R1());
+    if(!massLumping()){
+      std::cout << "In NON mass lumping" << std::endl; 
+      invR0_.compute(R0());
+      R_ = R1().transpose()*invR0_.solve(R1());
+    } else{
+        std::cout << "In mass lumping" << std::endl; 
+        DVector<double> lumped_invR0;
+        lumped_invR0.resize(R0().cols()); 
+        for(std::size_t j = 0; j < R0().cols(); ++j)    // M: troppe chiamate al getter di R0?? 
+          lumped_invR0[j] = 1 / R0().col(j).sum();  
+        lumped_invR0_ = lumped_invR0.asDiagonal();
+        R_ = R1().transpose()*lumped_invR0_*R1();
+    }
+
   }
   // compute and store matrix T for possible reuse
   if(!hasCovariates()) // case without covariates, Q is the identity matrix

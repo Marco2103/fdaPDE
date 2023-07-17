@@ -22,6 +22,10 @@ namespace models {
     using Base::lambda_; // vector of smoothing parameters
 
     SpMatrix<double> pen_; // discretization of regularizing term R1^T*R0^{-1}*R1
+
+    // Mass lumping parameter 
+    bool massLumping_ = false;   // M 
+    
   public:  
     // constructor
     SpaceOnlyBase() = default;
@@ -30,19 +34,32 @@ namespace models {
     
     // setters
     void setLambdaS(double lambda) { lambda_[0] = lambda; } 
+    void setMassLumping(bool massLumping) { massLumping_ = massLumping; }   // M 
     // getters
     double lambdaS() const { return lambda_[0]; } // smoothing parameter
     const SpMatrix<double>& R0()  const { return pde_->R0(); }    // mass matrix in space
     const SpMatrix<double>& R1()  const { return pde_->R1(); }    // discretization of differential operator L
     const DMatrix<double>&  u()   const { return pde_->force(); } // discretization of forcing term u
     inline std::size_t n_temporal_locs() const { return 1; }      // number of time instants, always 1 for space-only problems
-
+ 
     // computes and cache R1^T*R0^{-1}*R1. Returns an expression encoding \lambda_S*(R1^T*R0^{-1}*R1)
     auto pen() {
       if(is_empty(pen_)) {
-	fdaPDE::SparseLU<SpMatrix<double>> invR0_;
-	invR0_.compute(pde_->R0());
-	pen_ = R1().transpose()*invR0_.solve(R1()); // R1^T*R0^{-1}*R1
+        if(!massLumping_){
+          std::cout << "In NON mass lumping for pen" << std::endl; 
+          fdaPDE::SparseLU<SpMatrix<double>> invR0_;
+          invR0_.compute(pde_->R0());
+          pen_ = R1().transpose()*invR0_.solve(R1()); // R1^T*R0^{-1}*R1
+        } else{
+          std::cout << "In mass lumping for pen" << std::endl; 
+            DVector<double> invR0;
+            DiagMatrix<double> invR0_;
+            invR0.resize(R0().cols()); 
+            for(std::size_t j = 0; j < R0().cols(); ++j)    // M: troppe chiamate al getter di R0?? 
+              invR0[j] = 1 / R0().col(j).sum();  
+            invR0_ = invR0.asDiagonal();
+            pen_ = R1().transpose()*invR0_*R1();  // R1^T*R0^{-1}*R1
+        }
       }
       return lambdaS()*pen_;
     }

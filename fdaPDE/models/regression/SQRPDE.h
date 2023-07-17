@@ -67,7 +67,6 @@ namespace models{
     // DMatrix<double> U_{};
     // DMatrix<double> V_{};  
 
-
   public:
     IMPORT_REGRESSION_SYMBOLS;
     using Base::lambdaS; // smoothing parameter in space
@@ -113,6 +112,9 @@ namespace models{
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
+    const bool massLumping() const { return Base::massLumping(); }  // necessario perchè 
+    // altrimenti in GCV.h non posso fare model_.massLumping() 
+    // no ref perchè è ritorno un temporary object
 
     // Debug
     const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 
@@ -121,6 +123,7 @@ namespace models{
       tol_weights_ = tol_weigths; 
       tol_ = tol_FPIRLS; 
     }
+    const DiagMatrix<double> lumped_invR0() const { return lumped_invR0_; }
     
 
 

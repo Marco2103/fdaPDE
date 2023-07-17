@@ -85,6 +85,7 @@ namespace models {
     // access to NaN corrected \Psi and \Psi^T*D matrices
     const SpMatrix<double>& Psi() const { return has_nan() ? B_ : Psi(not_nan()); }
     auto PsiTD() const { return has_nan() ? B_.transpose()*D() : Psi(not_nan()).transpose()*D();}
+    const bool massLumping() const { return Base::massLumping_; }    // M
 
     // utilities
     bool hasCovariates() const { return q() != 0; } // true if the model has a parametric part
