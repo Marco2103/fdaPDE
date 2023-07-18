@@ -700,14 +700,19 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
   std::string stopping_type = "our"; 
 
   std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
-  bool massLumping = false; 
+  bool massLumping = true; 
+  std::string mass_type; 
+  if(massLumping)
+    mass_type = "TRUE"; 
+  else 
+    mass_type = "FALSE"; 
 
-  unsigned int M = 10;   // number of simulations
+  unsigned int M = 11;   // number of simulations
 
 
   // define grid of lambda values
   std::vector<SVector<1>> lambdas;
-  for(double x = -8.0; x <= -4.9; x +=1) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  for(double x = -7.0; x <= -5.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
 
   for(unsigned int m = 1; m <= M; ++m){
 
@@ -718,7 +723,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
     CSVFile<double> yFile; // observation file
     yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
                     TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-                    "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+                    "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
                     "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/z.csv");             
     DMatrix<double> y = yFile.toEigen();
     
@@ -743,32 +748,33 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
     std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl;
     std::ofstream fileLambdaopt(R_path + "/R/Our/data/Test_" 
                 + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-                "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+                "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
                 "/" + lin_sys_solver  + "/sim_" + std::to_string(m) + "/LambdaCpp.csv");
     if (fileLambdaopt.is_open()){
-      fileLambdaopt << best_lambda[0];
+      fileLambdaopt << std::setprecision(16) << best_lambda[0];
       fileLambdaopt.close();
     }
 
     // GCV scores
     std::ofstream fileGCV_scores(R_path + "/R/Our/data/Test_" 
                 + TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-                "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+                "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
                 "/" + lin_sys_solver  + "/sim_" + std::to_string(m) + "/GCV/Exact/GCV_scoresCpp.csv");
     for(std::size_t i = 0; i < GCV.values().size(); ++i) 
       fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
     fileGCV_scores.close(); 
 
-    DVector<double> invR0_Cpp = model.lumped_invR0().diagonal();
-    const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-    std::ofstream fileLumped(R_path + "/R/Our/data/Test_" + 
-              TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-              "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
-              "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/lumped_invR0_Cpp.csv");
-    if (fileLumped.is_open()){
-      fileLumped << invR0_Cpp.format(CSVFormat) << '\n';
-      fileLumped.close();
-    }
+    // // Degub
+    // DVector<double> invR0_Cpp = model.lumped_invR0().diagonal();
+    // const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream fileLumped(R_path + "/R/Our/data/Test_" + 
+    //           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+    //           "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+    //           "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/lumped_invR0_Cpp.csv");
+    // if (fileLumped.is_open()){
+    //   fileLumped << invR0_Cpp.format(CSVFormat) << '\n';
+    //   fileLumped.close();
+    // }
   }
  
 
@@ -1240,7 +1246,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 //                         "/" + stopping_type + "/tol_weights_" + seq_tol_weights_string[i] + "/tol_FPIRLS_" + seq_tol_FPIRLS_string[j] + 
 //                         "/" + lin_sys_solver  + "/n_" + seq_n_string[k] + "/sim_" + std::to_string(nsim) + "/LambdaCpp_" + alpha_string + ".csv");
 //             if (fileLambdaopt.is_open()){
-//               fileLambdaopt << best_lambda[0];
+//               fileLambdaopt << std::setprecision(16) << best_lambda[0];
 //               fileLambdaopt.close();
 //             }
 
@@ -1531,7 +1537,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 //                           + TestNumber + "/alpha_" + alpha_string  + "/tol_weights_" + tol_weights_string + 
 //                           "/compare_nodes" + "/N_" + seq_N_string[k] + "/LambdaCpp_" + alpha_string + ".csv");
 //           if (fileLambdaopt.is_open()){
-//             fileLambdaopt << best_lambda[0];
+//             fileLambdaopt << std::setprecision(16) << best_lambda[0];
 //             fileLambdaopt.close();
 //           }
 
@@ -1697,7 +1703,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 //                   TestNumber + "/alpha_" + alpha_string + "/tol_weights_" + tol_weights_string  + "/n_" + seq_n_string[n] +
 //                   "/GCV/Stochastic/LambdaCpp_" + stoch_type + alpha_string + ".csv");
 //       if (fileLambdaopt.is_open()){
-//         fileLambdaopt << best_lambda[0];
+//         fileLambdaopt << std::setprecision(16) << best_lambda[0];
 //         fileLambdaopt.close();
 //       }
 
@@ -1867,7 +1873,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 //                   TestNumber + "/alpha_" + alpha_string + "/tol_weights_" + tol_weights_string  + "/n_" + seq_n_string[n] +
 //                   "/GCV/Stochastic/LambdaCpp_" + stoch_type + alpha_string + ".csv");
 //       if (fileLambdaopt.is_open()){
-//         fileLambdaopt << best_lambda[0];
+//         fileLambdaopt << std::setprecision(16) << best_lambda[0];
 //         fileLambdaopt.close();
 //       }
 
@@ -2011,7 +2017,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 //                         "/" + lin_sys_solver + 
 //                         "/LambdaCpp_" + alpha_string + ".csv");
 //         if (fileLambdaopt.is_open()){
-//           fileLambdaopt << best_lambda[0];
+//           fileLambdaopt << std::setprecision(16) << best_lambda[0];
 //           fileLambdaopt.close();
 //         }
 
@@ -2144,7 +2150,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 //                     TestNumber + "/alpha_" + alpha_string + "/sim_" + std::to_string(m) + 
 //                     "/LambdaCpp.csv");
 //     if (fileLambdaopt.is_open()){
-//       fileLambdaopt << best_lambda[0];
+//       fileLambdaopt << std::setprecision(16) << best_lambda[0];
 //       fileLambdaopt.close();
 //     }
 

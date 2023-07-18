@@ -72,8 +72,12 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 
   std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
 
-  unsigned int M = 10;   // number of simulations
-  bool massLumping = false;
+  unsigned int M = 11;   // number of simulations
+  bool massLumping = true;
+  if(massLumping)
+    std::string mass_type = "TRUE"; 
+  else 
+    std::string mass_type = "FALSE"; 
 
 
   for(unsigned int m = 1; m <= M; ++m){
@@ -86,7 +90,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     CSVFile<double> yFile; // observation file
     yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
                     TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-                    "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+                    "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
                     "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/z.csv");             
     DMatrix<double> y = yFile.toEigen();
 
@@ -105,7 +109,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     // read from C++
     std::ifstream fileLambda(R_path + "/R/Our/data/Test_" + 
               TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-              "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+              "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
               "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/LambdaCpp.csv");
     if (fileLambda.is_open()){
       fileLambda >> lambda; 
@@ -127,7 +131,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
     std::ofstream filef(R_path + "/R/Our/data/Test_" + 
               TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-              "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+              "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
               "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/fCpp.csv");
     if (filef.is_open()){
       filef << computedF.format(CSVFormatf);
@@ -138,7 +142,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     const static Eigen::IOFormat CSVFormatfn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
     std::ofstream filefn(R_path + "/R/Our/data/Test_" + 
               TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-              "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+              "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
               "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/fnCpp.csv");
     if (filefn.is_open()){
       filefn << computedFn.format(CSVFormatfn);
@@ -148,7 +152,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     double J = model.J_final_sqrpde();
     std::ofstream fileJ(R_path + "/R/Our/data/Test_" + 
               TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-              "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+              "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
               "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/JCpp.csv");
     if (fileJ.is_open()){
       fileJ << J;
@@ -158,7 +162,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
     std::size_t niter = model.niter_sqrpde();
     std::ofstream filen(R_path + "/R/Our/data/Test_" + 
               TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-              "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+              "/mass" + mass_type + "" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
               "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/niterCpp.csv");
     if (filen.is_open()){
       filen << niter;
