@@ -700,12 +700,14 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
   std::string stopping_type = "our"; 
 
   std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
+  bool massLumping = false; 
 
   unsigned int M = 10;   // number of simulations
 
+
   // define grid of lambda values
   std::vector<SVector<1>> lambdas;
-  for(double x = -7.0; x <= -5.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  for(double x = -8.0; x <= -4.9; x +=1) lambdas.push_back(SVector<1>(std::pow(10,x)));
 
   for(unsigned int m = 1; m <= M; ++m){
 
@@ -727,7 +729,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
     model.init(); // init model
 
     model.setTolerances(tol_weights, tol_FPIRLS); 
-    model.setMassLumping(true); 
+    model.setMassLumping(massLumping); 
 
     // define GCV function and optimize
     GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);

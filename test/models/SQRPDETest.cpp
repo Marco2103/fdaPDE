@@ -73,6 +73,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   std::string lin_sys_solver = "LU";    // depends on the "symmetry" option in R 
 
   unsigned int M = 10;   // number of simulations
+  bool massLumping = false;
 
 
   for(unsigned int m = 1; m <= M; ++m){
@@ -113,9 +114,8 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   
     model.setLambdaS(lambda);    // read from C++
     
-
     // Set mass lumping option 
-    model.setMassLumping(true); 
+    model.setMassLumping(massLumping); 
 
     // solve smoothing problem
     model.setTolerances(tol_weights, tol_FPIRLS); 
