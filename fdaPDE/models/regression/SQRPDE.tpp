@@ -26,8 +26,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   
 
   if(hasCovariates()) {
-    U_ =    fpirls.solver().U(); 
-    V_ =    fpirls.solver().V(); 
+    U_ = fpirls.solver().U(); 
+    V_ = fpirls.solver().V(); 
 
   }
 
@@ -132,15 +132,15 @@ template <typename PDE, typename SamplingDesign>
 const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
   // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
   if(R_.size() == 0){
-    if(!massLumping()){
-      std::cout << "In NON mass lumping" << std::endl; 
+    if(!massLumpingGCV()){
+      std::cout << "Assembly NON lumped R" << std::endl;
       invR0_.compute(R0());
       R_ = R1().transpose()*invR0_.solve(R1());
     } else{
-        std::cout << "In mass lumping" << std::endl; 
+        std::cout << "Assembly lumped R" << std::endl; 
         DVector<double> lumped_invR0;
-        lumped_invR0.resize(R0().cols()); 
-        for(std::size_t j = 0; j < R0().cols(); ++j)    // M: troppe chiamate al getter di R0?? 
+        lumped_invR0.resize(n_basis()); 
+        for(std::size_t j = 0; j < n_basis(); ++j)    
           lumped_invR0[j] = 1 / R0().col(j).sum();  
         lumped_invR0_ = lumped_invR0.asDiagonal();
         R_ = R1().transpose()*lumped_invR0_*R1();

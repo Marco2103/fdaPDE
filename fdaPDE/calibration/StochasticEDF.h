@@ -14,8 +14,8 @@ namespace fdaPDE {
 namespace calibration{
 
   enum StochasticEDFMethod {
-    Woodbury,
-    Cholesky
+    WoodburyGCV,
+    CholeskyGCV
   } ; 
 
   // computes an approximation of the trace of S = \Psi*T^{-1}*\Psi^T*Q using a monte carlo approximation.
@@ -37,9 +37,9 @@ namespace calibration{
 
   public:
     // constructor
-    StochasticEDF(Model& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::Woodbury)
+    StochasticEDF(Model& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::WoodburyGCV)
       : model_(model), r_(r), seed_(seed), method_(method) {}
-    StochasticEDF(Model& model, std::size_t r, StochasticEDFMethod method = StochasticEDFMethod::Woodbury)
+    StochasticEDF(Model& model, std::size_t r, StochasticEDFMethod method = StochasticEDFMethod::WoodburyGCV)
       : StochasticEDF(model, r, std::random_device()(), method) {}
 
     // ATT: abbiamo rimosso il qualifier "const" quando passa il modello (come in ExatEDF) perchè ora qui chiamiamo anche model_.Q()
@@ -87,13 +87,13 @@ namespace calibration{
       if(!model_.hasCovariates()){ // nonparametric case
         sol = model_.invA().solve(Bs_);
       }else{
-        if (method_ == StochasticEDFMethod::Woodbury) {
-          std::cout << "Woodbury " << std::endl; 
+        if(method_ == StochasticEDFMethod::WoodburyGCV){
+          std::cout << "Woodbury GCV " << std::endl; 
           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
           sol = SMW<>().solve(model_.invA(), model_.U(), model_.XtWX(), model_.V(), Bs_);
         }
-        else {   // Cholesky
-          std::cout << "Cholesky " << std::endl; 
+        if(method_ == StochasticEDFMethod::CholeskyGCV){   // Cholesky
+          std::cout << "Cholesky GCV " << std::endl; 
           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
 
           // direct implementation: 
@@ -105,8 +105,6 @@ namespace calibration{
           lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen()); 
           sol = lltOfA.solve(- Bs_.topRows(n)); 
 
-
-     
           // block implementation: 
           // SparseBlockMatrix<double,2,2>
           // A(model_.PsiTD()*model_.W()*model_.Psi(), model_.lambdaS()*model_.R1().transpose(),

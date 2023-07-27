@@ -129,16 +129,28 @@ namespace models {
 
   // M: 
   class Gaussian {
+  private: 
+    double mu_;
+    double sigma_;  
+
   public:
     // constructor
     Gaussian() = default;
-
-    // completa con pdf e le altre info
-
+    Gaussian(double mu, double sigma) : mu_(mu), sigma_(sigma) {};
+    // density function
+    double pdf(double x) const { return 1/( std::sqrt(2*M_PI)*sigma_ ) * std::exp( -(x-mu_)*(x-mu_)/(2*sigma_*sigma_) ); };
+    double mean() const { return mu_; }
     void preprocess(DVector<double>& data) const { return; }
+    // vectorized operations
+    //DMatrix<double> variance(const DMatrix<double>& x) const {  return sigma_*sigma_ ; }     // ?? argomento x ?           
+    DMatrix<double> link(const DMatrix<double>& x) const { return x; }  
+    DMatrix<double> inv_link(const DMatrix<double>& x) const { return x; }             
+    //DMatrix<double> der_link(const DMatrix<double>& x) const { return 1; }   // ?? 
+
+    // deviance function
+    double deviance(double x, double y) { return (x-y)*(x-y); };
                       
-    DMatrix<double> inv_link(const DMatrix<double>& x) const {
-      return x; }          
+            
   };
   
 }}

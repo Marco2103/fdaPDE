@@ -31,10 +31,6 @@ namespace models{
     fdaPDE::SparseLU<SpMatrix<double>> invA_; // factorization of matrix A
     DVector<double> b_{}; // right hand side of problem's linear system (1 x 2N vector)
 
-    // Mass lumping parameter 
-    bool massLumping_ = false;   // M 
-    
-
   public:
     IMPORT_REGRESSION_SYMBOLS;
     using Base::lambdaS; // smoothing parameter in space
@@ -55,10 +51,7 @@ namespace models{
     // getters
     const SparseBlockMatrix<double,2,2>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
-    const bool massLumping() const { return Base::massLumping(); }  // M 
-
-    // setters 
-    void setMassLumping(bool massLumping) { massLumping_ = massLumping; }   // M 
+    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // M 
     
     virtual ~SRPDE() = default;
   };

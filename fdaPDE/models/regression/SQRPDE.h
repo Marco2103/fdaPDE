@@ -112,7 +112,7 @@ namespace models{
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
-    const bool massLumping() const { return Base::massLumping(); }  // necessario perchè 
+    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // necessario perchè 
     // altrimenti in GCV.h non posso fare model_.massLumping() 
     // no ref perchè è ritorno un temporary object
 

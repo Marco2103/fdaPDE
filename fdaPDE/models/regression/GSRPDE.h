@@ -53,7 +53,7 @@ namespace models{
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
 
     // getter 
-    const bool massLumping() const { return Base::massLumping(); }  // M 
+    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // M 
 
     // ModelBase implementation
     void init_model() { return; }
