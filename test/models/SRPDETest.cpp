@@ -41,6 +41,7 @@ TEST(SRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   double lambda = 5.623413 * std::pow(0.1, 5);
   SRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem);
   model.setLambdaS(lambda);
+  model.setInvASolver("Chol");
   
   // load data from .csv files
   CSVReader<double> reader{};
@@ -112,6 +113,7 @@ TEST(SRPDE, Test2_Laplacian_SemiParametric_GeostatisticalAtLocations) {
   SRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem);
   model.setLambdaS(lambda);
   model.set_spatial_locations(loc);
+  model.setInvASolver("Chol");
   
   // load data from .csv files
   CSVFile<double> yFile; // observation file
@@ -189,6 +191,7 @@ TEST(SRPDE, Test3_CostantCoefficientsPDE_NonParametric_GeostatisticalAtNodes) {
   double lambda = 10;
   SRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem);
   model.setLambdaS(lambda);
+  model.setInvASolver("Chol");
   
   // load data from .csv files
   CSVReader<double> reader{};
@@ -279,6 +282,7 @@ TEST(SRPDE, Test4_NonCostantCoefficientsPDE_NonParametric_Areal) {
   SRPDE<decltype(problem), fdaPDE::models::Areal> model(problem);
   model.setLambdaS(lambda);
   model.set_spatial_locations(areal);
+  model.setInvASolver("Chol");
   
   // load data from .csv files
   CSVFile<double> yFile; // observation file
