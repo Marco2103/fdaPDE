@@ -7,11 +7,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   std::cout << std::endl;
   std::cout << "Lambda: " << lambdaS() << std::endl; 
   
-
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
-
   fpirls.compute();
-  
   // fpirls converged: extract matrix P and solution estimates
   // W_ = fpirls.weights().asDiagonal();
   W_ = fpirls.solver().W();
@@ -22,13 +19,18 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   }
   
   // A_ =    fpirls.solver().A(); 
-  invA_ = fpirls.solver().invA();
+  if(invA_solver_ == "LU")
+    invA_ = fpirls.solver().invA();
+  else{
+    invA_Chol_ = fpirls.solver().invA_Chol();
+    if(invA_Chol_.info() == Eigen::NumericalIssue)
+      throw std::runtime_error("Possibly non positive definite matrix at FPIRLS convergence");
+  }
+    
   
-
   if(hasCovariates()) {
     U_ = fpirls.solver().U(); 
     V_ = fpirls.solver().V(); 
-
   }
 
   f_ = fpirls.solver().f();
@@ -51,39 +53,32 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
   SparseBlockMatrix<double,2,2>
     A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
       lambdaS()*R1(),     -lambdaS()*R0()            );
+
   // cache non-parametric matrix and its factorization for reuse 
-  fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
-  invA_temp.compute(A_temp);
+  if(invA_solver_ == "LU"){ // LU factorization of A_temp 
+    fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
+    invA_temp.compute(A_temp);
+    DVector<double> b_temp; 
+    b_temp.resize(A_temp.rows());
+    b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
+    b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
+    BLOCK_FRAME_SANITY_CHECKS;
+    DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+    DVector<double> fn = Psi()*f;
+    return fn;
+  } else{  // Cholesky factorization of A_temp    //  M
+    CholFactorization invA_temp; 
+    invA_temp.compute(A_temp);
+    DVector<double> b_temp; 
+    b_temp.resize(A_temp.rows());
+    b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
+    b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
+    BLOCK_FRAME_SANITY_CHECKS;
+    DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+    DVector<double> fn = Psi()*f;
+    return fn;
+  }
 
-  DVector<double> b_temp ; 
-  b_temp.resize(A_temp.rows());
-  b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
-  b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs() ; 
-  BLOCK_FRAME_SANITY_CHECKS;
-  DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-  DVector<double> fn = Psi()*f ; 
-
-  // implementazione diretta
-
-  // fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ; 
-  // invR0_temp.compute(R0());
-
-  // SpMatrix<double> A_temp{} ; 
-  // // A_temp = PsiTD()*Psi()/n_obs() + 2*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
-  // A_temp = PsiTD()*Psi() + 2*n_obs()*lambdaS()*R1().transpose()*invR0_temp.solve(R1()) ; 
-  // fdaPDE::SparseLU<SpMatrix<double>> invA_temp ;
-  // // invA_temp.compute( A_temp.derived() );
-
-  // invA_temp.compute( A_temp );
-  
-  // DVector<double> b_temp{} ; 
-  // // b_temp = PsiTD()*y()/n_obs() ; 
-  // b_temp = PsiTD()*y() ; 
-
-  // DVector<double> f = (invA_temp.solve(b_temp)) ;
-  // DVector<double> fn = Psi()*f ; 
-
-  return fn ; 
 }
 
 

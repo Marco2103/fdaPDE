@@ -9,11 +9,24 @@ void SRPDE<PDE, SamplingDesign>::init_model() {
     (-PsiTD()*W()*Psi(), lambdaS()*R1().transpose(),
      lambdaS()*R1(),     lambdaS()*R0()            );
   // cache non-parametric matrix factorization for reuse
-  invA_.compute(A_);
-  // prepare rhs of linear system
-  b_.resize(A_.rows());
-  b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
-  return;
+  if(invA_solver_ == "LU"){   // M 
+    std::cout << "LU factorization for invA" << std::endl; 
+    invA_.compute(A_);
+    // prepare rhs of linear system
+    b_.resize(A_.rows());
+    b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
+    return;
+  } else{
+    std::cout << "Cholesky factorization for invA" << std::endl;
+    invA_Chol_.compute(A_);
+    if(invA_Chol_.info() == Eigen::NumericalIssue)
+      throw std::runtime_error("Possibly non positive definite matrix in SRPDE");
+    // prepare rhs of linear system
+    b_.resize(A_.rows());
+    b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
+    return;
+  }
+
 }
   
 // finds a solution to the SR-PDE smoothing problem
@@ -27,7 +40,10 @@ void SRPDE<PDE, SamplingDesign>::solve() {
     b_.block(0,0, n_basis(),1) = -PsiTD()*W()*y();
     // solve linear system A_*x = b_
 
-    sol = invA_.solve(b_);
+    if(invA_solver_ == "LU")
+      sol = invA_.solve(b_);
+    else 
+      sol = invA_Chol_.solve(b_);   // M 
     f_ = sol.head(n_basis());
   }else{ // parametric case
     // update rhs of SR-PDE linear system
@@ -39,7 +55,10 @@ void SRPDE<PDE, SamplingDesign>::solve() {
     V_ = DMatrix<double>::Zero(q(), 2*n_basis());
     V_.block(0,0, q(), n_basis()) = X().transpose()*W()*Psi();
     // solve system (A_ + U_*(X^T*W_*X)*V_)x = b using woodbury formula from NLA module
-    sol = SMW<>().solve(invA_, U_, XtWX(), V_, b_);
+    if(invA_solver_ == "LU")
+      sol = SMW<>().solve(invA_, U_, XtWX(), V_, b_);
+    else 
+      sol = SMW<CholFactorization>().solve(invA_Chol_, U_, XtWX(), V_, b_);  // M 
     // store result of smoothing 
     f_    = sol.head(n_basis());
     beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);

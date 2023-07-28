@@ -99,6 +99,7 @@ namespace models{
 
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
+        std::cout << "FPIRLS iteration number " << k_ << std::endl; 
       //   while(k_ < max_iter_ && std::abs(J_new - 0.04472646666589305) > 1e-3){  --> to check a specific value of J 
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
@@ -110,6 +111,7 @@ namespace models{
 
 	// update solver to change in the weight matrix
 	solver_.init_data();
+  solver_.setInvASolver(m_.InvASolver());   // M to have correspondence between model and solver for the inversion of A 
 	solver_.init_model(); 
 	solver_.solve();
 	

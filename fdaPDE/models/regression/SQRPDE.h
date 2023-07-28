@@ -45,6 +45,9 @@ namespace models{
                                                       // non è usata da nessuna parte, va salvata comunque o la togliamo?
 
     fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
+    typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization; 
+    CholFactorization invA_Chol_;                     // M  Cholesky decomposition of A
+    std::string invA_solver_ = "LU";                  // M
 
     // Commento questi membri così stiamo usando quelli di RegressionBase
     // DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence
@@ -78,6 +81,7 @@ namespace models{
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
+    void setInvASolver(std::string solver) { invA_solver_ = solver; }  // M 
 
     // ModelBase implementation
     void init_model() { return; }
@@ -103,18 +107,17 @@ namespace models{
     // getters
     // const DiagMatrix<double>& W() const { return W_; } 
     // const DMatrix<double>& XtWX() const { return XtWX_; }
-    // const Eigen::PartialPivLU<DMatrix<double>>& invXtWX() const { return invXtWX_; }
-    
+    // const Eigen::PartialPivLU<DMatrix<double>>& invXtWX() const { return invXtWX_; } 
     // const DVector<double>& py() const { return py_; }    debug
-
     // const SpMatrix<double>& A() const { return A_; }
-
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
+    const CholFactorization& invA_Chol() const { return invA_Chol_; }  // M 
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
     const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // necessario perchè 
     // altrimenti in GCV.h non posso fare model_.massLumping() 
     // no ref perchè è ritorno un temporary object
+    const std::string InvASolver() const { return invA_solver_; }  // M 
 
     // Debug
     const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 

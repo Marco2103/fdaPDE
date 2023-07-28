@@ -13,10 +13,10 @@ using fdaPDE::models::is_regression_model;
 namespace fdaPDE {
 namespace calibration{
 
-  enum StochasticEDFMethod {
+  enum StochasticEDFMethod{
     WoodburyGCV,
     CholeskyGCV
-  } ; 
+  }; 
 
   // computes an approximation of the trace of S = \Psi*T^{-1}*\Psi^T*Q using a monte carlo approximation.
   template <typename Model>

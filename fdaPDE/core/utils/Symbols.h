@@ -100,6 +100,37 @@ namespace fdaPDE {
     Eigen::ComputationInfo info() const { return solver_->info(); }
   };
 
+  // M  added 
+  template <typename T>
+  class SparseChol {
+  private:
+    typedef Eigen::SimplicialLLT<T, Eigen::Lower, Eigen::NaturalOrdering<int>> SparseChol_;  
+    std::shared_ptr<SparseChol_> solver_; 
+  public:
+    // default constructor
+    SparseChol() = default;
+    // we expose only the compute and solve methods of Eigen::SparseLU
+    void compute(const T& matrix){
+      // initialize pointer
+      solver_ = std::make_shared<SparseChol_>();
+      solver_->compute(matrix);
+    }
+    
+    template <typename Rhs> // solve method, dense rhs operand
+    const Eigen::Solve<SparseChol_, Rhs>
+    solve(const Eigen::MatrixBase<Rhs>& b) const { 
+      return solver_->solve(b);
+    }
+    template <typename Rhs> // solve method, sparse rhs operand
+    const Eigen::Solve<SparseChol_, Rhs>
+    solve(const Eigen::SparseMatrixBase<Rhs>& b) const { 
+      return solver_->solve(b);
+    }
+    // direct access to Eigen::SparseChol
+    std::shared_ptr<SparseChol_> operator->() { return solver_; }
+    Eigen::ComputationInfo info() const { return solver_->info(); }
+  };
+
   // test for floating point equality based on relative error.
   const double DOUBLE_TOLERANCE = 50*std::numeric_limits<double>::epsilon(); // approx 10^-14
   template <typename T>
