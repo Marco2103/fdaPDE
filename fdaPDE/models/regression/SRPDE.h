@@ -34,6 +34,7 @@ namespace models{
     DVector<double> b_{}; // right hand side of problem's linear system (1 x 2N vector)
 
     std::string invA_solver_ = "LU"; // M 
+    std::string LinearSystemType_ = "Woodbury";  // M 
 
   public:
     IMPORT_REGRESSION_SYMBOLS;
@@ -60,6 +61,7 @@ namespace models{
 
     // setters 
     void setInvASolver(std::string solver) { invA_solver_ = solver; }  // M 
+    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
     
     virtual ~SRPDE() = default;
   };

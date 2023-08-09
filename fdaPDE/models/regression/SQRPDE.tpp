@@ -18,13 +18,13 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
     invXtWX_ = XtWX_.partialPivLu();
   }
   
-  // A_ =    fpirls.solver().A(); 
+  A_ =    fpirls.solver().A(); 
   if(invA_solver_ == "LU")
     invA_ = fpirls.solver().invA();
   else{
     invA_Chol_ = fpirls.solver().invA_Chol();
-    if(invA_Chol_.info() == Eigen::NumericalIssue)
-      throw std::runtime_error("Possibly non positive definite matrix at FPIRLS convergence");
+    // if(invA_Chol_.info() == Eigen::NumericalIssue)
+    //   throw std::runtime_error("Possibly non positive definite matrix at FPIRLS convergence");
   }
     
   
@@ -47,41 +47,55 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 // Non-parametric and semi-parametric cases coincide here, since beta^(0) = 0
 template <typename PDE, typename SamplingDesign>
 DVector<double> 
-SQRPDE<PDE, SamplingDesign>::initialize_mu() const {
+SQRPDE<PDE, SamplingDesign>::initialize_mu() {
 
-  // assemble system matrix 
-  SparseBlockMatrix<double,2,2>
-    A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
-      lambdaS()*R1(),     -lambdaS()*R0()            );
+  if(LinearSystemType_ == "Woodbury"){
 
-  // cache non-parametric matrix and its factorization for reuse 
-  if(invA_solver_ == "LU"){ // LU factorization of A_temp 
-    fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
-    invA_temp.compute(A_temp);
-    DVector<double> b_temp; 
-    b_temp.resize(A_temp.rows());
-    b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
-    b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
-    BLOCK_FRAME_SANITY_CHECKS;
-    DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+    std::cout << "Initialize mu with block resolution" << std::endl; 
+    // assemble system matrix 
+    SparseBlockMatrix<double,2,2>
+      A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
+        lambdaS()*R1(),     -lambdaS()*R0()            );
+
+    // cache non-parametric matrix and its factorization for reuse 
+    if(invA_solver_ == "LU"){ // LU factorization of A_temp 
+      fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
+      invA_temp.compute(A_temp);
+      DVector<double> b_temp; 
+      b_temp.resize(A_temp.rows());
+      b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();   // M è sempre 0 ??? 
+      b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
+      BLOCK_FRAME_SANITY_CHECKS;
+      DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+      DVector<double> fn = Psi()*f;
+      return fn;
+    } else{  // Cholesky factorization of A_temp    //  M
+      CholFactorization invA_temp; 
+      invA_temp.compute(A_temp);
+      DVector<double> b_temp; 
+      b_temp.resize(A_temp.rows());
+      b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
+      b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
+      BLOCK_FRAME_SANITY_CHECKS;
+      DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+      DVector<double> fn = Psi()*f;
+      return fn;
+    }
+
+  } else{
+    std::cout << "Initialize mu with direct resolution using Cholesky" << std::endl;
+    SpMatrix<double> A_Cholesky = 1./n_obs()*PsiTD()*Psi() + 2*Base::pen(); 
+    CholFactorization invA_Cholesky;
+    invA_Cholesky.compute(A_Cholesky);  
+    DVector<double> rhs_Cholesky; 
+    rhs_Cholesky.resize(A_Cholesky.rows());
+    rhs_Cholesky = -1./n_obs()*PsiTD()*y();    // M if u = 0 (as assumed above)
+    DVector<double> f = invA_Cholesky.solve(rhs_Cholesky); 
     DVector<double> fn = Psi()*f;
-    return fn;
-  } else{  // Cholesky factorization of A_temp    //  M
-    CholFactorization invA_temp; 
-    invA_temp.compute(A_temp);
-    DVector<double> b_temp; 
-    b_temp.resize(A_temp.rows());
-    b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
-    b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
-    BLOCK_FRAME_SANITY_CHECKS;
-    DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-    DVector<double> fn = Psi()*f;
-    return fn;
+    return fn;    
   }
 
 }
-
-
 
 template <typename PDE, typename SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
@@ -97,7 +111,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
   for(int i = 0; i < y().size(); ++i) {
     if (abs_res(i) < tol_weights_){
-      pW_(i) = ( 1./(abs_res(i) + tol_weights_ ) )/(2.*n_obs());
+      pW_(i) = ( 1./(abs_res(i) + tol_weights_) )/(2.*n_obs());
 
     }    
     else

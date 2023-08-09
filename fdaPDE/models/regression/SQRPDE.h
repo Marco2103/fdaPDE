@@ -41,13 +41,14 @@ namespace models{
     double alpha_;                                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
-    // SpMatrix<double> A_{};                         // system matrix of non-parametric problem (2N x 2N matrix)
+    SpMatrix<double> A_{};                         // system matrix of non-parametric problem (2N x 2N matrix)
                                                       // non è usata da nessuna parte, va salvata comunque o la togliamo?
 
     fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
     typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization; 
     CholFactorization invA_Chol_;                     // M  Cholesky decomposition of A
     std::string invA_solver_ = "LU";                  // M
+    std::string LinearSystemType_ = "Woodbury";       // M
 
     // Commento questi membri così stiamo usando quelli di RegressionBase
     // DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence
@@ -82,6 +83,7 @@ namespace models{
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
     void setInvASolver(std::string solver) { invA_solver_ = solver; }  // M 
+    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
 
     // ModelBase implementation
     void init_model() { return; }
@@ -94,7 +96,7 @@ namespace models{
     // model_loss computes the unpenalized loss (it is called by FPIRLS)
     double model_loss(const DVector<double>& mu); // private or public?
 
-    DVector<double> initialize_mu() const ; 
+    DVector<double> initialize_mu(); 
 
     
     // iGCV interface implementation
@@ -117,7 +119,9 @@ namespace models{
     const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // necessario perchè 
     // altrimenti in GCV.h non posso fare model_.massLumping() 
     // no ref perchè è ritorno un temporary object
+    
     const std::string InvASolver() const { return invA_solver_; }  // M 
+    const std::string LinearSystemType() const { return LinearSystemType_; }  // M 
 
     // Debug
     const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 
@@ -127,6 +131,8 @@ namespace models{
       tol_ = tol_FPIRLS; 
     }
     const DiagMatrix<double> lumped_invR0() const { return lumped_invR0_; }
+    const DiagMatrix<double>& W() const { return W_; } 
+    const SpMatrix<double>& A() const { return A_; }
     
 
 

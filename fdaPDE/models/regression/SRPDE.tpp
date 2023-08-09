@@ -4,67 +4,136 @@
 // NB: a change in the smoothing parameter must trigger a re-initialization of the model
 template <typename PDE, typename SamplingDesign>
 void SRPDE<PDE, SamplingDesign>::init_model() {
-  // assemble system matrix for nonparameteric part
-  A_ = SparseBlockMatrix<double,2,2>
-    (-PsiTD()*W()*Psi(), lambdaS()*R1().transpose(),
-     lambdaS()*R1(),     lambdaS()*R0()            );
-  // cache non-parametric matrix factorization for reuse
-  if(invA_solver_ == "LU"){   // M 
-    std::cout << "LU factorization for invA" << std::endl; 
-    invA_.compute(A_);
-    // prepare rhs of linear system
-    b_.resize(A_.rows());
-    b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
-    return;
-  } else{
-    std::cout << "Cholesky factorization for invA" << std::endl;
-    invA_Chol_.compute(A_);
-    if(invA_Chol_.info() == Eigen::NumericalIssue)
-      throw std::runtime_error("Possibly non positive definite matrix in SRPDE");
-    // prepare rhs of linear system
-    b_.resize(A_.rows());
-    b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
-    return;
-  }
+  if(LinearSystemType_ == "Woodbury"){
+    // assemble system matrix for nonparameteric part
+    A_ = SparseBlockMatrix<double,2,2>
+      (-PsiTD()*W()*Psi(), lambdaS()*R1().transpose(),
+      lambdaS()*R1(),     lambdaS()*R0()            );
+    // cache non-parametric matrix factorization for reuse
+    if(invA_solver_ == "LU"){   // M 
+      //std::cout << "LU factorization for invA" << std::endl; 
+      invA_.compute(A_);
+      // prepare rhs of linear system
+      b_.resize(A_.rows());
+      b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
+      return;
+    } else{
+      //std::cout << "Cholesky factorization for invA" << std::endl;
+      invA_Chol_.compute(A_);
+      // if(invA_Chol_.info() == Eigen::NumericalIssue)
+      //   throw std::runtime_error("Possibly non positive definite matrix in SRPDE");
+      // prepare rhs of linear system
+      b_.resize(A_.rows());
+      b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
+      return;
+    }
+
+  } else return;
 
 }
   
 // finds a solution to the SR-PDE smoothing problem
 template <typename PDE, typename SamplingDesign>
 void SRPDE<PDE, SamplingDesign>::solve() {
-  BLOCK_FRAME_SANITY_CHECKS;
-  DVector<double> sol; // room for problem' solution
-  
-  if(!hasCovariates()){ // nonparametric case
-    // update rhs of SR-PDE linear system
-    b_.block(0,0, n_basis(),1) = -PsiTD()*W()*y();
-    // solve linear system A_*x = b_
 
-    if(invA_solver_ == "LU")
-      sol = invA_.solve(b_);
-    else 
-      sol = invA_Chol_.solve(b_);   // M 
-    f_ = sol.head(n_basis());
-  }else{ // parametric case
-    // update rhs of SR-PDE linear system
-    b_.block(0,0, n_basis(),1) = -PsiTD()*lmbQ(y()); // -\Psi^T*D*Q*z
-    
-    // definition of matrices U and V  for application of woodbury formula
-    U_ = DMatrix<double>::Zero(2*n_basis(), q());
-    U_.block(0,0, n_basis(), q()) = PsiTD()*W()*X();
-    V_ = DMatrix<double>::Zero(q(), 2*n_basis());
-    V_.block(0,0, q(), n_basis()) = X().transpose()*W()*Psi();
-    // solve system (A_ + U_*(X^T*W_*X)*V_)x = b using woodbury formula from NLA module
-    if(invA_solver_ == "LU")
-      sol = SMW<>().solve(invA_, U_, XtWX(), V_, b_);
-    else 
-      sol = SMW<CholFactorization>().solve(invA_Chol_, U_, XtWX(), V_, b_);  // M 
-    // store result of smoothing 
-    f_    = sol.head(n_basis());
-    beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
+  if(LinearSystemType_ == "Woodbury"){   // M: nonparametric: block resolution; semiparametric: SMW
+  BLOCK_FRAME_SANITY_CHECKS;
+  DVector<double> sol; // room for problem' solution 
+  if(!hasCovariates()){ // nonparametric case       
+      // update rhs of SR-PDE linear system
+      b_.block(0,0, n_basis(),1) = -PsiTD()*W()*y();
+      // solve linear system A_*x = b_
+      if(invA_solver_ == "LU")
+        sol = invA_.solve(b_);
+      else 
+        sol = invA_Chol_.solve(b_);   // M 
+      f_ = sol.head(n_basis());
+    }else{ // parametric case
+      // update rhs of SR-PDE linear system
+      b_.block(0,0, n_basis(),1) = -PsiTD()*lmbQ(y()); // -\Psi^T*D*Q*z
+      
+      // definition of matrices U and V  for application of woodbury formula
+      U_ = DMatrix<double>::Zero(2*n_basis(), q());
+      U_.block(0,0, n_basis(), q()) = PsiTD()*W()*X();
+      V_ = DMatrix<double>::Zero(q(), 2*n_basis());
+      V_.block(0,0, q(), n_basis()) = X().transpose()*W()*Psi();
+      // solve system (A_ + U_*(X^T*W_*X)*V_)x = b using woodbury formula from NLA module
+      if(invA_solver_ == "LU")
+        sol = SMW<>().solve(invA_, U_, XtWX(), V_, b_);
+      else 
+        sol = SMW<CholFactorization>().solve(invA_Chol_, U_, XtWX(), V_, b_);  // M 
+      // store result of smoothing 
+      f_    = sol.head(n_basis());
+      beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
+    }
+    // store PDE misfit
+    g_ = sol.tail(n_basis());
+  } 
+  else{  // M: direct resolution with Cholesky
+    if(!hasCovariates()){ // nonparametric case  
+      SpMatrix<double> A_Cholesky = PsiTD()*W()*Psi() + Base::pen(); 
+      CholFactorization invA_Cholesky;
+      invA_Cholesky.compute(A_Cholesky); 
+      DVector<double> rhs_Cholesky; 
+      rhs_Cholesky.resize(A_Cholesky.rows());
+
+      if(Base::pde_ -> massLumpingSystem()){
+        DVector<double> lumped_vector;
+        DiagMatrix<double> lumped_invR0;
+        lumped_vector.resize(n_basis()); 
+        for(std::size_t j = 0; j < n_basis(); ++j)  
+          lumped_vector[j] = 1 / R0().col(j).sum();  
+        lumped_invR0 = lumped_vector.asDiagonal();
+
+        rhs_Cholesky = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*W()*y(); 
+        f_ = invA_Cholesky.solve(rhs_Cholesky); 
+        g_ = lumped_invR0*(R1()*f_ - u()); 
+      } else{
+        fdaPDE::SparseLU<SpMatrix<double>> invR0;
+        invR0.compute(Base::pde_->R0());
+
+        rhs_Cholesky = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*W()*y(); 
+        f_ = invA_Cholesky.solve(rhs_Cholesky);  
+        g_ = invR0.solve(R1()*f_- u()); 
+      }   
+      
+    } else{ // parametric case  (same as semiparametric but with Q in place of W (see Sangalli ISR pag. 515))
+
+      SpMatrix<double> A_Cholesky = PsiTD()*Base::lmbQ(Psi()) + Base::pen(); 
+      CholFactorization invA_Cholesky;
+      invA_Cholesky.compute(A_Cholesky);
+      DVector<double> rhs_Cholesky; 
+      rhs_Cholesky.resize(A_Cholesky.rows());
+
+      if(Base::pde_ -> massLumpingSystem()){
+        DVector<double> lumped_vector;
+        DiagMatrix<double> lumped_invR0;
+        lumped_vector.resize(n_basis()); 
+        for(std::size_t j = 0; j < n_basis(); ++j)  
+          lumped_vector[j] = 1 / R0().col(j).sum();  
+        lumped_invR0 = lumped_vector.asDiagonal();
+
+        rhs_Cholesky = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*Base::lmbQ(y()); 
+        f_ = invA_Cholesky.solve(rhs_Cholesky);
+        beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_); 
+        g_ = lumped_invR0*(R1()*f_ - u()); 
+        
+      } else{
+        fdaPDE::SparseLU<SpMatrix<double>> invR0;
+        invR0.compute(Base::pde_->R0());
+
+        rhs_Cholesky = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*Base::lmbQ(y());
+        f_ = invA_Cholesky.solve(rhs_Cholesky); 
+        beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
+        g_ = invR0.solve(R1()*f_ - u());
+      }
+
+
+
+ 
+    }
   }
-  // store PDE misfit
-  g_ = sol.tail(n_basis());
+
 
   return;
 }

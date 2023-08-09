@@ -98,8 +98,8 @@ namespace models{
       double J_old = tolerance_+1; double J_new = 0;
 
       // start loop
-      while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){
-        std::cout << "FPIRLS iteration number " << k_ << std::endl; 
+      while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){ 
+        std::cout << "FPIRLS iteration: " << k_ + 1 << std::endl;  
       //   while(k_ < max_iter_ && std::abs(J_new - 0.04472646666589305) > 1e-3){  --> to check a specific value of J 
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
@@ -111,7 +111,8 @@ namespace models{
 
 	// update solver to change in the weight matrix
 	solver_.init_data();
-  solver_.setInvASolver(m_.InvASolver());   // M to have correspondence between model and solver for the inversion of A 
+  solver_.setInvASolver(m_.InvASolver());   // M to have correspondence between model and solver 
+  solver_.setLinearSystemType(m_.LinearSystemType());   // M to have correspondence between model and solver 
 	solver_.init_model(); 
 	solver_.solve();
 	
@@ -125,7 +126,7 @@ namespace models{
 
 	mu_ = distribution_.inv_link(fitted);
 
-	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2 
+	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
   double J = m_.model_loss(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // aggiunto il lambda
   
 

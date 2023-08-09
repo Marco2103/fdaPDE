@@ -1210,7 +1210,7 @@ TEST(GCV_SQRPDE, Test13_Laplacian_SemiParametric_GeostatLocations_GridExact) {
   DMatrix<double> y; 
 
   std::string lin_sys_solver = "Cholesky";  // Cholesky  Woodbury
-  unsigned int launch_sim = 1;
+  unsigned int launch_sim = 2;
 
   for(int nsim = launch_sim; nsim <= launch_sim; ++nsim){
 

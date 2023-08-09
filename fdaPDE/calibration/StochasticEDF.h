@@ -102,7 +102,7 @@ namespace calibration{
           invR0_temp_.compute(model_.R0());
 
           Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
-          lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen()); 
+          lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen() ); 
           sol = lltOfA.solve(- Bs_.topRows(n)); 
 
           // block implementation: 
