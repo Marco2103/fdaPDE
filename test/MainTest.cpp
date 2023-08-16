@@ -19,14 +19,14 @@
 // #include "core/BilinearFormsTest.cpp"
 // #include "core/PDESolutionsTest.cpp"
 // // space-time test suites
-// #include "core/SplineTest.cpp"
-// #include "models/SpaceTimeTest.cpp"
+//#include "core/SplineTest.cpp"
+//#include "models/SpaceTimeTest.cpp"
 // regression module test suites
 //#include "models/SRPDETest.cpp"
-// #include "models/STRPDETest.cpp"
-// #include "models/GSRPDETest.cpp"
+//#include "models/STRPDETest.cpp"
+//#include "models/GSRPDETest.cpp"
 //#include "models/SQRPDETest.cpp"
-// #include "models/FPCATest.cpp"
+//#include "models/FPCATest.cpp"
 // GCV test suites
 #include "calibration/GCVTest.cpp"
 // #include "calibration/GCVNewtonTest.cpp"

@@ -40,166 +40,182 @@ using namespace std::chrono;
 
  */
 
-// TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
+TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 
-//   // Parameters 
-//   const std::string TestNumber = "1"; 
-//   double alpha = 0.5; 
-//   unsigned int alpha_int = alpha*100; 
-//   const std::string alpha_string = std::to_string(alpha_int); 
-//   std::string data_macro_strategy_type = "matern_data"; 
-//   std::string data_strategy_type = "F"; 
+  // Parameters 
+  const std::string TestNumber = "1"; 
+  double alpha = 0.5; 
+  unsigned int alpha_int = alpha*100; 
+  const std::string alpha_string = std::to_string(alpha_int); 
+  std::string data_macro_strategy_type = "matern_data"; 
+  std::string data_strategy_type = "F"; 
 
-//   // Marco
-//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+  // Marco
+  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-//   // Ilenia 
-//   // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+  // Ilenia 
+  // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
   
-//   double tol_weights = 0.000001; 
-//   double tol_FPIRLS = 0.000001;
+  double tol_weights = 0.000001; 
+  double tol_FPIRLS = 0.000001;
 
-//   unsigned int M = 1;   // number of simulations
-//   bool massLumping_system = false;
-//   bool massLumping_GCV = false; 
-//   std::string mass_type; 
-//   if(!massLumping_system & !massLumping_GCV)
-//     mass_type = "FF";
-//   if(!massLumping_system & massLumping_GCV)
-//     mass_type = "FT"; 
-//   if(massLumping_system & massLumping_GCV)
-//     mass_type = "TT";
+  // unsigned int M = 1;   // number of simulations
 
-//   std::string linear_system_type = "Woodbury"; 
+  std::string linear_system_type = "Woodbury"; 
 
-//   // define domain and regularizing PDE
-//   MeshLoader<Mesh2D<>> domain("unit_square");
-//   auto L = Laplacian();
-//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-//   PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
+  // define domain and regularizing PDE
+  MeshLoader<Mesh2D<>> domain("unit_square");
+  auto L = Laplacian();
+  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 
-//   SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
+  bool massLumping_system = false;
+  bool massLumping_GCV = true; 
+  std::string mass_type; 
+  if(!massLumping_system & !massLumping_GCV)
+    mass_type = "FF";
+  if(!massLumping_system & massLumping_GCV)
+    mass_type = "FT"; 
+  if(massLumping_system & massLumping_GCV)
+    mass_type = "TT";
 
-//   for(unsigned int m = 1; m <= M; ++m){
+  PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
 
-//     std::cout << "Simulation " << m << std::endl; 
-
-//     std::string path_solutions = R_path + "/R/Our/data/Test_" + 
-//                     TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + 
-//                     data_strategy_type + "/inversion_A/sim_" + std::to_string(m);
-
-//     // load data from .csv files
-//     CSVReader<double> reader{};
-//     CSVFile<double> yFile; // observation file
-//     yFile = reader.parseFile(path_solutions + "/z.csv");             
-//     DMatrix<double> y = yFile.toEigen();
+  SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
 
 
-//     // set model data
-//     BlockFrame<double, int> df;
-//     df.insert(OBSERVATIONS_BLK,  y);
-//     model.setData(df);
+  unsigned int launch_sim = 11; 
 
-//     CSVFile<double> lambdaCSV; 
+  for(unsigned int m = launch_sim; m <= launch_sim; ++m){
 
-//     // Use optimal lambda to avoid possible numerical issues
+    std::string path_solutions = R_path + "/R/Our/data/Test_" + 
+                    TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + 
+                    data_strategy_type + "/lump" + mass_type + 
+                    "/our/tol_weights_1e-06/tol_FPIRLS_1e-06/LU/sim_" + std::to_string(m);   
 
-//     double lambda;               // read from C++
+    std::cout <<  path_solutions   << std::endl;                         
 
-//     // read from C++
-//     std::ifstream fileLambda(path_solutions + "/LambdaCpp.csv");
-//     if (fileLambda.is_open()){
-//       fileLambda >> lambda; 
-//       fileLambda.close();
-//     }
+    // load data from .csv files
+    CSVReader<double> reader{};
+    CSVFile<double> yFile; // observation file
+    yFile = reader.parseFile(path_solutions + "/z.csv");             
+    DMatrix<double> y = yFile.toEigen();
+
+
+    // set model data
+    BlockFrame<double, int> df;
+    df.insert(OBSERVATIONS_BLK,  y);
+    model.setData(df);
+
+    CSVFile<double> lambdaCSV; 
+
+    // Use optimal lambda to avoid possible numerical issues
+
+    double lambda;               // read from C++
+
+    // read from C++
+    std::ifstream fileLambda(path_solutions + "/LambdaCpp.csv");
+    if (fileLambda.is_open()){
+      fileLambda >> lambda; 
+      fileLambda.close();
+    }
   
-//     model.setLambdaS(lambda);    // read from C++
+    model.setLambdaS(lambda);    // read from C++
     
-//     // Set
-//     model.setMassLumpingGCV(massLumping_GCV); 
-//     model.setLinearSystemType(linear_system_type); 
-//     model.setTolerances(tol_weights, tol_FPIRLS);
+    // Set
+    model.setMassLumpingGCV(massLumping_GCV); 
+    model.setLinearSystemType(linear_system_type); 
+    model.setTolerances(tol_weights, tol_FPIRLS);
 
-//     // solve smoothing problem
-//     model.init();     
-//     model.solve();
+    // solve smoothing problem
+    auto t0 = high_resolution_clock::now();
+    model.init();     
+    model.solve();
+    auto t1 = high_resolution_clock::now();
+    std::chrono::duration<double> delta_time = t1 - t0;
 
-//     // Save C++ solution 
-//     DMatrix<double> computedF = model.f();
-//     const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     std::ofstream filef(path_solutions + "/fCpp.csv");
-//     if (filef.is_open()){
-//       filef << computedF.format(CSVFormatf);
-//       filef.close();
-//     }
+    // // Save C++ solution 
+    // DMatrix<double> computedF = model.f();
+    // const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream filef(path_solutions + "/fCpp.csv");
+    // if (filef.is_open()){
+    //   filef << computedF.format(CSVFormatf);
+    //   filef.close();
+    // }
 
-//     DMatrix<double> computedFn = model.Psi()*model.f();
-//     const static Eigen::IOFormat CSVFormatfn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     std::ofstream filefn(path_solutions + "/fnCpp.csv");
-//     if (filefn.is_open()){
-//       filefn << computedFn.format(CSVFormatfn);
-//       filefn.close();
-//     }
+    // DMatrix<double> computedFn = model.Psi()*model.f();
+    // const static Eigen::IOFormat CSVFormatfn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream filefn(path_solutions + "/fnCpp.csv");
+    // if (filefn.is_open()){
+    //   filefn << computedFn.format(CSVFormatfn);
+    //   filefn.close();
+    // }
 
-//     double J = model.J_final_sqrpde();
-//     std::ofstream fileJ(path_solutions + "/JCpp.csv");
-//     if (fileJ.is_open()){
-//       fileJ << J;
-//       fileJ.close();
-//     }
+    // double J = model.J_final_sqrpde();
+    // std::ofstream fileJ(path_solutions + "/JCpp.csv");
+    // if (fileJ.is_open()){
+    //   fileJ << J;
+    //   fileJ.close();
+    // }
 
-//     std::size_t niter = model.niter_sqrpde();
-//     std::ofstream filen(path_solutions + "/niterCpp.csv");
-//     if (filen.is_open()){
-//       filen << niter;
-//       filen.close();
-//     }
+    // std::size_t niter = model.niter_sqrpde();
+    // std::ofstream filen(path_solutions + "/niterCpp.csv");
+    // if (filen.is_open()){
+    //   filen << niter;
+    //   filen.close();
+    // }
+
+    // Duration 
+    std::ofstream myfileTime(path_solutions + "/Time_Cpp.csv");
+    if (myfileTime.is_open()){
+      myfileTime << std::setprecision(16) << delta_time.count() << "\n";
+      myfileTime.close();
+    }
 
 
-//     // // Degub 
+    // // Degub 
 
-//     // DMatrix<double> computedA = model.A(); 
-//     // DMatrix<double> computedR0 = model.R0();
-//     // DMatrix<double> computedR1 = model.R1();
-//     // DMatrix<double> computedW = model.W();
-//     // DMatrix<double> computedPsi = model.Psi(); 
+    // DMatrix<double> computedA = model.A(); 
+    // DMatrix<double> computedR0 = model.R0();
+    // DMatrix<double> computedR1 = model.R1();
+    // DMatrix<double> computedW = model.W();
+    // DMatrix<double> computedPsi = model.Psi(); 
 
-//     // const static Eigen::IOFormat CSVFormatA(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     // std::ofstream fileA(path_solutions + "/A_Cpp.csv");
-//     // if (fileA.is_open()){
-//     //   fileA << computedA.format(CSVFormatA);
-//     //   fileA.close();
-//     // } 
-//     // const static Eigen::IOFormat CSVFormatR0(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     // std::ofstream fileR0(path_solutions + "/R0_Cpp.csv");
-//     // if (fileR0.is_open()){
-//     //   fileR0 << computedR0.format(CSVFormatR0);
-//     //   fileR0.close();
-//     // } 
-//     // const static Eigen::IOFormat CSVFormatR1(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     // std::ofstream fileR1(path_solutions + "/R1_Cpp.csv");
-//     // if (fileR1.is_open()){
-//     //   fileR1 << computedR1.format(CSVFormatR1);
-//     //   fileR1.close();
-//     // } 
-//     // const static Eigen::IOFormat CSVFormatW(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     // std::ofstream fileW(path_solutions + "/W_Cpp.csv");
-//     // if (fileW.is_open()){
-//     //   fileW << computedW.format(CSVFormatW);
-//     //   fileW.close();
-//     // } 
-//     // const static Eigen::IOFormat CSVFormatPsi(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     // std::ofstream filePsi(path_solutions + "/Psi_Cpp.csv");
-//     // if (filePsi.is_open()){
-//     //   filePsi << computedA.format(CSVFormatPsi);
-//     //   filePsi.close();
-//     // } 
+    // const static Eigen::IOFormat CSVFormatA(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream fileA(path_solutions + "/A_Cpp.csv");
+    // if (fileA.is_open()){
+    //   fileA << computedA.format(CSVFormatA);
+    //   fileA.close();
+    // } 
+    // const static Eigen::IOFormat CSVFormatR0(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream fileR0(path_solutions + "/R0_Cpp.csv");
+    // if (fileR0.is_open()){
+    //   fileR0 << computedR0.format(CSVFormatR0);
+    //   fileR0.close();
+    // } 
+    // const static Eigen::IOFormat CSVFormatR1(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream fileR1(path_solutions + "/R1_Cpp.csv");
+    // if (fileR1.is_open()){
+    //   fileR1 << computedR1.format(CSVFormatR1);
+    //   fileR1.close();
+    // } 
+    // const static Eigen::IOFormat CSVFormatW(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream fileW(path_solutions + "/W_Cpp.csv");
+    // if (fileW.is_open()){
+    //   fileW << computedW.format(CSVFormatW);
+    //   fileW.close();
+    // } 
+    // const static Eigen::IOFormat CSVFormatPsi(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream filePsi(path_solutions + "/Psi_Cpp.csv");
+    // if (filePsi.is_open()){
+    //   filePsi << computedA.format(CSVFormatPsi);
+    //   filePsi.close();
+    // } 
     
     
 
-//   }
+  }
 
-// }
+}
 
 
 /* test 2
@@ -579,171 +595,175 @@ using namespace std::chrono;
 
  */
 
-TEST(SQRPDE, Test5_Laplacian_SemiParametric_GeostatisticalAtLocations) {
+// TEST(SQRPDE, Test5_Laplacian_SemiParametric_GeostatisticalAtLocations) {
 
-  double alpha = 0.5; 
-  unsigned int alpha_int = alpha*100; 
-  const std::string alpha_string = std::to_string(alpha_int);
-  const std::string TestNumber = "5"; 
+//   double alpha = 0.5; 
+//   unsigned int alpha_int = alpha*100; 
+//   const std::string alpha_string = std::to_string(alpha_int);
+//   const std::string TestNumber = "5"; 
 
-  // load data from .csv files
-  CSVReader<double> reader{};
-  CSVFile<double> yFile; // observation file
-  CSVFile<double> XFile; // covariates file
-  CSVFile<double> locFile; // locations file
+//   // load data from .csv files
+//   CSVReader<double> reader{};
+//   CSVFile<double> yFile; // observation file
+//   CSVFile<double> XFile; // covariates file
+//   CSVFile<double> locFile; // locations file
 
-  std::string data_macro_strategy_type = "skewed_data"; 
-  std::string data_strategy_type = "E"; 
+//   std::string data_macro_strategy_type = "skewed_data"; 
+//   std::string data_strategy_type = "E"; 
 
-  // Marco
-  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+//   // Marco
+//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-  // Ilenia 
-  // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+//   // Ilenia 
+//   // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
   
-  double tol_weights = 0.000001; 
-  double tol_FPIRLS = 0.000001;      
-  std::string GCV_type = "Exact";  
+//   double tol_weights = 0.000001; 
+//   double tol_FPIRLS = 0.000001;      
+//   std::string GCV_type = "Exact";  
 
-  std::string lin_sys_solver = "Woodbury";   // Woodbury Cholesky
-  //std::string GCV_lin_sys_solver = "Woodbury";      // to be chosen only when GCV_type = "Stochastic"
+//   std::string lin_sys_solver = "Woodbury";   // Woodbury Cholesky
+//   std::string GCV_lin_sys_solver = "Cholesky";      // to be chosen only when GCV_type = "Stochastic"
 
-  CSVFile<double> lambdaCSV; 
-  double lambda;                        // to read from Cpp
+//   CSVFile<double> lambdaCSV; 
+//   double lambda;                        // to read from Cpp
 
-  DMatrix<double> loc; 
-  DMatrix<double> X; 
-  DMatrix<double> y; 
+//   DMatrix<double> loc; 
+//   DMatrix<double> X; 
+//   DMatrix<double> y; 
 
-  bool massLumping_system = false;
-  bool massLumping_GCV = false; 
-  std::string mass_type; 
-  if(!massLumping_system & !massLumping_GCV)
-    mass_type = "FF";
-  if(!massLumping_system & massLumping_GCV)
-    mass_type = "FT"; 
-  if(massLumping_system & massLumping_GCV)
-    mass_type = "TT";
+//   bool massLumping_system = false;
+//   bool massLumping_GCV = false; 
+//   std::string mass_type; 
+//   if(!massLumping_system & !massLumping_GCV)
+//     mass_type = "FF";
+//   if(!massLumping_system & massLumping_GCV)
+//     mass_type = "FT"; 
+//   if(massLumping_system & massLumping_GCV)
+//     mass_type = "TT";
 
-  unsigned int launch_sim = 1; 
+//   unsigned int launch_sim = 5; 
 
-  for(int nsim = launch_sim; nsim <= launch_sim; ++nsim){
+//   for(int nsim = launch_sim; nsim <= launch_sim; ++nsim){
 
-      auto t0 = high_resolution_clock::now();
+//       auto t0 = high_resolution_clock::now();
       
-      // define domain and regularizing PDE
-      MeshLoader<Mesh2D<>> domain("unit_square_71");  
-      auto L = Laplacian();
-      DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-      PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
-      SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
+//       // define domain and regularizing PDE
+//       MeshLoader<Mesh2D<>> domain("unit_square_71");  
+//       auto L = Laplacian();
+//       DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//       PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
+//       SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
 
-      auto t1 = high_resolution_clock::now();
-      std::chrono::duration<double> delta_model = t1 - t0;
-
-
-      // Read data
-
-      std::string path_solutions = R_path + "/R/Our/data/Test_" + 
-          TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-          "/for_slides_lumping&solvers/" + "system_solver_" + lin_sys_solver + 
-          "/sim_" + std::to_string(nsim); 
-
-      std::string path_GCV = path_solutions + "/GCV/" + GCV_type; 
-
-      yFile = reader.parseFile(path_solutions + "/z.csv");             
-      y = yFile.toEigen();
-
-      XFile = reader.parseFile(path_solutions + "/X.csv");             
-      X = XFile.toEigen();
-
-      locFile = reader.parseFile(path_solutions + "/locs.csv");
-      loc = locFile.toEigen();
-      model.set_spatial_locations(loc);
+//       auto t1 = high_resolution_clock::now();
+//       std::chrono::duration<double> delta_model = t1 - t0;
 
 
-      //Use optimal lambda to avoid possible numerical issues
-      //Read from Cpp
+//       // Read data
+
+//       std::string path_solutions = R_path + "/R/Our/data/Test_" + 
+//           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+//           "/for_slides_lumping&solvers/" + "system_solver_" + lin_sys_solver + 
+//           "/sim_" + std::to_string(nsim); 
+
+//       std::string path_GCV = path_solutions + "/GCV/" + GCV_type; 
+
+//       yFile = reader.parseFile(path_solutions + "/z.csv");             
+//       y = yFile.toEigen();
+
+//       XFile = reader.parseFile(path_solutions + "/X.csv");             
+//       X = XFile.toEigen();
+
+//       locFile = reader.parseFile(path_solutions + "/locs.csv");
+//       loc = locFile.toEigen();
+//       model.set_spatial_locations(loc);
+
+
+//       //Use optimal lambda to avoid possible numerical issues
+//       //Read from Cpp
       
-      
-      if(GCV_type == "Stochastic")
-        std::ifstream fileLambda(path_solutions + "/LambdaCpp_" + GCV_lin_sys_solver + ".csv");
-      if(GCV_type == "Exact")
-        std::ifstream fileLambda(path_solutions + "/LambdaCpp.csv");
-      if(fileLambda.is_open()){
-        fileLambda >> lambda; 
-        fileLambda.close();
-      }
-      // // lambda = 0.000398107170553497;  // read from \system_solver_Woodbury
+//       if(GCV_type == "Stochastic"){
+//         std::ifstream fileLambda(path_solutions + "/LambdaCpp_" + GCV_lin_sys_solver + ".csv");
+//         if(fileLambda.is_open()){
+//           fileLambda >> lambda; 
+//           fileLambda.close();
+//         }
+//       }       
+//       if(GCV_type == "Exact"){
+//         std::ifstream fileLambda(path_solutions + "/LambdaCpp.csv");
+//         if(fileLambda.is_open()){
+//           fileLambda >> lambda; 
+//           fileLambda.close();
+//         }
+//       }
 
-      auto t2 = high_resolution_clock::now();
+//       auto t2 = high_resolution_clock::now();
 
-      // set model data, locations, lambdas and tolerances  
-      model.set_spatial_locations(loc);
-      BlockFrame<double, int> df;
-      df.insert(OBSERVATIONS_BLK, y);
-      df.insert(DESIGN_MATRIX_BLK, X);
-      model.setData(df);
+//       // set model data, locations, lambdas and tolerances  
+//       model.set_spatial_locations(loc);
+//       BlockFrame<double, int> df;
+//       df.insert(OBSERVATIONS_BLK, y);
+//       df.insert(DESIGN_MATRIX_BLK, X);
+//       model.setData(df);
 
-      model.setLambdaS(lambda);         // to read from Cpp
-      model.setTolerances(tol_weights, tol_FPIRLS); 
-      model.setMassLumpingGCV(massLumping_GCV); 
-      model.setLinearSystemType(lin_sys_solver); 
+//       model.setLambdaS(lambda);         // to read from Cpp
+//       model.setTolerances(tol_weights, tol_FPIRLS); 
+//       model.setMassLumpingGCV(massLumping_GCV); 
+//       model.setLinearSystemType(lin_sys_solver); 
 
 
-      // Solve smoothing problem
-      model.init();     
-      model.solve();
-      auto t3 = high_resolution_clock::now();
-      std::chrono::duration<double> delta_fit = t3 - t2;
+//       // Solve smoothing problem
+//       model.init();     
+//       model.solve();
+//       auto t3 = high_resolution_clock::now();
+//       std::chrono::duration<double> delta_fit = t3 - t2;
 
-      std::cout << "Duration: "  << delta_model.count() + delta_fit.count() << "seconds" << std::endl;
+//       std::cout << "Duration: "  << delta_model.count() + delta_fit.count() << "seconds" << std::endl;
 
-      std::ofstream myfile(path_solutions +  "/Time_Cpp.csv");
-      myfile << std::setprecision(16) << delta_model.count() + delta_fit.count() << "\n";
+//       std::ofstream myfile(path_solutions +  "/Time_Cpp.csv");
+//       myfile << std::setprecision(16) << delta_model.count() + delta_fit.count() << "\n";
 
-      // Save C++ solution 
-      DMatrix<double> computedF = model.f();
-      const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-      std::ofstream filef(path_solutions + "/fCpp.csv");
-      if (filef.is_open()){
-        filef << computedF.format(CSVFormatf);
-        filef.close();
-      }
+//       // Save C++ solution 
+//       DMatrix<double> computedF = model.f();
+//       const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//       std::ofstream filef(path_solutions + "/fCpp.csv");
+//       if (filef.is_open()){
+//         filef << computedF.format(CSVFormatf);
+//         filef.close();
+//       }
 
-      DMatrix<double> computedFn = model.Psi()*model.f();
-      const static Eigen::IOFormat CSVFormatfn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-      std::ofstream filefn(path_solutions + "/fnCpp.csv");
-      if (filefn.is_open()){
-        filefn << computedFn.format(CSVFormatfn);
-        filefn.close();
-      }
+//       DMatrix<double> computedFn = model.Psi()*model.f();
+//       const static Eigen::IOFormat CSVFormatfn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//       std::ofstream filefn(path_solutions + "/fnCpp.csv");
+//       if (filefn.is_open()){
+//         filefn << computedFn.format(CSVFormatfn);
+//         filefn.close();
+//       }
 
-      DVector<double> computedBeta = model.beta();
-      const static Eigen::IOFormat CSVFormat_beta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-      std::ofstream file_beta(path_solutions + "/betaCpp.csv");
-      if (file_beta.is_open()){
-        file_beta << computedBeta.format(CSVFormat_beta);
-        file_beta.close();
-      }
+//       DVector<double> computedBeta = model.beta();
+//       const static Eigen::IOFormat CSVFormat_beta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//       std::ofstream file_beta(path_solutions + "/betaCpp.csv");
+//       if (file_beta.is_open()){
+//         file_beta << computedBeta.format(CSVFormat_beta);
+//         file_beta.close();
+//       }
 
-      double J = model.J_final_sqrpde();
-      std::ofstream fileJ(path_solutions + "/JCpp.csv");
-      if (fileJ.is_open()){
-        fileJ << J;
-        fileJ.close();
-      }
+//       double J = model.J_final_sqrpde();
+//       std::ofstream fileJ(path_solutions + "/JCpp.csv");
+//       if (fileJ.is_open()){
+//         fileJ << J;
+//         fileJ.close();
+//       }
 
-      std::size_t niter = model.niter_sqrpde();
-      std::ofstream filen(path_solutions + "/niterCpp.csv");
-      if (filen.is_open()){
-        filen << niter;
-        filen.close();
-      }
+//       std::size_t niter = model.niter_sqrpde();
+//       std::ofstream filen(path_solutions + "/niterCpp.csv");
+//       if (filen.is_open()){
+//         filen << niter;
+//         filen.close();
+//       }
 
-  }
+//   }
   
-}
+// }
 
 
 /* test 6
