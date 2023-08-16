@@ -19,15 +19,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   }
   
   A_ =    fpirls.solver().A(); 
-  if(invA_solver_ == "LU")
-    invA_ = fpirls.solver().invA();
-  else{
-    invA_Chol_ = fpirls.solver().invA_Chol();
-    // if(invA_Chol_.info() == Eigen::NumericalIssue)
-    //   throw std::runtime_error("Possibly non positive definite matrix at FPIRLS convergence");
-  }
-    
-  
+  invA_ = fpirls.solver().invA();
+
   if(hasCovariates()) {
     U_ = fpirls.solver().U(); 
     V_ = fpirls.solver().V(); 
@@ -58,29 +51,17 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() {
         lambdaS()*R1(),     -lambdaS()*R0()            );
 
     // cache non-parametric matrix and its factorization for reuse 
-    if(invA_solver_ == "LU"){ // LU factorization of A_temp 
-      fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
-      invA_temp.compute(A_temp);
-      DVector<double> b_temp; 
-      b_temp.resize(A_temp.rows());
-      b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();   // M è sempre 0 ??? 
-      b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
-      BLOCK_FRAME_SANITY_CHECKS;
-      DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-      DVector<double> fn = Psi()*f;
-      return fn;
-    } else{  // Cholesky factorization of A_temp    //  M
-      CholFactorization invA_temp; 
-      invA_temp.compute(A_temp);
-      DVector<double> b_temp; 
-      b_temp.resize(A_temp.rows());
-      b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();
-      b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
-      BLOCK_FRAME_SANITY_CHECKS;
-      DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-      DVector<double> fn = Psi()*f;
-      return fn;
-    }
+    fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
+    invA_temp.compute(A_temp);
+    DVector<double> b_temp; 
+    b_temp.resize(A_temp.rows());
+    b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();   // M è sempre 0 ??? 
+    b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
+    BLOCK_FRAME_SANITY_CHECKS;
+    DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+    DVector<double> fn = Psi()*f;
+    return fn;
+  
 
   } else{
     std::cout << "Initialize mu with direct resolution using Cholesky" << std::endl;

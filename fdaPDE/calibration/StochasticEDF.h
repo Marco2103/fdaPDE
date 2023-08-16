@@ -7,7 +7,7 @@
 using fdaPDE::core::NLA::SMW;
 #include "../models/regression/RegressionBase.h"
 using fdaPDE::models::is_regression_model;
-#include <Eigen/Cholesky>   // aggiunto 
+#include <Eigen/Cholesky>   // M aggiunto 
 
 
 namespace fdaPDE {
@@ -33,7 +33,7 @@ namespace calibration{
 
     bool init_ = false;
 
-    StochasticEDFMethod method_ ; 
+    StochasticEDFMethod method_; 
 
   public:
     // constructor
@@ -87,32 +87,36 @@ namespace calibration{
       if(!model_.hasCovariates()){ // nonparametric case
         sol = model_.invA().solve(Bs_);
       }else{
+        // if(model_.Psi().cols() > 5000){
         if(method_ == StochasticEDFMethod::WoodburyGCV){
-          std::cout << "Woodbury GCV " << std::endl; 
+          std::cout << "Inizio Woodbury GCV " << std::endl; 
           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
-          sol = SMW<>().solve(model_.invA(), model_.U(), model_.XtWX(), model_.V(), Bs_);
+          std::cout << "Inizio  getter inv A" << std::endl; 
+          auto invAgcv = model_.invA(); 
+          std::cout << "Inizio getter U" << std::endl;
+          auto Ugcv = model_.U(); 
+          std::cout << "Inizio  getter XtWX" << std::endl;
+          auto XtWXgcv = model_.XtWX(); 
+          std::cout << "Inizio  getter V" << std::endl;
+          auto Vgcv = model_.V(); 
+          std::cout << "Fine  getter V" << std::endl;
+          sol = SMW<>().solve(invAgcv, Ugcv, XtWXgcv, Vgcv, Bs_);
+          std::cout << "Fine Woodbury GCV " << std::endl; 
         }
+        // else{
         if(method_ == StochasticEDFMethod::CholeskyGCV){   // Cholesky
-          std::cout << "Cholesky GCV " << std::endl; 
+          std::cout << "Inizio Cholesky GCV " << std::endl; 
           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
 
-          // direct implementation: 
           // Compute R
           fdaPDE::SparseLU<SpMatrix<double>> invR0_temp_{};
           invR0_temp_.compute(model_.R0());
 
           Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
-          lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen() ); 
+          // lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen() ); 
+          lltOfA.compute( model_.T() );
           sol = lltOfA.solve(- Bs_.topRows(n)); 
-
-          // block implementation: 
-          // SparseBlockMatrix<double,2,2>
-          // A(model_.PsiTD()*model_.W()*model_.Psi(), model_.lambdaS()*model_.R1().transpose(),
-          //   model_.lambdaS()*model_.R1(),     -model_.lambdaS()*model_.R0()            );
-          // // cache non-parametric matrix and its factorization for reuse
-          // A_Chol = A.derived();
-          // invA_.compute(A_);
-          
+          std::cout << "Fine Cholesky GCV " << std::endl;   
         }
         
       }

@@ -34,7 +34,6 @@ template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 DVector<double>
 GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::initialize_mu() const {
-  
   return y();
 }
 

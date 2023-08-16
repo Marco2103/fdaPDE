@@ -10,23 +10,12 @@ void SRPDE<PDE, SamplingDesign>::init_model() {
       (-PsiTD()*W()*Psi(), lambdaS()*R1().transpose(),
       lambdaS()*R1(),     lambdaS()*R0()            );
     // cache non-parametric matrix factorization for reuse
-    if(invA_solver_ == "LU"){   // M 
-      //std::cout << "LU factorization for invA" << std::endl; 
-      invA_.compute(A_);
-      // prepare rhs of linear system
-      b_.resize(A_.rows());
-      b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
-      return;
-    } else{
-      //std::cout << "Cholesky factorization for invA" << std::endl;
-      invA_Chol_.compute(A_);
-      // if(invA_Chol_.info() == Eigen::NumericalIssue)
-      //   throw std::runtime_error("Possibly non positive definite matrix in SRPDE");
-      // prepare rhs of linear system
-      b_.resize(A_.rows());
-      b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
-      return;
-    }
+    //std::cout << "LU factorization for invA" << std::endl; 
+    invA_.compute(A_);
+    // prepare rhs of linear system
+    b_.resize(A_.rows());
+    b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
+    return;
 
   } else return;
 
@@ -43,10 +32,7 @@ void SRPDE<PDE, SamplingDesign>::solve() {
       // update rhs of SR-PDE linear system
       b_.block(0,0, n_basis(),1) = -PsiTD()*W()*y();
       // solve linear system A_*x = b_
-      if(invA_solver_ == "LU")
-        sol = invA_.solve(b_);
-      else 
-        sol = invA_Chol_.solve(b_);   // M 
+      sol = invA_.solve(b_);
       f_ = sol.head(n_basis());
     }else{ // parametric case
       // update rhs of SR-PDE linear system
@@ -58,10 +44,7 @@ void SRPDE<PDE, SamplingDesign>::solve() {
       V_ = DMatrix<double>::Zero(q(), 2*n_basis());
       V_.block(0,0, q(), n_basis()) = X().transpose()*W()*Psi();
       // solve system (A_ + U_*(X^T*W_*X)*V_)x = b using woodbury formula from NLA module
-      if(invA_solver_ == "LU")
-        sol = SMW<>().solve(invA_, U_, XtWX(), V_, b_);
-      else 
-        sol = SMW<CholFactorization>().solve(invA_Chol_, U_, XtWX(), V_, b_);  // M 
+      sol = SMW<>().solve(invA_, U_, XtWX(), V_, b_); 
       // store result of smoothing 
       f_    = sol.head(n_basis());
       beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
@@ -74,8 +57,7 @@ void SRPDE<PDE, SamplingDesign>::solve() {
       SpMatrix<double> A_Cholesky = PsiTD()*W()*Psi() + Base::pen(); 
       CholFactorization invA_Cholesky;
       invA_Cholesky.compute(A_Cholesky); 
-      DVector<double> rhs_Cholesky; 
-      rhs_Cholesky.resize(A_Cholesky.rows());
+      b_Chol_.resize(A_Cholesky.rows());
 
       if(Base::pde_ -> massLumpingSystem()){
         DVector<double> lumped_vector;
@@ -85,15 +67,15 @@ void SRPDE<PDE, SamplingDesign>::solve() {
           lumped_vector[j] = 1 / R0().col(j).sum();  
         lumped_invR0 = lumped_vector.asDiagonal();
 
-        rhs_Cholesky = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*W()*y(); 
-        f_ = invA_Cholesky.solve(rhs_Cholesky); 
+        b_Chol_ = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*W()*y(); 
+        f_ = invA_Cholesky.solve(b_Chol_); 
         g_ = lumped_invR0*(R1()*f_ - u()); 
       } else{
         fdaPDE::SparseLU<SpMatrix<double>> invR0;
         invR0.compute(Base::pde_->R0());
 
-        rhs_Cholesky = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*W()*y(); 
-        f_ = invA_Cholesky.solve(rhs_Cholesky);  
+        b_Chol_ = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*W()*y(); 
+        f_ = invA_Cholesky.solve(b_Chol_);  
         g_ = invR0.solve(R1()*f_- u()); 
       }   
       
@@ -102,8 +84,7 @@ void SRPDE<PDE, SamplingDesign>::solve() {
       SpMatrix<double> A_Cholesky = PsiTD()*Base::lmbQ(Psi()) + Base::pen(); 
       CholFactorization invA_Cholesky;
       invA_Cholesky.compute(A_Cholesky);
-      DVector<double> rhs_Cholesky; 
-      rhs_Cholesky.resize(A_Cholesky.rows());
+      b_Chol_.resize(A_Cholesky.rows());
 
       if(Base::pde_ -> massLumpingSystem()){
         DVector<double> lumped_vector;
@@ -113,8 +94,8 @@ void SRPDE<PDE, SamplingDesign>::solve() {
           lumped_vector[j] = 1 / R0().col(j).sum();  
         lumped_invR0 = lumped_vector.asDiagonal();
 
-        rhs_Cholesky = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*Base::lmbQ(y()); 
-        f_ = invA_Cholesky.solve(rhs_Cholesky);
+        b_Chol_ = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*Base::lmbQ(y()); 
+        f_ = invA_Cholesky.solve(b_Chol_);
         beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_); 
         g_ = lumped_invR0*(R1()*f_ - u()); 
         
@@ -122,8 +103,8 @@ void SRPDE<PDE, SamplingDesign>::solve() {
         fdaPDE::SparseLU<SpMatrix<double>> invR0;
         invR0.compute(Base::pde_->R0());
 
-        rhs_Cholesky = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*Base::lmbQ(y());
-        f_ = invA_Cholesky.solve(rhs_Cholesky); 
+        b_Chol_ = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*Base::lmbQ(y());
+        f_ = invA_Cholesky.solve(b_Chol_); 
         beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
         g_ = invR0.solve(R1()*f_ - u());
       }

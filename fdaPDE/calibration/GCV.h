@@ -149,7 +149,7 @@ namespace calibration{
     //     t = dS*y
     double a(){
       DMatrix<double> g; 
-      if(!model_.massLumping()){
+      if(!model_.massLumpingGCV()){
         g = model_.R1().transpose()*model_.invR0().solve(model_.u());
       } else{ 
         g = model_.R1().transpose()*model_.lumped_invR0()*model_.u();   // M

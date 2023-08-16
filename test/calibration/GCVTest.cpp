@@ -1191,8 +1191,8 @@ void mem_usage(double& vm_usage, double& resident_set){
  
 //   std::string GCV_type = "Exact"; 
 
-//   bool massLumping_system = false;
-//   bool massLumping_GCV = false; 
+//   bool massLumping_system = true;
+//   bool massLumping_GCV = true; 
 //   std::string mass_type; 
 //   if(!massLumping_system & !massLumping_GCV)
 //     mass_type = "FF";
@@ -1209,8 +1209,11 @@ void mem_usage(double& vm_usage, double& resident_set){
 //   DMatrix<double> X; 
 //   DMatrix<double> y; 
 
-//   std::string lin_sys_solver = "Woodbury";  // Cholesky  Woodbury
-//   unsigned int launch_sim = 3;
+//   std::string lin_sys_solver = "Cholesky";  // Cholesky Woodbury
+//   std::string lin_sys_solver_abbrv = "Chol";  // Chol Wood 
+
+
+//   unsigned int launch_sim = 1;
 
 //   for(int nsim = launch_sim; nsim <= launch_sim; ++nsim){
 
@@ -1225,9 +1228,9 @@ void mem_usage(double& vm_usage, double& resident_set){
 
 //     // Read data
 //     std::string path_solutions = R_path + "/R/Our/data/Test_" + 
-//           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+//           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + 
 //           "/for_slides_lumping&solvers/" +
-//           "system_solver_" + lin_sys_solver + "/sim_" + std::to_string(nsim); 
+//           "system_solver_" + lin_sys_solver_abbrv + "/lump" + mass_type + "/sim_" + std::to_string(nsim); 
 
 //     std::string path_GCV = path_solutions + "/GCV" + "/" + GCV_type; 
 
@@ -1339,10 +1342,11 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 
    
   std::string lin_sys_solver = "Woodbury";  // Woodbury Cholesky  
+  std::string lin_sys_solver_abbrv = "Wood";   // Wood Chol
 
 
 
-  std::string launch_sqrtN = "283";  // 24 35 50 71 100 142 174 200 283
+  std::string launch_sqrtN = "71";  // 24 35 50 71 100 142 174 200 283
 
   unsigned int launch_sim = 1;      // 1 2 3 4 5
 
@@ -1371,7 +1375,7 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
     std::string path_solutions = R_path + "/R/Our/data/Test_" + 
           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + 
           "/for_slides_lumping&solvers/" +
-          "system_solver_" + lin_sys_solver + "/increase_N/sqrtN_" + launch_sqrtN + "/sim_" + std::to_string(nsim); 
+          "system_solver_" + lin_sys_solver_abbrv + "/incr_N/sqrtN_" + launch_sqrtN + "/sim_" + std::to_string(nsim); 
 
     std::string path_GCV = path_solutions + "/GCV/" + GCV_type + "/" + GCV_lin_sys_solver; 
 
@@ -1416,34 +1420,34 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
     std::cout << "Duration: " << delta_time.count() << "seconds" << std::endl;
     std::cout << "rss used: " << delta_rss*1e-3 << "Mb" << std::endl;
       
-    // Lambda opt
-    SVector<1> best_lambda = opt.optimum();
-    std::ofstream fileLambdaopt(path_solutions + "/LambdaCpp_" + GCV_lin_sys_solver + ".csv");
-    if(fileLambdaopt.is_open()){
-      fileLambdaopt << std::setprecision(16) << best_lambda[0];
-      fileLambdaopt.close();
-    }
+    // // Lambda opt
+    // SVector<1> best_lambda = opt.optimum();
+    // std::ofstream fileLambdaopt(path_solutions + "/LambdaCpp_" + GCV_lin_sys_solver + ".csv");
+    // if(fileLambdaopt.is_open()){
+    //   fileLambdaopt << std::setprecision(16) << best_lambda[0];
+    //   fileLambdaopt.close();
+    // }
 
-    // GCV scores
-    std::ofstream fileGCV_scores(path_GCV + "/GCV_scoresCpp.csv");
-    if(fileGCV_scores.is_open()){
-      for(std::size_t i = 0; i < GCV.values().size(); ++i) 
-        fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n";
+    // // GCV scores
+    // std::ofstream fileGCV_scores(path_GCV + "/GCV_scoresCpp.csv");
+    // if(fileGCV_scores.is_open()){
+    //   for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+    //     fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n";
 
-      fileGCV_scores.close();  
-    }
+    //   fileGCV_scores.close();  
+    // }
 
-    // Duration 
-    std::ofstream myfileTime(path_GCV +  "/Time_Cpp.csv");
-    myfileTime << std::setprecision(16) << delta_time.count() << "\n";
+    // // Duration 
+    // std::ofstream myfileTime(path_GCV +  "/Time_Cpp.csv");
+    // myfileTime << std::setprecision(16) << delta_time.count() << "\n";
 
-    // Memory rss (Resident set size)
-    std::ofstream myfileRSS(path_GCV +  "/rss_Cpp.csv");
-    myfileRSS << std::setprecision(16) << delta_rss << "\n";
+    // // Memory rss (Resident set size)
+    // std::ofstream myfileRSS(path_GCV +  "/rss_Cpp.csv");
+    // myfileRSS << std::setprecision(16) << delta_rss << "\n";
 
-    // Memory vm (Virtual Memory)
-    std::ofstream myfileVM(path_GCV +  "/vm_Cpp.csv");
-    myfileVM << std::setprecision(16) << delta_vm << "\n"; 
+    // // Memory vm (Virtual Memory)
+    // std::ofstream myfileVM(path_GCV +  "/vm_Cpp.csv");
+    // myfileVM << std::setprecision(16) << delta_vm << "\n"; 
 
 
   }

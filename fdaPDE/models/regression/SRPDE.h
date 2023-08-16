@@ -30,10 +30,9 @@ namespace models{
     typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization;     // M 
     SparseBlockMatrix<double,2,2> A_{}; // system matrix of non-parametric problem (2N x 2N matrix)
     fdaPDE::SparseLU<SpMatrix<double>> invA_;   // factorization of matrix A
-    CholFactorization invA_Chol_;    // M  Cholesky decomposition of A  
     DVector<double> b_{}; // right hand side of problem's linear system (1 x 2N vector)
+    DVector<double> b_Chol_{}; // M right hand side of problem's linear system (1 x N vector)
 
-    std::string invA_solver_ = "LU"; // M 
     std::string LinearSystemType_ = "Woodbury";  // M 
 
   public:
@@ -56,11 +55,9 @@ namespace models{
     // getters
     const SparseBlockMatrix<double,2,2>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
-    const CholFactorization& invA_Chol() const { return invA_Chol_; } // M 
     const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // M 
 
     // setters 
-    void setInvASolver(std::string solver) { invA_solver_ = solver; }  // M 
     void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
     
     virtual ~SRPDE() = default;

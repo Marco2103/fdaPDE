@@ -44,10 +44,8 @@ namespace models{
     SpMatrix<double> A_{};                         // system matrix of non-parametric problem (2N x 2N matrix)
                                                       // non è usata da nessuna parte, va salvata comunque o la togliamo?
 
+    typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization;     // M 
     fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
-    typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization; 
-    CholFactorization invA_Chol_;                     // M  Cholesky decomposition of A
-    std::string invA_solver_ = "LU";                  // M
     std::string LinearSystemType_ = "Woodbury";       // M
 
     // Commento questi membri così stiamo usando quelli di RegressionBase
@@ -82,7 +80,6 @@ namespace models{
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    void setInvASolver(std::string solver) { invA_solver_ = solver; }  // M 
     void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
 
     // ModelBase implementation
@@ -113,14 +110,12 @@ namespace models{
     // const DVector<double>& py() const { return py_; }    debug
     // const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
-    const CholFactorization& invA_Chol() const { return invA_Chol_; }  // M 
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
     const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // necessario perchè 
     // altrimenti in GCV.h non posso fare model_.massLumping() 
     // no ref perchè è ritorno un temporary object
     
-    const std::string InvASolver() const { return invA_solver_; }  // M 
     const std::string LinearSystemType() const { return LinearSystemType_; }  // M 
 
     // Debug

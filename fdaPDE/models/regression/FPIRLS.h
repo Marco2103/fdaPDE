@@ -79,6 +79,8 @@ namespace models{
       solver_.data() = m_.data();
       solver_.setLambda(m_.lambda());
       solver_.set_spatial_locations(m_.locs());
+      solver_.setLinearSystemType(m_.LinearSystemType());   // M to have correspondence between model and solver
+      solver_.setMassLumpingGCV(m_.massLumpingGCV());    // M to have correspondence between model and solver
       solver_.init_pde();
       solver_.init_regularization();
       solver_.init_sampling();
@@ -110,9 +112,7 @@ namespace models{
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
 
 	// update solver to change in the weight matrix
-	solver_.init_data();
-  solver_.setInvASolver(m_.InvASolver());   // M to have correspondence between model and solver 
-  solver_.setLinearSystemType(m_.LinearSystemType());   // M to have correspondence between model and solver 
+	solver_.init_data(); 
 	solver_.init_model(); 
 	solver_.solve();
 	

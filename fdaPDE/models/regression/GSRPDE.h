@@ -25,10 +25,12 @@ namespace models{
     static_assert(std::is_base_of<PDEBase, PDE>::value);
   private:
     typedef RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>> Base;
-    // DiagMatrix<double> W_;  // possiamo toglierla
+    // DiagMatrix<double> W_;  // possiamo toglierla?
     Distribution distribution_{};
     DVector<double> py_; // \tilde y^k = G^k(y-u^k) + \theta^k
     DVector<double> pW_; // diagonal of W^k = ((G^k)^{-2})*((V^k)^{-1}) 
+
+    std::string LinearSystemType_ = "Woodbury";       // M
     
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 15;
@@ -51,6 +53,7 @@ namespace models{
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
+    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
 
     // getter 
     const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // M 
@@ -66,7 +69,9 @@ namespace models{
     // I:
     double model_loss(const DVector<double>& mu); 
 
-    DVector<double> initialize_mu() const ; 
+    DVector<double> initialize_mu() const; 
+
+    const std::string LinearSystemType() const { return LinearSystemType_; }  // M 
     
     // iGCV interface implementation
     virtual const DMatrix<double>& T(); // T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
