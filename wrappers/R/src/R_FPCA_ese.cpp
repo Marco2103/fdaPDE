@@ -3,7 +3,6 @@
 // [[Rcpp::depends(RcppEigen)]]
 
 #include <thread>
-
 #include <fdaPDE/core/utils/Symbols.h>
 #include <fdaPDE/models/functional/fPCA.h>
 using fdaPDE::models::FPCA;

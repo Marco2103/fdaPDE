@@ -23,3 +23,15 @@ loadModule("FPCA_Laplacian_3D_GeoStatNodes", TRUE)
 # loadModule("STRPDE_Laplacian_2D_GeoStatLocations", TRUE)
 # loadModule("GapFill_Laplacian_2D_GeoStatNodes", TRUE)
 # loadModule("GapFill_Laplacian_2D_GeoStatLocations", TRUE)
+
+
+## SQRPDE
+loadModule("SQRPDE_Laplacian_2D_GeoStatNodes", TRUE)
+
+
+
+
+
+
+
+

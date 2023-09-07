@@ -6,6 +6,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
   std::cout << std::endl;
   std::cout << "Lambda: " << lambdaS() << std::endl; 
+  std::cout << "alpha = " << alpha_ << std::endl; 
   
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
   fpirls.compute();

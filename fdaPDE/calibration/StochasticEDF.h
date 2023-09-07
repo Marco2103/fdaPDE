@@ -89,34 +89,21 @@ namespace calibration{
       }else{
         // if(model_.Psi().cols() > 5000){
         if(method_ == StochasticEDFMethod::WoodburyGCV){
-          std::cout << "Inizio Woodbury GCV " << std::endl; 
           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
-          std::cout << "Inizio  getter inv A" << std::endl; 
           auto invAgcv = model_.invA(); 
-          std::cout << "Inizio getter U" << std::endl;
           auto Ugcv = model_.U(); 
-          std::cout << "Inizio  getter XtWX" << std::endl;
           auto XtWXgcv = model_.XtWX(); 
-          std::cout << "Inizio  getter V" << std::endl;
           auto Vgcv = model_.V(); 
-          std::cout << "Fine  getter V" << std::endl;
-          sol = SMW<>().solve(invAgcv, Ugcv, XtWXgcv, Vgcv, Bs_);
-          std::cout << "Fine Woodbury GCV " << std::endl; 
+          sol = SMW<>().solve(invAgcv, Ugcv, XtWXgcv, Vgcv, Bs_); 
         }
         // else{
         if(method_ == StochasticEDFMethod::CholeskyGCV){   // Cholesky
-          std::cout << "Inizio Cholesky GCV " << std::endl; 
           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
-
-          // Compute R
-          fdaPDE::SparseLU<SpMatrix<double>> invR0_temp_{};
-          invR0_temp_.compute(model_.R0());
 
           Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
           // lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen() ); 
           lltOfA.compute( model_.T() );
-          sol = lltOfA.solve(- Bs_.topRows(n)); 
-          std::cout << "Fine Cholesky GCV " << std::endl;   
+          sol = lltOfA.solve(- Bs_.topRows(n));   
         }
         
       }

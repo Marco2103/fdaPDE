@@ -15,7 +15,6 @@ f <- FEfunction()   ## qualcosa che dia l'idea che f è una funzione scritta com
 
 ## scrittura dell'operatore differenziale, alcuni esempi:
 L <- -laplacian(f)                         ## laplaciano
-
 L <- -div(K * grad(f)) + dot(b, grad(f))   ## diffusione - trasporto
 L <- dot(b, grad(f)) + c * f               ## trasporto - reazione
 

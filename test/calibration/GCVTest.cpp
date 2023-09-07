@@ -274,85 +274,254 @@ void mem_usage(double& vm_usage, double& resident_set){
 //   EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[14][0]) );
 // }
 
-// /* test 4
-//    domain:       c-shaped
-//    sampling:     locations != nodes
-//    penalization: simple laplacian
-//    covariates:   yes
-//    BC:           no
-//    order FE:     1
-//    GCV optimization: grid stochastic
-//  */
-// TEST(GCV_SRPDE, Test4_Laplacian_SemiParametric_GeostatisticalAtLocations_GridStochastic) {
-//   // define domain and regularizing PDE
-//   MeshLoader<Mesh2D<>> domain("c_shaped");
-//   auto L = Laplacian();
-//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // define statistical model
-//   CSVReader<double> reader{};
-//   // load locations where data are sampled
-//   CSVFile<double> locFile;
-//   locFile = reader.parseFile("data/models/SRPDE/2D_test2/locs.csv");
-//   DMatrix<double> loc = locFile.toEigen();
+/* test 4   (MODIFIED)
+   domain:       c-shaped
+   sampling:     locations != nodes
+   penalization: simple laplacian
+   covariates:   yes
+   BC:           no
+   order FE:     1
+   GCV optimization: grid stochastic
+ */
+//TEST(GCV_SRPDE, Test4_Laplacian_SemiParametric_GeostatisticalAtLocations_GridStochastic) {
 
-//   // define statistical model
-//   SRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem);
-//   model.set_spatial_locations(loc);
+//   // // TEST (Wood,Wood) VS (Wood,Chol): accuracy 
+
+//   // const std::string TestNumber = "2"; 
+
+//   // // Marco
+//   // std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-//   // load data from .csv files
-//   CSVFile<double> yFile; // observation file
-//   yFile = reader.parseFile  ("data/models/SRPDE/2D_test2/z.csv");
-//   DMatrix<double> y = yFile.toEigen();
-//   CSVFile<double> XFile; // design matrix
-//   XFile = reader.parseFile  ("data/models/SRPDE/2D_test2/X.csv");
-//   DMatrix<double> X = XFile.toEigen();
+//   // // Ilenia 
+//   // // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared";
 
-//   // set model data
-//   BlockFrame<double, int> df;
-//   df.insert(OBSERVATIONS_BLK,  y);
-//   df.insert(DESIGN_MATRIX_BLK, X);
-//   model.setData(df);
-//   model.init(); // init model
+//   // std::string GCV_type = "Stochastic";  
 
-//   // define grid of lambda values
-//   std::vector<SVector<1>> lambdas;
-//   for(double x = -3.0; x <= 3.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10, x)));
+//   // auto gcv_enum = fdaPDE::calibration::StochasticEDFMethod::CholeskyGCV;  
+//   // std::string GCV_lin_sys_solver;      
+//   // if(gcv_enum) 
+//   //   GCV_lin_sys_solver = "Cholesky"; 
+//   // else
+//   //   GCV_lin_sys_solver = "Woodbury";  
+
+//   // const std::string nnodes = "";  
   
-//   // define GCV calibrator
-//   std::size_t seed = 66546513;
-//   GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, 100, seed);
-//   GridOptimizer<1> opt;
+//   // std::string path_solutions = R_path + "/R/Our/data/SRPDE/Test_" + TestNumber + "/accuracy"; 
+//   // std::string path_GCV = path_solutions + "/GCV/" + GCV_type + "/" + GCV_lin_sys_solver; 
 
-//   ScalarField<1, decltype(GCV)> obj(GCV);
-//   opt.optimize(obj, lambdas); // optimize gcv field
-//   SVector<1> best_lambda = opt.optimum();
+//   // // define domain and regularizing PDE
+//   // MeshLoader<Mesh2D<>> domain("c_shaped");
+//   // auto L = Laplacian();
+//   // DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   // PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
-//   // expected values for q + Tr[S] (approximated)
-//   std::vector<double> expected_edfs = {
-//     106.2709775815650062, 91.2781878154271595, 76.8216314734006431, 63.6368232668402314, 52.0874830058305562,
-//     42.2619783483174274,  34.0612617815139203, 27.2926608538180062, 21.7650509877889817, 17.3309390327612363,
-//     13.8629820650085431,  11.2197970258596094,  9.2470064712368139,  7.7975062657152465,  6.7408531721908309,
-//     5.9632650796519151,    5.3718179354249518,  4.9012488716219842,  4.5124258626382030,  4.1837705547537087,
-//     3.9038225985944632,    3.6643245426561473,  3.4547903696710578,  3.2650834389510122,  3.0930648940657273
-//   };
-//   for(std::size_t i = 0; i < expected_edfs.size(); ++i)
-//     EXPECT_TRUE( almost_equal(expected_edfs[i], GCV.edfs()[i]) );  
+//   // // define statistical model
+//   // CSVReader<double> reader{};
+//   // // load locations where data are sampled
+//   // CSVFile<double> locFile;
+//   // locFile = reader.parseFile("data/models/SRPDE/2D_test2/locs.csv");
+//   // DMatrix<double> loc = locFile.toEigen();
 
-//   // expected value of gcv(\lambda)
-//   std::vector<double> expected_gcvs = {
-//     1.9933325455157656, 1.9339516163142583, 1.8744400183178187, 1.8164174958658492, 1.7608058393404040,
-//     1.7082461763764853, 1.6595618959678919, 1.6161177888901777, 1.5794269592455561, 1.5503494275186216,
-//     1.5285490034180831, 1.5129761785234856, 1.5028470225931159, 1.4977383948589298, 1.4967621840119401,
-//     1.4983351571813046, 1.5010945226728243, 1.5047240675196598, 1.5105230912061263, 1.5234895155928254,
-//     1.5578890056928336, 1.6477498970873763, 1.8582485673557088, 2.2753184385488714, 2.9426362338294938
-//   };  
-//   for(std::size_t i = 0; i < expected_edfs.size(); ++i)
-//     EXPECT_TRUE( almost_equal(expected_gcvs[i], GCV.values()[i]) );
+//   // // define statistical model
+//   // SRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem);
+//   // model.set_spatial_locations(loc);
+  
+//   // // load data from .csv files
+//   // CSVFile<double> yFile; // observation file
+//   // yFile = reader.parseFile("data/models/SRPDE/2D_test2/z.csv");
+//   // DMatrix<double> y = yFile.toEigen();
+//   // CSVFile<double> XFile; // design matrix
+//   // XFile = reader.parseFile("data/models/SRPDE/2D_test2/X.csv");
+//   // DMatrix<double> X = XFile.toEigen();
 
-//   // check optimal lambda
-//   EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[14][0]) );
+//   // // set model data
+//   // BlockFrame<double, int> df;
+//   // df.insert(OBSERVATIONS_BLK,  y);
+//   // df.insert(DESIGN_MATRIX_BLK, X);
+//   // model.setData(df);
+//   // model.init(); // init model
+
+//   // // define grid of lambda values
+//   // std::vector<SVector<1>> lambdas;
+//   // for(double x = -3.0; x <= 3.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10, x)));
+  
+//   // // define GCV calibrator
+//   // std::size_t seed = 66546513;
+//   // GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, 100, seed, gcv_enum);
+//   // GridOptimizer<1> opt;
+
+//   // ScalarField<1, decltype(GCV)> obj(GCV);
+//   // opt.optimize(obj, lambdas);     // optimize gcv field
+//   // SVector<1> best_lambda = opt.optimum();
+
+//   // // Save results 
+
+//   // // Lambda opt
+//   // std::ofstream fileLambdaopt(path_solutions + "/LambdaCpp_" + GCV_lin_sys_solver + ".csv");
+//   // if(fileLambdaopt.is_open()){
+//   //   fileLambdaopt << std::setprecision(16) << best_lambda[0];
+//   //   fileLambdaopt.close();
+//   // }
+
+//   // // GCV scores
+//   // std::ofstream fileGCV_scores(path_GCV + "/GCV_scoresCpp.csv");
+//   // if(fileGCV_scores.is_open()){
+//   //   for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+//   //     fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n";
+
+//   //   fileGCV_scores.close();  
+//   // }
+
+//   // // expected values for q + Tr[S] (approximated)
+//   // std::vector<double> expected_edfs = {
+//   //   106.2709775815650062, 91.2781878154271595, 76.8216314734006431, 63.6368232668402314, 52.0874830058305562,
+//   //   42.2619783483174274,  34.0612617815139203, 27.2926608538180062, 21.7650509877889817, 17.3309390327612363,
+//   //   13.8629820650085431,  11.2197970258596094,  9.2470064712368139,  7.7975062657152465,  6.7408531721908309,
+//   //   5.9632650796519151,    5.3718179354249518,  4.9012488716219842,  4.5124258626382030,  4.1837705547537087,
+//   //   3.9038225985944632,    3.6643245426561473,  3.4547903696710578,  3.2650834389510122,  3.0930648940657273
+//   // };
+//   // for(std::size_t i = 0; i < expected_edfs.size(); ++i)
+//   //   EXPECT_TRUE( almost_equal(expected_edfs[i], GCV.edfs()[i]) );  
+
+//   // // expected value of gcv(\lambda)
+//   // std::vector<double> expected_gcvs = {
+//   //   1.9933325455157656, 1.9339516163142583, 1.8744400183178187, 1.8164174958658492, 1.7608058393404040,
+//   //   1.7082461763764853, 1.6595618959678919, 1.6161177888901777, 1.5794269592455561, 1.5503494275186216,
+//   //   1.5285490034180831, 1.5129761785234856, 1.5028470225931159, 1.4977383948589298, 1.4967621840119401,
+//   //   1.4983351571813046, 1.5010945226728243, 1.5047240675196598, 1.5105230912061263, 1.5234895155928254,
+//   //   1.5578890056928336, 1.6477498970873763, 1.8582485673557088, 2.2753184385488714, 2.9426362338294938
+//   // };  
+//   // for(std::size_t i = 0; i < expected_edfs.size(); ++i)
+//   //   EXPECT_TRUE( almost_equal(expected_gcvs[i], GCV.values()[i]) );
+
+//   // // check optimal lambda
+//   // EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[14][0]) );
+
+
+
+  // TEST (Wood,Wood) VS (Wood,Chol): performance
+
+//   const std::string TestNumber = "2"; 
+
+//   // Marco
+//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared";  
+//   // Ilenia 
+//   // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+//   std::string GCV_type = "Stochastic"; 
+
+
+
+//   const std::string nnodes = "11011";      // 742 1452 2789 5502 11011 22086 44136                  
+//   unsigned int launch_sim = 5; 
+//   auto gcv_enum = fdaPDE::calibration::StochasticEDFMethod::CholeskyGCV;  // WoodburyGCV CholeskyGCV 
+  
+
+
+//   unsigned int MC_nsim = 1000;          // number of Monte Carlo simulations
+//   std::string GCV_lin_sys_solver;      
+//   if(gcv_enum) 
+//     GCV_lin_sys_solver = "Cholesky"; 
+//   else
+//     GCV_lin_sys_solver = "Woodbury"; 
+
+    
+//   for(int nsim = launch_sim; nsim <= launch_sim; ++nsim){
+
+//     std::string path_solutions = R_path + "/R/Our/data/SRPDE/Test_" + 
+//       TestNumber + "/performance/MC_nsim_1000/mesh_" + nnodes + "/sim_" + std::to_string(nsim); 
+
+//     std::string path_GCV = path_solutions + "/GCV/" + GCV_type + "/" + GCV_lin_sys_solver; 
+
+//     // define domain and regularizing PDE
+//     MeshLoader<Mesh2D<>> domain("c_shaped_" + nnodes);
+//     auto L = Laplacian();
+//     DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//     PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+
+//     // define statistical model
+//     CSVReader<double> reader{};
+//     // load locations where data are sampled
+//     CSVFile<double> locFile;
+//     locFile = reader.parseFile(path_solutions + "/locs.csv");
+//     DMatrix<double> loc = locFile.toEigen();
+
+//     // define statistical model
+//     SRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem);
+//     model.set_spatial_locations(loc);
+    
+//     // load data from .csv files
+//     CSVFile<double> yFile; // observation file
+//     yFile = reader.parseFile(path_solutions + "/z.csv");
+//     DMatrix<double> y = yFile.toEigen();
+//     CSVFile<double> XFile; // design matrix
+//     XFile = reader.parseFile(path_solutions + "/X.csv");
+//     DMatrix<double> X = XFile.toEigen();
+
+//     // set model data
+//     BlockFrame<double, int> df;
+//     df.insert(OBSERVATIONS_BLK, y);
+//     df.insert(DESIGN_MATRIX_BLK, X);
+//     model.setData(df);
+//     model.init(); // init model
+
+//     // define grid of lambda values
+//     std::vector<SVector<1>> lambdas;
+//     for(double x = -3.0; x <= 3.0; x +=0.25) lambdas.push_back(SVector<1>(std::pow(10, x)));
+    
+//     // define GCV calibrator
+//     std::size_t seed = 66546513;
+//     GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, MC_nsim, seed, gcv_enum);
+//     GridOptimizer<1> opt;
+
+//     ScalarField<1, decltype(GCV)> obj(GCV);
+//     std::chrono::duration<double> delta_time; 
+//     double vm_init, rss_init, vm_final, rss_final, delta_vm, delta_rss;
+
+//     mem_usage(vm_init, rss_init);
+//     auto t0 = high_resolution_clock::now();
+//     opt.optimize(obj, lambdas);     // optimize gcv field
+//     auto t1 = high_resolution_clock::now();
+//     mem_usage(vm_final, rss_final);
+
+//     delta_vm = vm_final - vm_init; 
+//     delta_rss = rss_final - rss_init; 
+//     delta_time = t1 - t0;
+//     std::cout << "Duration: " << delta_time.count() << " seconds" << std::endl;
+//     std::cout << "rss used: " << delta_rss*1e-3 << " Mb" << std::endl;
+
+//     // Save results 
+
+//     // Lambda opt
+//     SVector<1> best_lambda = opt.optimum();
+//     std::ofstream fileLambdaopt(path_solutions + "/LambdaCpp_" + GCV_lin_sys_solver + ".csv");
+//     if(fileLambdaopt.is_open()){
+//       fileLambdaopt << std::setprecision(16) << best_lambda[0];
+//       fileLambdaopt.close();
+//     }
+
+//     // GCV scores
+//     std::ofstream fileGCV_scores(path_GCV + "/GCV_scoresCpp.csv");
+//     if(fileGCV_scores.is_open()){
+//       for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+//         fileGCV_scores << std::setprecision(16) << GCV.values()[i] << "\n";
+
+//       fileGCV_scores.close();  
+//     }
+
+//     // Duration 
+//     std::ofstream myfileTime(path_GCV +  "/Time_Cpp.csv");
+//     myfileTime << std::setprecision(16) << delta_time.count() << "\n";
+
+//     // Memory rss (Resident set size)
+//     std::ofstream myfileRSS(path_GCV +  "/rss_Cpp.csv");
+//     myfileRSS << std::setprecision(16) << delta_rss << "\n";
+
+//     // Memory vm (Virtual Memory)
+//     std::ofstream myfileVM(path_GCV +  "/vm_Cpp.csv");
+//     myfileVM << std::setprecision(16) << delta_vm << "\n"; 
+//   }
+  
 // }
 
 // /* test 5
@@ -681,6 +850,11 @@ void mem_usage(double& vm_usage, double& resident_set){
 
 
 
+
+
+
+
+
 // GCV Test for SQRPDE
 // -------------------
 
@@ -695,109 +869,112 @@ void mem_usage(double& vm_usage, double& resident_set){
    GCV optimization: grid exact
    Correspondent in R: Test_1 
  */
-// TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) {
+TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) {
 
-//   const std::string TestNumber = "1"; 
+  const std::string TestNumber = "1"; 
 
-//   // parameters 
-//   double alpha = 0.5; 
-//   unsigned int alpha_int = alpha*100; 
-//   const std::string alpha_string = std::to_string(alpha_int); 
+  // parameters 
+  double alpha = 0.1; 
+  unsigned int alpha_int = alpha*100; 
+  const std::string alpha_string = std::to_string(alpha_int); 
 
-//     // Marco
-//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+    // Marco
+  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-//   // Ilenia 
-//   // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+  // Ilenia 
+  // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
 
-//   std::string data_macro_strategy_type = "matern_data"; 
-//   std::string data_strategy_type = "F"; 
-//   double tol_weights = 0.000001; 
-//   double tol_FPIRLS = 0.000001;
+  std::string data_macro_strategy_type = "matern_data"; 
+  std::string data_strategy_type = "F"; 
+  double tol_weights = 0.000001; 
+  double tol_FPIRLS = 0.000001;
 
-//   bool massLumping_system = false;
-//   bool massLumping_GCV = true; 
-//   std::string invA_solver_type = "Chol";
+  bool massLumping_system = false;
+  bool massLumping_GCV = false; 
 
-//   unsigned int M = 1;   // number of simulations
+  unsigned int M = 11;   // number of simulations
 
-//   // define domain and regularizing PDE
-//   MeshLoader<Mesh2D<>> domain("unit_square"); 
-//   auto L = Laplacian();
-//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-//   PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
+  // define domain and regularizing PDE
+  MeshLoader<Mesh2D<>> domain("unit_square"); 
+  auto L = Laplacian();
+  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+  PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
 
-//   // define the statistical model 
-//   SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
+  // define the statistical model 
+  SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
 
-//   // define grid of lambda values
-//   std::vector<SVector<1>> lambdas;
-//   for(double x = 8.0; x <= 9.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  // define grid of lambda values
+  std::vector<SVector<1>> lambdas;
+  if(almost_equal(alpha, 0.5))
+    for(double x = -7.0; x <= -4.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  if(almost_equal(alpha, 0.1))
+    for(double x = -8.0; x <= -5.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+   for(auto l : lambdas) 
+    std::cout << "lambdas " << l << std::endl; 
 
-//   for(unsigned int m = 1; m <= M; ++m){
+  for(unsigned int m = 1; m <= M; ++m){
 
-//     std::cout << "Simulation " << m << std::endl; 
+    std::cout << "Simulation " << m << std::endl; 
 
-//     std::string solution_path = R_path + "/R/Our/data/Test_" + 
-//                     TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + 
-//                     data_strategy_type + "/inversion_A/sim_" + std::to_string(m);
+    std::string solution_path = R_path + "/R/Our/data/Test_" + 
+                    TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + 
+                    data_strategy_type + "/our/tol_weights_1e-06/tol_FPIRLS_1e-06/LU/sim_" + std::to_string(m);
 
-//     std::string GCV_path = solution_path +  "/GCV/Exact";              
+    std::string GCV_path = solution_path +  "/GCV/Exact";              
 
-//     // load data from .csv files
-//     CSVReader<double> reader{};
-//     CSVFile<double> yFile; // observation file
-//     yFile = reader.parseFile(solution_path + "/z.csv");             
-//     DMatrix<double> y = yFile.toEigen();
+    // load data from .csv files
+    CSVReader<double> reader{};
+    CSVFile<double> yFile; // observation file
+    yFile = reader.parseFile(solution_path + "/z.csv");             
+    DMatrix<double> y = yFile.toEigen();
     
-//     // set model data
-//     BlockFrame<double, int> df;
-//     df.insert(OBSERVATIONS_BLK, y);
-//     model.setData(df);
+    // set model data
+    BlockFrame<double, int> df;
+    df.insert(OBSERVATIONS_BLK, y);
+    model.setData(df);
 
-//     model.setTolerances(tol_weights, tol_FPIRLS); 
-//     model.setMassLumpingGCV(massLumping_GCV); 
-//     model.setInvASolver(invA_solver_type); 
+    model.setTolerances(tol_weights, tol_FPIRLS); 
+    model.setMassLumpingGCV(massLumping_GCV); 
 
-//     model.init(); // init model
+    model.init(); // init model
 
-//     // define GCV function and optimize
-//     GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
-//     GridOptimizer<1> opt;
+    // define GCV function and optimize
+    GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
+    GridOptimizer<1> opt;
 
-//     ScalarField<1, decltype(GCV)> obj(GCV);
-//     opt.optimize(obj, lambdas); // optimize gcv field
-//     SVector<1> best_lambda = opt.optimum();
+    ScalarField<1, decltype(GCV)> obj(GCV);
+    opt.optimize(obj, lambdas); // optimize gcv field
+    SVector<1> best_lambda = opt.optimum();
     
-//     // Lambda opt
-//     std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl;
-//     std::ofstream fileLambdaopt(solution_path + "/LambdaCpp.csv");
-//     if (fileLambdaopt.is_open()){
-//       fileLambdaopt << std::setprecision(16) << best_lambda[0];
-//       fileLambdaopt.close();
-//     }
+    // Lambda opt
+    std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl;
+    std::ofstream fileLambdaopt(solution_path + "/LambdaCpp.csv");
+    if (fileLambdaopt.is_open()){
+      fileLambdaopt << std::setprecision(16) << best_lambda[0];
+      fileLambdaopt.close();
+    }
 
-//     // GCV scores
-//     std::ofstream fileGCV_scores(GCV_path + "/GCV_scoresCpp.csv");
-//     for(std::size_t i = 0; i < GCV.values().size(); ++i) 
-//       fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
-//     fileGCV_scores.close(); 
+    // GCV scores
+    std::ofstream fileGCV_scores(GCV_path + "/GCV_scoresCpp.csv");
+    for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+      fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+    fileGCV_scores.close(); 
 
-//     // // Degub
-//     // DVector<double> invR0_Cpp = model.lumped_invR0().diagonal();
-//     // const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-//     // std::ofstream fileLumped(R_path + "/R/Our/data/Test_" + 
-//     //           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-//     //           "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
-//     //           "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/lumped_invR0_Cpp.csv");
-//     // if (fileLumped.is_open()){
-//     //   fileLumped << invR0_Cpp.format(CSVFormat) << '\n';
-//     //   fileLumped.close();
-//     // }
-//   }
+    // // Degub
+    // DVector<double> invR0_Cpp = model.lumped_invR0().diagonal();
+    // const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // std::ofstream fileLumped(R_path + "/R/Our/data/Test_" + 
+    //           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
+    //           "/mass" + mass_type + "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
+    //           "/" + lin_sys_solver + "/sim_" + std::to_string(m) + "/lumped_invR0_Cpp.csv");
+    // if (fileLumped.is_open()){
+    //   fileLumped << invR0_Cpp.format(CSVFormat) << '\n';
+    //   fileLumped.close();
+    // }
+  }
  
 
-// }
+}
 
 
 /* test 10
@@ -1295,130 +1472,130 @@ void mem_usage(double& vm_usage, double& resident_set){
    GCV optimization: grid stochastic
    Correspondent in R: Test_5
  */
-TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridStochastic) {
+// TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridStochastic) {
 
-  // Parameters 
-  const std::string TestNumber = "5"; 
-  double alpha = 0.5; 
-  unsigned int alpha_int = alpha*100; 
-  const std::string alpha_string = std::to_string(alpha_int); 
+//   // Parameters 
+//   const std::string TestNumber = "5"; 
+//   double alpha = 0.5; 
+//   unsigned int alpha_int = alpha*100; 
+//   const std::string alpha_string = std::to_string(alpha_int); 
   
-  std::string data_macro_strategy_type = "skewed_data"; 
-  std::string data_strategy_type = "E"; 
-  std::string GCV_type = "Stochastic"; 
+//   std::string data_macro_strategy_type = "skewed_data"; 
+//   std::string data_strategy_type = "E"; 
+//   std::string GCV_type = "Stochastic"; 
 
-  // Marco
-  std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+//   // Marco
+//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-  // Ilenia 
-  // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+//   // Ilenia 
+//   // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
   
-  // load data from .csv files
-  CSVReader<double> reader{};
-  CSVFile<double> yFile; // observation file
-  CSVFile<double> XFile; // covariates file
-  CSVFile<double> locFile; // locations file
+//   // load data from .csv files
+//   CSVReader<double> reader{};
+//   CSVFile<double> yFile; // observation file
+//   CSVFile<double> XFile; // covariates file
+//   CSVFile<double> locFile; // locations file
 
-  DMatrix<double> loc; 
-  DMatrix<double> X; 
-  DMatrix<double> y; 
+//   DMatrix<double> loc; 
+//   DMatrix<double> X; 
+//   DMatrix<double> y; 
 
-  // define grid of lambda values
-  std::vector<SVector<1>> lambdas;
-  for(double x = -4.0; x <= -0.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));  
+//   // define grid of lambda values
+//   std::vector<SVector<1>> lambdas;
+//   for(double x = -4.0; x <= -0.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));  
 
-  double tol_weights = 0.000001; 
-  double tol_FPIRLS = 0.000001;
+//   double tol_weights = 0.000001; 
+//   double tol_FPIRLS = 0.000001;
 
-  bool massLumping_system = false;
-  bool massLumping_GCV = false; 
-  std::string mass_type; 
-  if(!massLumping_system & !massLumping_GCV)
-    mass_type = "FF";
-  if(!massLumping_system & massLumping_GCV)
-    mass_type = "FT"; 
-  if(massLumping_system & massLumping_GCV)
-    mass_type = "TT";
+//   bool massLumping_system = false;
+//   bool massLumping_GCV = false; 
+//   std::string mass_type; 
+//   if(!massLumping_system & !massLumping_GCV)
+//     mass_type = "FF";
+//   if(!massLumping_system & massLumping_GCV)
+//     mass_type = "FT"; 
+//   if(massLumping_system & massLumping_GCV)
+//     mass_type = "TT";
 
    
-  std::string lin_sys_solver = "Woodbury";  // Woodbury Cholesky  
-  std::string lin_sys_solver_abbrv = "Wood";   // Wood Chol
+//   std::string lin_sys_solver = "Woodbury";  // Woodbury Cholesky  
+//   std::string lin_sys_solver_abbrv = "Wood";   // Wood Chol
 
 
 
-  std::string launch_sqrtN = "71";  // 24 35 50 71 100 142 174 200 283
+//   std::string launch_sqrtN = "71";  // 24 35 50 71 100 142 174 200 283
 
-  unsigned int launch_sim = 1;      // 1 2 3 4 5
+//   unsigned int launch_sim = 1;      // 1 2 3 4 5
 
-  auto gcv_enum = fdaPDE::calibration::StochasticEDFMethod::WoodburyGCV;  // WoodburyGCV CholeskyGCV 
+//   auto gcv_enum = fdaPDE::calibration::StochasticEDFMethod::CholeskyGCV;  // WoodburyGCV CholeskyGCV 
+  
 
 
-
-  std::string GCV_lin_sys_solver;       // Woodbury Cholesky 
-  if(gcv_enum) 
-    GCV_lin_sys_solver = "Cholesky"; 
-  else
-    GCV_lin_sys_solver = "Woodbury";  
+//   std::string GCV_lin_sys_solver;       // Woodbury Cholesky 
+//   if(gcv_enum) 
+//     GCV_lin_sys_solver = "Cholesky"; 
+//   else
+//     GCV_lin_sys_solver = "Woodbury";  
     
-  for(int nsim = launch_sim; nsim <= launch_sim; ++nsim){
+//   for(int nsim = launch_sim; nsim <= launch_sim; ++nsim){
 
-    // define domain and regularizing PDE
-    MeshLoader<Mesh2D<>> domain("unit_square_" + launch_sqrtN);  
-    auto L = Laplacian();
-    DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
-    PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
-    SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
-    std::size_t seed = 476813;
-    GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, 1000, seed, gcv_enum);
+//     // define domain and regularizing PDE
+//     MeshLoader<Mesh2D<>> domain("unit_square_" + launch_sqrtN);  
+//     auto L = Laplacian();
+//     DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//     PDE problem(domain.mesh, L, u, massLumping_system); // definition of regularizing PDE
+//     SQRPDE<decltype(problem), fdaPDE::models::GeoStatLocations> model(problem, alpha);
+//     std::size_t seed = 476813;
+//     GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, 1000, seed, gcv_enum);
 
-    // Read data
-    std::string path_solutions = R_path + "/R/Our/data/Test_" + 
-          TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + 
-          "/for_slides_lumping&solvers/" +
-          "system_solver_" + lin_sys_solver_abbrv + "/incr_N/sqrtN_" + launch_sqrtN + "/sim_" + std::to_string(nsim); 
+//     // Read data
+//     std::string path_solutions = R_path + "/R/Our/data/Test_" + 
+//           TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + 
+//           "/for_slides_lumping&solvers/" +
+//           "system_solver_" + lin_sys_solver_abbrv + "/incr_N/sqrtN_" + launch_sqrtN + "/sim_" + std::to_string(nsim); 
 
-    std::string path_GCV = path_solutions + "/GCV/" + GCV_type + "/" + GCV_lin_sys_solver; 
+//     std::string path_GCV = path_solutions + "/GCV/" + GCV_type + "/" + GCV_lin_sys_solver; 
 
-    yFile = reader.parseFile(path_solutions + "/z.csv");             
-    y = yFile.toEigen();
+//     yFile = reader.parseFile(path_solutions + "/z.csv");             
+//     y = yFile.toEigen();
 
-    XFile = reader.parseFile(path_solutions + "/X.csv");             
-    X = XFile.toEigen();
+//     XFile = reader.parseFile(path_solutions + "/X.csv");             
+//     X = XFile.toEigen();
 
-    locFile = reader.parseFile(path_solutions + "/locs.csv");
-    loc = locFile.toEigen();
-    model.set_spatial_locations(loc); 
+//     locFile = reader.parseFile(path_solutions + "/locs.csv");
+//     loc = locFile.toEigen();
+//     model.set_spatial_locations(loc); 
 
-    // set model data
-    BlockFrame<double, int> df;
-    df.insert(OBSERVATIONS_BLK, y);
-    df.insert(DESIGN_MATRIX_BLK, X);
-    model.setData(df);
-    model.setTolerances(tol_weights, tol_FPIRLS); 
-    model.setMassLumpingGCV(massLumping_GCV); 
-    model.setLinearSystemType(lin_sys_solver); 
+//     // set model data
+//     BlockFrame<double, int> df;
+//     df.insert(OBSERVATIONS_BLK, y);
+//     df.insert(DESIGN_MATRIX_BLK, X);
+//     model.setData(df);
+//     model.setTolerances(tol_weights, tol_FPIRLS); 
+//     model.setMassLumpingGCV(massLumping_GCV); 
+//     model.setLinearSystemType(lin_sys_solver); 
 
-    model.init(); // init model
+//     model.init(); // init model
 
 
-    // define GCV function and optimize  
-    GridOptimizer<1> opt;
-    std::chrono::duration<double> delta_time; 
-    double vm_init, rss_init, vm_final, rss_final, delta_vm, delta_rss;
+//     // define GCV function and optimize  
+//     GridOptimizer<1> opt;
+//     std::chrono::duration<double> delta_time; 
+//     double vm_init, rss_init, vm_final, rss_final, delta_vm, delta_rss;
 
-    ScalarField<1, decltype(GCV)> obj(GCV);
+//     ScalarField<1, decltype(GCV)> obj(GCV);
 
-    mem_usage(vm_init, rss_init);
-    auto t0 = high_resolution_clock::now();
-    opt.optimize(obj, lambdas);     // optimize gcv field
-    auto t1 = high_resolution_clock::now();
-    mem_usage(vm_final, rss_final);
+//     mem_usage(vm_init, rss_init);
+//     auto t0 = high_resolution_clock::now();
+//     opt.optimize(obj, lambdas);     // optimize gcv field
+//     auto t1 = high_resolution_clock::now();
+//     mem_usage(vm_final, rss_final);
 
-    delta_vm = vm_final - vm_init; 
-    delta_rss = rss_final - rss_init; 
-    delta_time = t1 - t0;
-    std::cout << "Duration: " << delta_time.count() << "seconds" << std::endl;
-    std::cout << "rss used: " << delta_rss*1e-3 << "Mb" << std::endl;
+//     delta_vm = vm_final - vm_init; 
+//     delta_rss = rss_final - rss_init; 
+//     delta_time = t1 - t0;
+//     std::cout << "Duration: " << delta_time.count() << "seconds" << std::endl;
+//     std::cout << "rss used: " << delta_rss*1e-3 << "Mb" << std::endl;
       
     // // Lambda opt
     // SVector<1> best_lambda = opt.optimum();
@@ -1450,9 +1627,9 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
     // myfileVM << std::setprecision(16) << delta_vm << "\n"; 
 
 
-  }
+//   }
 
-}
+// }
 
 
 /* test 15
@@ -1968,14 +2145,15 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 //   MeshLoader<Mesh2D<>> domain("unit_square");
 //   // non unitary diffusion tensor
 //   SMatrix<2> K;
-//   K << 2.5, 1.5, 1.5, 2.5;
+//   K << 1, 0., 0., 4;
 //   auto L = Laplacian(K); // anisotropic diffusion
-//   std::cout << "Number mesh elements: " << domain.mesh.elements() << std::endl ; 
+//   std::cout << "Number mesh elements: " << domain.mesh.elements() << std::endl; 
 //   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
 //   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
 //   double alpha = 0.01; 
-//   const std::string alpha_string = "1"; 
+//   unsigned int alpha_int = alpha*100; 
+//   const std::string alpha_string = std::to_string(alpha_int); 
 //   const std::string TestNumber = "3"; 
 
 //   SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
@@ -1987,25 +2165,27 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 //   std::string data_strategy_type = "E"; 
 
 //   // Marco
-//   // std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-//   // Ilenia 
-//   std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+//   // // Ilenia 
+//   // std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
   
-//   std::vector<double> seq_tol_weights = {0.0000001, 0.000001}; 
-//   std::vector<std::string> seq_tol_weights_string = {"1e-07", "1e-06"};
+//   std::vector<double> seq_tol_weights = {0.000001}; 
+//   std::vector<std::string> seq_tol_weights_string = {"1e-06"};
 
-//   std::vector<double> seq_tol_FPIRLS = {0.00000001, 0.0000001, 0.000001}; 
-//   std::vector<std::string> seq_tol_FPIRLS_string = {"1e-08", "1e-07", "1e-06"}; 
+//   std::vector<double> seq_tol_FPIRLS = {0.000001}; 
+//   std::vector<std::string> seq_tol_FPIRLS_string = {"1e-06"}; 
 
 //   std::string lin_sys_solver = "Chol";    // depends on the "symmetry" option in R 
 //   std::string stopping_type = "our";
 
 //   // define grid of lambda values
 //   std::vector<SVector<1>> lambdas;
-//   for(double x = -8.0; x <= -5.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+//   for(double x = -9.0; x <= -6.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+//   std::string GCV_type = "Exact"; 
+//   unsigned int M = 10;      // number of simulations
 
-
+// for(int m = 10; m <= M; ++m){
 //   for(int i = 0; i < seq_tol_weights.size(); ++i ){
 
 //     std::string tol_weights_string = seq_tol_weights_string[i]; 
@@ -2016,11 +2196,16 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 //         std::string tol_FPIRLS_string = seq_tol_FPIRLS_string[j]; 
 //         double tol_FPIRLS = seq_tol_FPIRLS[j]; 
 
-//         yFile = reader.parseFile(R_path + "/R/Our/data/Test_" + 
+//         std::string path_solutions = R_path + "/R/Our/data/Test_" + 
 //                         TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
 //                         "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
-//                         "/" + lin_sys_solver + 
-//                         "/z.csv");             
+//                         "/" + lin_sys_solver + "/sim_" + std::to_string(m); 
+
+//         std::cout << path_solutions << std::endl; 
+
+//         std::string path_GCV = path_solutions + "/GCV/" + GCV_type;  
+
+//         yFile = reader.parseFile(path_solutions + "/z.csv");          
 //         DMatrix<double> y = yFile.toEigen();
         
 //         // set model data
@@ -2039,13 +2224,8 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 //         opt.optimize(obj, lambdas); // optimize gcv field
 //         SVector<1> best_lambda = opt.optimum();
         
-//         std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl; 
 //         // Lambda opt
-//         std::ofstream fileLambdaopt(R_path + "/R/Our/data/Test_" + 
-//                         TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-//                         "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
-//                         "/" + lin_sys_solver + 
-//                         "/LambdaCpp_" + alpha_string + ".csv");
+//         std::ofstream fileLambdaopt(path_solutions + "/LambdaCpp.csv");
 //         if (fileLambdaopt.is_open()){
 //           fileLambdaopt << std::setprecision(16) << best_lambda[0];
 //           fileLambdaopt.close();
@@ -2055,19 +2235,15 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 //         // // Lambda vector
 //         // std::ofstream fileGCV_lambda("data/models/SQRPDE/2D_test1_GCV/Eaxct/GCV_lambdasCpp_" + alpha_string + ".csv");
 //         // for(std::size_t i = 0; i < lambdas.size(); ++i) 
-//         //   fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
+//         //   fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n"; 
 
 //         // fileGCV_lambda.close(); 
 
-//       //   // GCV scores
-//       //   std::ofstream fileGCV_scores(R_path + "/R/Our/data/Test_" + 
-//       //               TestNumber + "/alpha_" + alpha_string + "/" + data_macro_strategy_type + "/strategy_"  + data_strategy_type + 
-//       //               "/" + stopping_type + "/tol_weights_" + tol_weights_string + "/tol_FPIRLS_" + tol_FPIRLS_string + 
-//       //               "/" + lin_sys_solver + "/GCV/Exact/GCV_scoresCpp_" + alpha_string + ".csv");
-//       //   for(std::size_t i = 0; i < GCV.values().size(); ++i) 
-//       //     fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
-
-//       //   fileGCV_scores.close(); 
+//         // GCV scores
+//         std::ofstream fileGCV_scores(path_GCV + "/GCV_scoresCpp.csv");
+//         for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+//           fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+//         fileGCV_scores.close(); 
 
 
 //       //   // Edf
@@ -2081,9 +2257,11 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 //       //   fileGCV_edf.close(); 
 //       }
 //   }
+// }
 
 
 // }
+
 
 
 
@@ -2206,3 +2384,194 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtLocations_GridS
 // }
 
 
+/* test 20
+   domain:       linear network 
+   sampling:     locations = nodes
+   penalization: laplacian
+   covariates:   no
+   BC:           no
+   order FE:     1
+   GCV optimization: grid exact
+   Correspondent in R: Test_9
+ */
+// TEST(GCV_SQRPDE, Test20_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) {
+
+//   const std::string TestNumber = "9"; 
+  
+//   // define domain and regularizing PDE
+//   MeshLoader<NetworkMesh<>> domain("network");
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+
+
+//   double alpha = 0.9; 
+//   unsigned int alpha_int = alpha*100; 
+//   const std::string alpha_string = std::to_string(alpha_int);
+//   SQRPDE<decltype(problem), fdaPDE::models::GeoStatMeshNodes> model(problem, alpha);
+//   //GeoStatLocations
+
+//   // load data from .csv files
+//   CSVReader<double> reader{};
+//   CSVFile<double> yFile; 
+//   DMatrix<double> y;  
+
+//   // Marco
+//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+//   // Ilenia 
+//   //std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+  
+//   double tol_weights = 0.000001; 
+//   double tol_FPIRLS = 0.000001; 
+//   model.setTolerances(tol_weights, tol_FPIRLS); 
+   
+//   std::string GCV_type = "Exact";
+//   // define grid of lambda values
+//   std::vector<SVector<1>> lambdas;
+//   for(double x = -8.0; x <= -4.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+
+//   unsigned int M = 10;
+//   for(std::size_t m = 1; m <= M; m++) {
+
+//     std::string path_solutions = R_path + "/R/Our/data/Test_" + 
+//                     TestNumber + "/alpha_" + alpha_string + "/c_network/sim_" + std::to_string(m); 
+//     std::string path_GCV =  path_solutions + "/GCV/" + GCV_type;                
+
+//     yFile = reader.parseFile(path_solutions + "/z.csv");             
+//     y = yFile.toEigen();
+
+//     // set model data
+//     BlockFrame<double, int> df;
+//     df.insert(OBSERVATIONS_BLK, y);
+
+//     model.setData(df);
+//     model.init(); // init model
+
+//     model.setTolerances(tol_weights, tol_FPIRLS); 
+
+//     // define GCV function and optimize
+//     GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
+//     GridOptimizer<1> opt;
+
+//     ScalarField<1, decltype(GCV)> obj(GCV);
+//     opt.optimize(obj, lambdas); // optimize gcv field
+//     SVector<1> best_lambda = opt.optimum();
+    
+//     std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl; 
+//     // Lambda opt
+//     std::ofstream fileLambdaopt(path_solutions + 
+//                     "/LambdaCpp.csv");
+//     if (fileLambdaopt.is_open()){
+//       fileLambdaopt << std::setprecision(16) << best_lambda[0];
+//       fileLambdaopt.close();
+//     }
+//     // Lambda vector
+//     std::ofstream fileGCV_lambda(path_GCV + "/Lambdas.csv");
+//     for(std::size_t i = 0; i < lambdas.size(); ++i) 
+//       fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
+
+//     fileGCV_lambda.close(); 
+//     // GCV scores
+//     std::ofstream fileGCV_scores(path_GCV + "/GCV_scoresCpp.csv");
+//     for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+//       fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+
+//     fileGCV_scores.close(); 
+
+//   }
+
+// }
+
+
+// /* test 22
+//    domain:       quasicircular domain
+//    sampling:     areal
+//    penalization: laplacian 
+//    covariates:   no
+//    BC:           yes
+//    order FE:     1
+//    GCV optimization: grid exact
+//  */
+// TEST(GCV_SQRPDE, Test22_NonCostantCoefficientsPDE_NonParametric_Areal_GridExact) {
+
+//   const std::string TestNumber = "4";
+
+//   double alpha = 0.5; 
+//   unsigned int alpha_int = alpha*100; 
+//   const std::string alpha_string = std::to_string(alpha_int);
+
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("quasi_circle");
+
+//   // load PDE coefficients data
+//   auto L = Laplacian();
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+
+//   std::string GCV_type = "Exact";
+
+//   // Marco
+//   std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+//   // Ilenia 
+//   //std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared"; 
+//   std::string path_solutions = R_path + "/R/Our/data/Test_" + TestNumber + "/alpha_" + alpha_string; 
+//   std::string path_GCV = path_solutions + "/GCV/" + GCV_type; 
+  
+//   // define statistical model
+//   CSVReader<double> reader{};
+//   CSVReader<int> int_reader{};
+//   CSVFile<int> arealFile; // incidence matrix for specification of subdomains
+//   arealFile = int_reader.parseFile(path_solutions + "/incidence_matrix.csv");
+//   DMatrix<int> areal = arealFile.toEigen();
+
+//   SQRPDE<decltype(problem), fdaPDE::models::Areal> model(problem, alpha);
+//   model.set_spatial_locations(areal);
+  
+//   // load data from .csv files
+//   CSVFile<double> yFile; // observation file
+//   std::cout << "here 3" << std::endl;
+//   yFile = reader.parseFile(path_solutions + "/z.csv");
+//   std::cout << "here 4" << std::endl;
+//   DMatrix<double> y = yFile.toEigen();
+  
+//   // set model data
+//   BlockFrame<double, int> df;
+//   df.insert(OBSERVATIONS_BLK, y);
+//   model.setData(df);
+//   model.init(); // init model
+
+//   // define grid of lambda values
+//   std::vector<SVector<1>> lambdas;
+//   for(double x = -6.0; x <= -3.0; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
+  
+//   // define GCV calibrator
+//   GCV<decltype(model), ExactEDF<decltype(model)>> GCV(model);
+//   GridOptimizer<1> opt;
+
+//   ScalarField<1, decltype(GCV)> obj(GCV);
+//   opt.optimize(obj, lambdas); // optimize gcv field
+//   SVector<1> best_lambda = opt.optimum();
+//   std::cout << "Lambda optimal is: " << best_lambda[0] << std::endl; 
+
+//   // Lambda opt
+//   std::ofstream fileLambdaopt(path_solutions + 
+//                   "/LambdaCpp.csv");
+//   if (fileLambdaopt.is_open()){
+//     fileLambdaopt << std::setprecision(16) << best_lambda[0];
+//     fileLambdaopt.close();
+//   }
+
+//   // Lambda vector
+//   std::ofstream fileGCV_lambda(path_GCV + "/Lambdas.csv");
+//   for(std::size_t i = 0; i < lambdas.size(); ++i) 
+//     fileGCV_lambda << std::setprecision(16) << lambdas[i] << "\n" ; 
+//   fileGCV_lambda.close(); 
+
+//   // GCV scores
+//   std::ofstream fileGCV_scores(path_GCV + "/GCV_scoresCpp.csv");
+//   for(std::size_t i = 0; i < GCV.values().size(); ++i) 
+//     fileGCV_scores << std::setprecision(16) << std::sqrt(GCV.values()[i]) << "\n" ; 
+
+//   fileGCV_scores.close(); 
+
+// }

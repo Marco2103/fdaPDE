@@ -87,6 +87,9 @@ namespace FEM{
     DMatrix<double> quadratureNodes() const { return integrator_.quadratureNodes(domain_); }; // returns all quadrature nodes on the mesh
     bool massLumpingSystem() const { return massLumpingSystem_; }; // M 
 
+    // setters 
+    void setMassLumpingSystem(const bool &lumping) const { massLumpingSystem_ = lumping; }; // M
+
     // solution informations produced by call to .solve()
     const DMatrix<double>&  solution() const { return solver_.solution(); };
     const DMatrix<double>&  force() const { return solver_.force(); }; // rhs of FEM linear system

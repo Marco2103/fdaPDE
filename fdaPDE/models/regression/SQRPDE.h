@@ -38,7 +38,7 @@ namespace models{
   private:
     typedef RegressionBase<SQRPDE<PDE, SamplingDesign>> Base;
     
-    double alpha_;                                          // quantile order 
+    double alpha_;                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
     SpMatrix<double> A_{};                         // system matrix of non-parametric problem (2N x 2N matrix)
@@ -58,7 +58,7 @@ namespace models{
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 200;  
-    double tol_weights_; 
+    double tol_weights_ = 1e-6; 
     double tol_;
 
     // Debug
@@ -74,13 +74,13 @@ namespace models{
     using Base::lambdaS; // smoothing parameter in space
     // constructor
     SQRPDE() = default;
-    SQRPDE(const PDE& pde, double alpha = 0.5) : Base(pde), alpha_(alpha) {};   
-
+    SQRPDE(const PDE& pde, double alpha = 0.5) : Base(pde), alpha_(alpha) {}; 
     
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
+    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; } 
+    void setAlpha(const double &alpha) { alpha_ = alpha; }
 
     // ModelBase implementation
     void init_model() { return; }
@@ -95,9 +95,8 @@ namespace models{
 
     DVector<double> initialize_mu(); 
 
-    
     // iGCV interface implementation
-    virtual const DMatrix<double>& T(); // T = A 
+    virtual const DMatrix<double>& T();  
     virtual const DMatrix<double>& Q(); 
 
     // returns the euclidian norm of y - \hat y

@@ -6,5 +6,4 @@
 // #include <fdaPDE/models/regression/SRPDE.h>
 // using fdaPDE::models::SRPDE;
 // #include <fdaPDE/models/SamplingDesign.h>
-
 // using fdaPDE::models::Sampling;
