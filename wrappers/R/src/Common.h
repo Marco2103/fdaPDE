@@ -40,17 +40,6 @@ public:
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
     pde_(domain_) { 
       pde_.setBilinearForm(BilinearFormType()); };
-
-  RegularizingPDE(const Rcpp::List& R_Mesh) :
-    // initialize domain
-    domain_(Rcpp::as<DMatrix<double>>(R_Mesh["nodes"]),
-	    Rcpp::as<DMatrix<int>>   (R_Mesh["edges"]),
-	    Rcpp::as<DMatrix<int>>   (R_Mesh["elements"]),
-	    // Rcpp::as<DMatrix<int>>   (R_Mesh["neigh"]),
-      Rcpp::as<neighb_type>   (R_Mesh["neigh"]),
-	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
-    pde_(domain_) { 
-      pde_.setBilinearForm(BilinearFormType()); };
   
   // setters
   void set_dirichlet_bc(const DMatrix<double>& data){ pde_.setDirichletBC(data); }

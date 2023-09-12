@@ -66,7 +66,7 @@ public:
   void set_alpha(const double &alpha){ model_.setAlpha(alpha); }
   // void setTolerances(double tol_w, double tol_fpirls){ model_.setTolerances(tol_w, tol_fpirls); }
   void setMassLumpingGCV(bool lump){ model_.setMassLumpingGCV(lump); }
-  void setMassLumpingSystem(bool lump){ regularization_.pde().setMassLumpingSystem(lump); }
+  // void setMassLumpingSystem(bool lump){ regularization_.pde().setMassLumpingSystem(lump); }
 
   /* getters */
   SpMatrix<double> R0() const { return model_.R0(); }
@@ -75,7 +75,8 @@ public:
   DVector<double> f() const { return model_.f(); }; 
   DVector<double> fn() const { return model_.Psi()*model_.f(); }; 
   DVector<double> beta() const { return model_.beta(); }; 
-  DMatrix<double> locs() const { return model_.locs(); };  
+  DMatrix<double> locs() const { return model_.locs(); }; 
+  DMatrix<int> subdomains() const { return model_.locs(); };  
 
     
   /* initialize model and solve smoothing problem */
@@ -107,7 +108,7 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatNodes) {
     .method("set_lambda_s",     &SQRPDE_Laplacian_2D_GeoStatNodes::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_2D_GeoStatNodes::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_2D_GeoStatNodes::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_Laplacian_2D_GeoStatNodes::setMassLumpingSystem)
+    // .method("setMassLumpingSystem",     &SQRPDE_Laplacian_2D_GeoStatNodes::setMassLumpingSystem)
     .method("set_observations", &SQRPDE_Laplacian_2D_GeoStatNodes::set_observations)
     .method("init",       &SQRPDE_Laplacian_2D_GeoStatNodes::init)
     .method("init_regularization",       &SQRPDE_Laplacian_2D_GeoStatNodes::init_regularization)
@@ -130,7 +131,7 @@ RCPP_MODULE(SQRPDE_ConstantCoefficients_2D_GeoStatNodes) {
     .method("set_lambda_s",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::set_lambda_s)
     .method("set_alpha",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::setMassLumpingSystem)
+    // .method("setMassLumpingSystem",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::setMassLumpingSystem)
     .method("set_observations", &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::set_observations)
     .method("set_covariates", &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::set_covariates)
     .method("init",       &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::init)
@@ -154,7 +155,7 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatLocations) {
     .method("set_lambda_s",     &SQRPDE_Laplacian_2D_GeoStatLocations::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_2D_GeoStatLocations::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_2D_GeoStatLocations::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_Laplacian_2D_GeoStatLocations::setMassLumpingSystem)
+    // .method("setMassLumpingSystem",     &SQRPDE_Laplacian_2D_GeoStatLocations::setMassLumpingSystem)
     .method("set_locations",  &SQRPDE_Laplacian_2D_GeoStatLocations::set_locations)
     .method("set_observations", &SQRPDE_Laplacian_2D_GeoStatLocations::set_observations)
     .method("init",       &SQRPDE_Laplacian_2D_GeoStatLocations::init)
@@ -174,12 +175,12 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_Areal) {
     .method("beta",     &SQRPDE_Laplacian_2D_Areal::beta)
     .method("R0",       &SQRPDE_Laplacian_2D_Areal::R0)
     .method("Psi",       &SQRPDE_Laplacian_2D_Areal::Psi)
-    .method("locs",       &SQRPDE_Laplacian_2D_Areal::locs)
+    .method("subdomains",       &SQRPDE_Laplacian_2D_Areal::subdomains)
     // setters
     .method("set_lambda_s",     &SQRPDE_Laplacian_2D_Areal::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_2D_Areal::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_2D_Areal::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_Laplacian_2D_Areal::setMassLumpingSystem)
+    // .method("setMassLumpingSystem",     &SQRPDE_Laplacian_2D_Areal::setMassLumpingSystem)
     .method("set_subdomains", &SQRPDE_Laplacian_2D_Areal::set_subdomains)
     .method("set_observations", &SQRPDE_Laplacian_2D_Areal::set_observations)
     .method("set_covariates", &SQRPDE_Laplacian_2D_Areal::set_covariates)
@@ -207,7 +208,7 @@ RCPP_MODULE(SQRPDE_Laplacian_3D_GeoStatNodes) {
     .method("set_lambda_s",     &SQRPDE_Laplacian_3D_GeoStatNodes::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_3D_GeoStatNodes::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_3D_GeoStatNodes::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_Laplacian_3D_GeoStatNodes::setMassLumpingSystem)
+    // .method("setMassLumpingSystem",     &SQRPDE_Laplacian_3D_GeoStatNodes::setMassLumpingSystem)
     .method("set_observations", &SQRPDE_Laplacian_3D_GeoStatNodes::set_observations)
     .method("set_covariates", &SQRPDE_Laplacian_3D_GeoStatNodes::set_covariates)
     .method("init_regularization",       &SQRPDE_Laplacian_3D_GeoStatNodes::init_regularization)
@@ -233,7 +234,7 @@ RCPP_MODULE(SQRPDE_Laplacian_3D_GeoStatLocations) {
     .method("set_lambda_s",     &SQRPDE_Laplacian_3D_GeoStatLocations::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_3D_GeoStatLocations::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_3D_GeoStatLocations::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_Laplacian_3D_GeoStatLocations::setMassLumpingSystem)
+    // .method("setMassLumpingSystem",     &SQRPDE_Laplacian_3D_GeoStatLocations::setMassLumpingSystem)
     .method("set_locations",  &SQRPDE_Laplacian_3D_GeoStatLocations::set_locations)
     .method("set_observations", &SQRPDE_Laplacian_3D_GeoStatLocations::set_observations)
     .method("set_covariates", &SQRPDE_Laplacian_3D_GeoStatLocations::set_covariates)
@@ -259,8 +260,8 @@ RCPP_MODULE(SQRPDE_Laplacian_25D_GeoStatNodes) {
     .method("set_lambda_s",     &SQRPDE_Laplacian_25D_GeoStatNodes::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_25D_GeoStatNodes::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_25D_GeoStatNodes::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_Laplacian_3D_GeoStatLocations::setMassLumpingSystem)
-    .method("set_observations", &SQRPDE_Laplacian_3D_GeoStatLocations::set_observations)
+    // .method("setMassLumpingSystem",     &SQRPDE_Laplacian_25D_GeoStatNodes::setMassLumpingSystem)
+    .method("set_observations", &SQRPDE_Laplacian_25D_GeoStatNodes::set_observations)
     .method("set_covariates", &SQRPDE_Laplacian_25D_GeoStatNodes::set_covariates)
     .method("init_regularization",       &SQRPDE_Laplacian_25D_GeoStatNodes::init_regularization)
     .method("init_pde",       &SQRPDE_Laplacian_25D_GeoStatNodes::init_pde)
@@ -285,7 +286,7 @@ RCPP_MODULE(SQRPDE_Laplacian_1_5D_GeoStatNodes) {
     .method("set_lambda_s",     &SQRPDE_Laplacian_1_5D_GeoStatNodes::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_1_5D_GeoStatNodes::set_alpha)
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_1_5D_GeoStatNodes::setMassLumpingGCV)
-    .method("setMassLumpingSystem",     &SQRPDE_Laplacian_1_5D_GeoStatNodes::setMassLumpingSystem)
+    // .method("setMassLumpingSystem",     &SQRPDE_Laplacian_1_5D_GeoStatNodes::setMassLumpingSystem)
     .method("set_observations", &SQRPDE_Laplacian_1_5D_GeoStatNodes::set_observations)
     .method("set_covariates", &SQRPDE_Laplacian_1_5D_GeoStatNodes::set_covariates)
     .method("init_regularization",       &SQRPDE_Laplacian_1_5D_GeoStatNodes::init_regularization)

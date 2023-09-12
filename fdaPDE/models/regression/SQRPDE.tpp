@@ -27,8 +27,6 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   f_ = fpirls.solver().f();
   g_ = fpirls.solver().g();   // per completezza (non sappiamo se lo usa)
  
-  Jfinal_sqrpde_ = fpirls.J_final();
-  niter_sqrpde_ = fpirls.n_iter();
 
   if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;

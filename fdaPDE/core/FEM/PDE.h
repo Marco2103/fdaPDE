@@ -77,7 +77,7 @@ namespace FEM{
     void setInitialCondition(const DVector<double>& data) { initialCondition_ = data; };
 
     // setters 
-    void setMassLumpingSystem(const bool &lumping) const { massLumpingSystem_ = lumping; }; // M
+    void setMassLumpingSystem(const bool &lumping) { massLumpingSystem_ = lumping; }; // M
   
     // getters
     const Mesh<M,N,R>& domain() const { return domain_; }
@@ -89,9 +89,6 @@ namespace FEM{
     const B& reference_basis() const { return referenceBasis_; }
     DMatrix<double> quadratureNodes() const { return integrator_.quadratureNodes(domain_); }; // returns all quadrature nodes on the mesh
     bool massLumpingSystem() const { return massLumpingSystem_; }; // M 
-
-    // setters 
-    void setMassLumpingSystem(const bool &lumping) { massLumpingSystem_ = lumping; }; // M
 
     // solution informations produced by call to .solve()
     const DMatrix<double>&  solution() const { return solver_.solution(); };

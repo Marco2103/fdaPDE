@@ -78,7 +78,7 @@ namespace models{
       solver_.data() = m_.data();
       solver_.setLambda(m_.lambda());
       solver_.set_spatial_locations(m_.locs());
-      solver_.setLinearSystemType(m_.LinearSystemType());   // M to have correspondence between model and solver
+      //solver_.setLinearSystemType(m_.LinearSystemType());   // M to have correspondence between model and solver
       solver_.setMassLumpingGCV(m_.massLumpingGCV());    // M to have correspondence between model and solver
       solver_.init_pde();
       solver_.init_regularization();
