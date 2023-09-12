@@ -73,7 +73,11 @@ namespace models {
       return x.array().inverse(); }                          // 1/x
     
     // deviance function
-    double deviance(double x, double y) { return y > 0 ? y*std::log(y/x) - (y-x) : x; };
+    double deviance(double x, double y) { 
+      if(!(y>0)) {
+        std::cout << "ATT: no positive" << std::endl;
+      }
+      return y > 0 ? y*std::log(y/x) - (y-x) : x; };
   };
 
   class Exponential {

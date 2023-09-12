@@ -51,7 +51,10 @@ namespace calibration{
     GCV(M& model, std::size_t r) : model_(model), trS_(model_, r) {};
     template <typename U = trS_evaluation_strategy,
 	      typename std::enable_if<std::is_same<U, StochasticEDF<M>>::value,int>::type = 0>
-    GCV(M& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::WoodburyGCV) : model_(model), trS_(model_, r, seed, method) {};
+
+    GCV(M& model, std::size_t r, std::size_t seed) : model_(model), trS_(model_, r, seed) {};
+
+    // GCV(M& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::WoodburyGCV) : model_(model), trS_(model_, r, seed, method) {};
     // cambiato l'ultimo constructor per passare il parametro Woodbury/Cholesky 
 
     // evaluates the analytical expression of gcv at \lambda (called by any type of GCV optimization)
@@ -72,8 +75,9 @@ namespace calibration{
       std::size_t n = model_.n_obs(); // number of observations      
       double dor = n - (q + trS);     // residual degrees of freedom
       edfs_->emplace_back(q + trS);   // store equivalent degrees of freedom
-      
+       
       // return gcv at point
+      std::cout << "Constant: " << (n/std::pow(dor, 2)) << std::endl ; 
       double gcv_value = (n/std::pow(dor, 2))*( model_.norm(model_.fitted(), model_.y()) ) ;
       values_->emplace_back(gcv_value);
       // per SQRPDE dobbiamo restituire la radice 

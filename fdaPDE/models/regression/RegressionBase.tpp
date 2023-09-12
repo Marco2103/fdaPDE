@@ -27,12 +27,13 @@ void RegressionBase<Model>::init_data() {
     XtWX_ = X().transpose()*W_*X();
     invXtWX_ = XtWX_.partialPivLu();
   }
+
 }
 
 // computes fitted values \hat y = \Psi*f_ + X*beta_
 template <typename Model>
 DMatrix<double> RegressionBase<Model>::fitted() const {
-  DMatrix<double> hat_y = Psi(not_nan())*f_;
+  DMatrix<double> hat_y = Psi(not_nan())*f_;  // PsiTD().transpose()*f_; 
   if(hasCovariates()) hat_y += X()*beta_;
   return hat_y;
 }

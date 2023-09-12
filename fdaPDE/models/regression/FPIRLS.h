@@ -92,6 +92,7 @@ namespace models{
     void compute() {
 
       static_assert(is_regression_model<Model>::value);   
+
       mu_ = m_.initialize_mu(); 
   
       distribution_.preprocess(mu_);
@@ -101,19 +102,22 @@ namespace models{
 
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){ 
-        std::cout << "FPIRLS iteration: " << k_ + 1 << std::endl;  
+        // std::cout << "FPIRLS iteration: " << k_ + 1 << std::endl;  
       //   while(k_ < max_iter_ && std::abs(J_new - 0.04472646666589305) > 1e-3){  --> to check a specific value of J 
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
 	auto pair = m_.compute(mu_);    // aggiunto un k in input 
+
+  
 	// solve weighted least square problem
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
 
 	// update solver to change in the weight matrix
-	solver_.init_data(); 
+	solver_.init_data();  
 	solver_.init_model(); 
+  // if(k_+1 != max_iter_)      // debug per prendere i pesi
 	solver_.solve();
 	
 	// extract estimates from solver
@@ -128,6 +132,8 @@ namespace models{
 
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
   double J = m_.model_loss(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // aggiunto il lambda
+  
+  // std::cout << " J = " << m_.model_loss(mu_) << " + " << m_.lambdaS()*g_.dot(m_.R0()*g_) << " = " << J ; 
   
 
 	// prepare for next iteration

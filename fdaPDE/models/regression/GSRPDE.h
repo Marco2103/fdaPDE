@@ -14,6 +14,12 @@ using fdaPDE::calibration::iGCV;
 #include "FPIRLS.h"
 using fdaPDE::models::FPIRLS;
 
+// regression module imports    // M 
+#include "../SamplingDesign.h"
+#include "RegressionBase.h"
+using fdaPDE::models::RegressionBase;
+
+
 namespace fdaPDE{
 namespace models{
 
@@ -33,8 +39,8 @@ namespace models{
     std::string LinearSystemType_ = "Woodbury";       // M
     
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 15;
-    double tol_ = 0.0002020;
+    std::size_t max_iter_ = 200;
+    double tol_ = 0.000001;   // 0.0002020;
 
   public:
     IMPORT_REGRESSION_SYMBOLS;

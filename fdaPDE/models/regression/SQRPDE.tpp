@@ -7,7 +7,13 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   std::cout << std::endl;
   std::cout << "Lambda: " << lambdaS() << std::endl; 
   
+  // Debug
+  // W_matrix_.resize(n_obs(), max_iter_);
+  // py_matrix_.resize(n_obs(), max_iter_);
+  // res_matrix_.resize(n_obs(), max_iter_);
+
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
+
   fpirls.compute();
   // fpirls converged: extract matrix P and solution estimates
   // W_ = fpirls.weights().asDiagonal();
@@ -18,7 +24,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
     invXtWX_ = XtWX_.partialPivLu();
   }
   
-  A_ =    fpirls.solver().A(); 
+  // A_ =    fpirls.solver().A(); 
   invA_ = fpirls.solver().invA();
 
   if(hasCovariates()) {
@@ -44,7 +50,6 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() {
 
   if(LinearSystemType_ == "Woodbury"){
 
-    std::cout << "Initialize mu with block resolution" << std::endl; 
     // assemble system matrix 
     SparseBlockMatrix<double,2,2>
       A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
@@ -55,11 +60,16 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() {
     invA_temp.compute(A_temp);
     DVector<double> b_temp; 
     b_temp.resize(A_temp.rows());
-    b_temp.block(n_basis(),0, n_basis(),1) = 0.*u();   // M è sempre 0 ??? 
+    b_temp.block(n_basis(),0, n_basis(),1) = lambdaS()*u();   // M : da controllare
     b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
     BLOCK_FRAME_SANITY_CHECKS;
     DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
-    DVector<double> fn = Psi()*f;
+    DVector<double> fn =  Psi(not_nan())*f;   // PsiTD().transpose()*f;   //  Psi(not_nan())*f;
+
+    for(int i = 0; i < y().size(); ++i) {
+  } 
+
+
     return fn;
   
 
@@ -84,12 +94,13 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   // compute weight matrix and pseudo-observation vector
   DVector<double> abs_res{} ;
   abs_res.resize(y().size()) ; 
+  for(int i = 0; i < y().size(); ++i) {
+    abs_res(i) = std::abs(y()(i) - mu(i)) ; 
+    // std::cout << "Abs_res[ " << i << " ] = " << abs_res(i) << std::endl ; 
+  }   
 
-  for(int i = 0; i < y().size(); ++i)
-    abs_res(i) = std::abs(y()(i) - mu(i)) ;   
 
   pW_.resize(n_obs());
-
   for(int i = 0; i < y().size(); ++i) {
     if (abs_res(i) < tol_weights_){
       pW_(i) = ( 1./(abs_res(i) + tol_weights_) )/(2.*n_obs());
@@ -100,6 +111,13 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   }
  
   py_ = y() - (1 - 2.*alpha_)*abs_res;
+
+  // W_matrix_.col(count_) = pW_ ; 
+  // py_matrix_.col(count_) = py_ ; 
+  // res_matrix_.col(count_) = abs_res ; 
+
+  // count_++;
+
   return std::tie(pW_, py_);
 }
 

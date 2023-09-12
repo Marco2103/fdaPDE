@@ -161,6 +161,7 @@ namespace models{
     SamplingDesign() = default;
     // init sampling data structures
     void init_sampling(bool forced = false) {
+      // std::cout << "Init sampling areal " << std::endl ; 
       if(subdomains_.size() == 0)
 	throw std::logic_error("you have requested an Areal sampling without supplying the incidence matrix");
       // compute once if not forced to recompute
@@ -195,11 +196,16 @@ namespace models{
 	    Di += e->measure(); // update measure of subdomain D_i
 	  }
 	}
+
+
 	// divide each \int_{D_i} \psi_j by the measure of subdomain D_i
 	for(std::size_t j = 0; j < head; ++j){
 	  tripletList[tail + j].value() /= Di;
 	}
 	D[k] = Di; // store measure of subdomain
+
+  // std::cout << "Measure D_" << k << " : " << Di << std::endl; 
+
 	tail += head;
       }
       // here we must be carefull of the type of model (space-only or space-time) we are handling
@@ -219,6 +225,7 @@ namespace models{
       Psi_.setFromTriplets(tripletList.begin(), tripletList.end());
       Psi_.makeCompressed();
       tensorize(); // tensorize \Psi for space-time problems
+
     };
     
     // getters
@@ -227,7 +234,9 @@ namespace models{
     const DiagMatrix<double>& D() const { return D_; }
     const DMatrix<int>& locs() const { return subdomains_; }
     // setter
-    void set_spatial_locations(const DMatrix<int>& subdomains) { subdomains_ = subdomains; }
+    void set_spatial_locations(const DMatrix<int>& subdomains) { 
+      // std::cout << "Set subdomains " << std::endl ; 
+      subdomains_ = subdomains; }
   };  
     
 }}

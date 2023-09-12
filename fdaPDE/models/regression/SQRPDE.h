@@ -41,9 +41,6 @@ namespace models{
     double alpha_;                                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
-    SpMatrix<double> A_{};                         // system matrix of non-parametric problem (2N x 2N matrix)
-                                                      // non è usata da nessuna parte, va salvata comunque o la togliamo?
-
     typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization;     // M 
     fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
     std::string LinearSystemType_ = "Woodbury";       // M
@@ -58,12 +55,16 @@ namespace models{
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 200;  
-    double tol_weights_; 
-    double tol_;
+    const double tol_weights_ = 0.000001;   // visto che questa non cambia più possiamo definirla const 
+    double tol_ = 0.000001; // 0.0002020;
 
     // Debug
     double Jfinal_sqrpde_;
     std::size_t niter_sqrpde_;
+    // DMatrix<double> W_matrix_{};
+    // DMatrix<double> py_matrix_{};
+    // DMatrix<double> res_matrix_{}; 
+    // std::size_t count_ = 0; 
 
     // matrices related to woodbury decomposition -> tolte perchè lui le ha aggiunte in RegressionBase
     // DMatrix<double> U_{};
@@ -81,6 +82,7 @@ namespace models{
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
     void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
+    void setAlpha(const double &alpha) { alpha_ = alpha; }  // M
 
     // ModelBase implementation
     void init_model() { return; }
@@ -121,13 +123,17 @@ namespace models{
     // Debug
     const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 
     const std::size_t& niter_sqrpde() const { return niter_sqrpde_; } 
-    void setTolerances(double tol_weigths, double tol_FPIRLS) { 
-      tol_weights_ = tol_weigths; 
-      tol_ = tol_FPIRLS; 
-    }
+    // void setTolerances(double tol_weigths, double tol_FPIRLS) { 
+    //   tol_weights_ = tol_weigths; 
+    //   tol_ = tol_FPIRLS; 
+    // }
     const DiagMatrix<double> lumped_invR0() const { return lumped_invR0_; }
     const DiagMatrix<double>& W() const { return W_; } 
-    const SpMatrix<double>& A() const { return A_; }
+    // const SpMatrix<double>& A() const { return A_; }
+
+    // const DMatrix<double>& W_matrix() const { return W_matrix_; }
+    // const DMatrix<double>& py_matrix() const { return py_matrix_; }
+    // const DMatrix<double>& res_matrix() const { return res_matrix_; }
     
 
 

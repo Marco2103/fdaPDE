@@ -39,6 +39,7 @@ namespace models {
   public:
     typedef typename model_traits<Model>::PDE PDE; // PDE used for regularization in space
     typedef typename select_regularization_type<Model>::type Base;
+    // typedef typename select_regularization_type<Model>::type::Base SuperBase;  // M 
     typedef SamplingDesign<Model, typename model_traits<Model>::sampling> SamplingBase;
     using Base::pde_;        // differential operator L 
     using Base::df_;         // BlockFrame for problem's data storage
@@ -46,6 +47,7 @@ namespace models {
     using Base::idx;         // indices of observations
     using SamplingBase::Psi; // matrix of spatial basis evaluation at locations p_1 ... p_n
     using SamplingBase::D;   // matrix of subdomains measures (for areal sampling)
+
     
     RegressionBase() = default;
     // space-only constructor
@@ -86,8 +88,13 @@ namespace models {
     const SpMatrix<double>& Psi() const { return has_nan() ? B_ : Psi(not_nan()); }
     auto PsiTD() const { return has_nan() ? B_.transpose()*D() : Psi(not_nan()).transpose()*D();}
     const bool massLumpingGCV() const { return Base::massLumpingGCV_; }    // M
+
+    // const bool massLumpingGCV() const { return SuperBase::massLumpingGCV_; }    // M
+
     // setters
     void setMassLumpingGCV(bool massLumping) { Base::setMassLumpingGCV(massLumping); }   // M 
+
+    // void setMassLumpingGCV(bool massLumping) { SuperBase::setMassLumpingGCV(massLumping); }   // M 
 
     // utilities
     bool hasCovariates() const { return q() != 0; } // true if the model has a parametric part

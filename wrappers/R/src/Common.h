@@ -4,7 +4,6 @@
 #include <fdaPDE/core/utils/Symbols.h>
 #include <fdaPDE/models/regression/SRPDE.h>
 using fdaPDE::models::SRPDE;
-
 #include <fdaPDE/core/utils/DataStructures/BlockFrame.h>
 #include <fdaPDE/models/ModelTraits.h>
 #include <fdaPDE/core/FEM/PDE.h>
@@ -20,7 +19,9 @@ using fdaPDE::core::MESH::Mesh;
 
 template <unsigned int M, unsigned int N, unsigned int R, typename F>
 class RegularizingPDE {
+
 private:
+  typedef typename fdaPDE::core::MESH::neighboring_structure<M,N>::type neighb_type;  // new
   typedef typename std::decay<F>::type BilinearFormType;
   // internal data
   Mesh<M,N,R> domain_;
@@ -32,9 +33,23 @@ public:
     domain_(Rcpp::as<DMatrix<double>>(R_Mesh["nodes"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["edges"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["elements"]),
-	    Rcpp::as<DMatrix<int>>   (R_Mesh["neigh"]),
+	    // Rcpp::as<DMatrix<int>>   (R_Mesh["neigh"]),
+      Rcpp::as<neighb_type>   (R_Mesh["neigh"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
-    pde_(domain_) { pde_.setBilinearForm(BilinearFormType()); };
+    pde_(domain_) { 
+      pde_.setBilinearForm(BilinearFormType()); };
+
+  RegularizingPDE(const Rcpp::List& R_Mesh) :
+    // initialize domain
+    domain_(Rcpp::as<DMatrix<double>>(R_Mesh["nodes"]),
+	    Rcpp::as<DMatrix<int>>   (R_Mesh["edges"]),
+	    Rcpp::as<DMatrix<int>>   (R_Mesh["elements"]),
+	    // Rcpp::as<DMatrix<int>>   (R_Mesh["neigh"]),
+      Rcpp::as<neighb_type>   (R_Mesh["neigh"]),
+	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
+    pde_(domain_) { 
+      std::cout << "Hello 1" << std::endl; 
+      pde_.setBilinearForm(BilinearFormType()); };
   
   // setters
   void set_dirichlet_bc(const DMatrix<double>& data){ pde_.setDirichletBC(data); }
@@ -57,6 +72,12 @@ Laplacian_2D_Order1;
 // 3D simple Laplacian regularization
 typedef RegularizingPDE<3,3,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>
 Laplacian_3D_Order1;
+// 2.5D simple Laplacian regularization
+typedef RegularizingPDE<2,3,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>    // new
+Laplacian_25D_Order1;
+// 1.5D simple Laplacian regularization
+typedef RegularizingPDE<1,2,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>    // new
+Laplacian_1_5D_Order1;
 
 // constant coefficients PDE type
 template<unsigned int M>

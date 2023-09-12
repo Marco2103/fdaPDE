@@ -75,6 +75,9 @@ namespace FEM{
     void setDirichletBC(const DMatrix<double>& data);
     //void setNeumannBC();
     void setInitialCondition(const DVector<double>& data) { initialCondition_ = data; };
+
+    // setters 
+    void setMassLumpingSystem(const bool &lumping) const { massLumpingSystem_ = lumping; }; // M
   
     // getters
     const Mesh<M,N,R>& domain() const { return domain_; }

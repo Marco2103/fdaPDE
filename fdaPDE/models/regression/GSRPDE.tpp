@@ -10,7 +10,11 @@ void GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::solv
   // fpirls converged: extract matrix P and solution estimates
   W_ = fpirls.solver().W();
 
-  // invXtWX = .. per GCV 
+  if(hasCovariates()) {                // M
+    XtWX_ = X().transpose()*W_*X(); 
+    invXtWX_ = XtWX_.partialPivLu();
+  }
+
   f_ = fpirls.solver().f();
   if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
@@ -93,11 +97,17 @@ const DMatrix<double>& GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, D
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 double GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::norm
-(const DMatrix<double>& obs, const DMatrix<double>& fitted) const {
+(const DMatrix<double>& fitted, const DMatrix<double>& obs) const {   // M : Palu: obs and fitted (invertiti fitted e obs perchè in GCV::operator() nella chiamata di norm() hanno questo ordine)
   Distribution distr_{}; // define distribution object
   // total deviance computation
+
+  // compute mu to pass to the deviance function
+  DMatrix<double> mu = distr_.inv_link(fitted);
   double result = 0;
-  for(std::size_t i = 0; i < obs.rows(); ++i)
-    result += distr_.deviance(obs.coeff(i,0), fitted.coeff(i,0));
+  for(std::size_t i = 0; i < obs.rows(); ++i) 
+    result += distr_.deviance(mu.coeff(i,0), obs.coeff(i,0));
+    
+    // result += distr_.deviance(fitted.coeff(i,0), obs.coeff(i,0));     // M : Palu: obs and fitted
+
   return result;
 }

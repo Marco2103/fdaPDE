@@ -5,7 +5,6 @@
 #include <fdaPDE/core/utils/Symbols.h>
 #include <fdaPDE/models/regression/SRPDE.h>
 using fdaPDE::models::SRPDE;
-
 #include <fdaPDE/core/utils/DataStructures/BlockFrame.h>
 #include <fdaPDE/models/ModelTraits.h>
 #include <fdaPDE/core/FEM/PDE.h>
@@ -81,4 +80,33 @@ RCPP_MODULE(Laplacian_3D_Order1) {
     // setters
     .method("set_dirichlet_bc",     &Laplacian_3D_Order1::set_dirichlet_bc)
     .method("set_forcing_term",     &Laplacian_3D_Order1::set_forcing_term);
+}
+
+
+RCPP_EXPOSED_AS  (Laplacian_25D_Order1)
+RCPP_EXPOSED_WRAP(Laplacian_25D_Order1)
+
+RCPP_MODULE(Laplacian_25D_Order1) {
+  Rcpp::class_<Laplacian_25D_Order1>("Laplacian_25D_Order1")
+    .constructor<Rcpp::List>()
+    // getters
+    .method("get_quadrature_nodes", &Laplacian_25D_Order1::get_quadrature_nodes)
+    .method("get_dofs_coordinates", &Laplacian_25D_Order1::get_dofs_coordinates)
+    // setters
+    .method("set_dirichlet_bc",     &Laplacian_25D_Order1::set_dirichlet_bc)
+    .method("set_forcing_term",     &Laplacian_25D_Order1::set_forcing_term);
+}
+
+RCPP_EXPOSED_AS  (Laplacian_1_5D_Order1)
+RCPP_EXPOSED_WRAP(Laplacian_1_5D_Order1)
+
+RCPP_MODULE(Laplacian_1_5D_Order1) {
+  Rcpp::class_<Laplacian_1_5D_Order1>("Laplacian_1_5D_Order1")
+    .constructor<Rcpp::List>()
+    // getters
+    .method("get_quadrature_nodes", &Laplacian_1_5D_Order1::get_quadrature_nodes)
+    .method("get_dofs_coordinates", &Laplacian_1_5D_Order1::get_dofs_coordinates)
+    // setters
+    .method("set_dirichlet_bc",     &Laplacian_1_5D_Order1::set_dirichlet_bc)
+    .method("set_forcing_term",     &Laplacian_1_5D_Order1::set_forcing_term);
 }
