@@ -4,6 +4,8 @@
 #include <fdaPDE/core/utils/Symbols.h>
 #include <fdaPDE/models/regression/SRPDE.h>
 using fdaPDE::models::SRPDE;
+#include <fdaPDE/models/regression/SQRPDE.h>
+using fdaPDE::models::SQRPDE;
 #include <fdaPDE/core/utils/DataStructures/BlockFrame.h>
 #include <fdaPDE/models/ModelTraits.h>
 #include <fdaPDE/core/FEM/PDE.h>
@@ -48,7 +50,6 @@ public:
       Rcpp::as<neighb_type>   (R_Mesh["neigh"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
     pde_(domain_) { 
-      std::cout << "Hello 1" << std::endl; 
       pde_.setBilinearForm(BilinearFormType()); };
   
   // setters

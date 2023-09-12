@@ -64,7 +64,7 @@ namespace models{
 
       std::size_t N = model().n_basis();
 
-      Psi_.resize(n, N);    
+      Psi_.resize(n, N);
 
       // triplet list to fill sparse matrix
       std::vector<fdaPDE::Triplet<double>> tripletList;
@@ -119,9 +119,11 @@ namespace models{
 
       auto gse = model().gse(); // geometric search engine
       // cycle over all locations
+      std::size_t count = 1; 
       for(std::size_t i = 0; i < locs_.rows(); ++i){ 
 	SVector<model_traits<Model>::PDE::local_dimension> p_i(locs_.row(i));
 	// search element containing the point
+  count++; 
 	auto e = gse.search(p_i);
 	// update \Psi matrix
 	for(std::size_t j = 0; j < model().pde().basis()[e->ID()].size(); ++j){
@@ -131,6 +133,7 @@ namespace models{
 	  // evaluate \phi_h(p_i) (value of the basis function centered in mesh node h and evaluated in point p_i)
 	  tripletList.emplace_back(i, h, psi_h(p_i));
 	}
+
       }
       // finalize construction
       Psi_.setFromTriplets(tripletList.begin(), tripletList.end());

@@ -38,7 +38,7 @@ namespace models{
   private:
     typedef RegressionBase<SQRPDE<PDE, SamplingDesign>> Base;
     
-    double alpha_;                                          // quantile order 
+    double alpha_;                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
 
     typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization;     // M 
@@ -55,34 +55,22 @@ namespace models{
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 200;  
-    const double tol_weights_ = 0.000001;   // visto che questa non cambia più possiamo definirla const 
-    double tol_ = 0.000001; // 0.0002020;
+    double tol_weights_ = 1e-6;   // DOM const ?
+    double tol_ = 1e-6; 
 
-    // Debug
-    double Jfinal_sqrpde_;
-    std::size_t niter_sqrpde_;
-    // DMatrix<double> W_matrix_{};
-    // DMatrix<double> py_matrix_{};
-    // DMatrix<double> res_matrix_{}; 
-    // std::size_t count_ = 0; 
-
-    // matrices related to woodbury decomposition -> tolte perchè lui le ha aggiunte in RegressionBase
-    // DMatrix<double> U_{};
-    // DMatrix<double> V_{};  
-
+ 
   public:
     IMPORT_REGRESSION_SYMBOLS;
     using Base::lambdaS; // smoothing parameter in space
     // constructor
     SQRPDE() = default;
-    SQRPDE(const PDE& pde, double alpha = 0.5) : Base(pde), alpha_(alpha) {};   
-
+    SQRPDE(const PDE& pde, double alpha = 0.5) : Base(pde), alpha_(alpha) {}; 
     
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
-    void setAlpha(const double &alpha) { alpha_ = alpha; }  // M
+    // void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }   DOM
+    void setAlpha(const double &alpha) { alpha_ = alpha; }
 
     // ModelBase implementation
     void init_model() { return; }
@@ -93,49 +81,24 @@ namespace models{
     std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
 
     // model_loss computes the unpenalized loss (it is called by FPIRLS)
-    double model_loss(const DVector<double>& mu); // private or public?
+    double model_loss(const DVector<double>& mu); // DOM private ?
 
     DVector<double> initialize_mu(); 
 
-    
     // iGCV interface implementation
-    virtual const DMatrix<double>& T(); // T = A 
+    virtual const DMatrix<double>& T();  
     virtual const DMatrix<double>& Q(); 
 
     // returns the euclidian norm of y - \hat y
     double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const ; 
 
     // getters
-    // const DiagMatrix<double>& W() const { return W_; } 
-    // const DMatrix<double>& XtWX() const { return XtWX_; }
-    // const Eigen::PartialPivLU<DMatrix<double>>& invXtWX() const { return invXtWX_; } 
-    // const DVector<double>& py() const { return py_; }    debug
-    // const SpMatrix<double>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
-    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // necessario perchè 
-    // altrimenti in GCV.h non posso fare model_.massLumping() 
-    // no ref perchè è ritorno un temporary object
+    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  
     
-    const std::string LinearSystemType() const { return LinearSystemType_; }  // M 
-
-    // Debug
-    const double& J_final_sqrpde() const { return Jfinal_sqrpde_; } 
-    const std::size_t& niter_sqrpde() const { return niter_sqrpde_; } 
-    // void setTolerances(double tol_weigths, double tol_FPIRLS) { 
-    //   tol_weights_ = tol_weigths; 
-    //   tol_ = tol_FPIRLS; 
-    // }
-    const DiagMatrix<double> lumped_invR0() const { return lumped_invR0_; }
-    const DiagMatrix<double>& W() const { return W_; } 
-    // const SpMatrix<double>& A() const { return A_; }
-
-    // const DMatrix<double>& W_matrix() const { return W_matrix_; }
-    // const DMatrix<double>& py_matrix() const { return py_matrix_; }
-    // const DMatrix<double>& res_matrix() const { return res_matrix_; }
-    
-
+    // const std::string LinearSystemType() const { return LinearSystemType_; }  // DOM
 
     virtual ~SQRPDE() = default;
   };

@@ -86,20 +86,17 @@ namespace calibration{
       if(!model_.hasCovariates()){ // nonparametric case
         sol = model_.invA().solve(Bs_);
       }else{
-        if (model_.n_basis() > N_threshold){  // prova constexpr -> non va (neanche definendo come constexpr function n_basi())
-                                              // perchè dentro constexpr non posso chiamare this 
+        if (model_.n_basis() > N_threshold){ 
           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
-          std::cout << "Inizio Woodbury GCV " << std::endl;
+       
           sol = SMW<>().solve(model_.invA(), model_.U(), model_.XtWX(), model_.V(), Bs_);
-          std::cout << "Fine Woodbury GCV " << std::endl; 
+        
         }
         else{   // Cholesky
-          std::cout << "Inizio Cholesky GCV " << std::endl; 
           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
           Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
           lltOfA.compute( model_.T() );
-          sol = lltOfA.solve(- Bs_.topRows(n)); 
-          std::cout << "Fine Cholesky GCV " << std::endl;   
+          sol = lltOfA.solve(- Bs_.topRows(n));   
         }
         
       }
@@ -117,78 +114,5 @@ namespace calibration{
 
 
 
-
-// OLD IMPLEMENTATION
-//     // evaluate trace of S exploiting a monte carlo approximation
-//     double compute() {
-//       std::size_t n = model_.Psi().cols(); // number of basis functions
-//       if(!init_){
-// 	// compute sample from Rademacher distribution
-// 	std::default_random_engine rng(seed_);
-// 	std::bernoulli_distribution Be(0.5); // bernulli distribution with parameter p = 0.5
-// 	Us_.resize(model_.n_obs(), r_); // preallocate memory for matrix Us
-// 	// fill matrix
-// 	for(std::size_t i = 0; i < model_.n_obs(); ++i){
-// 	  for(std::size_t j = 0; j < r_; ++j){
-// 	    if(Be(rng)) Us_(i,j) =  1.0;
-// 	    else        Us_(i,j) = -1.0;
-// 	  }
-// 	}
-// 	// // prepare matrix Bs_ --> spostato fuori perchè ora serve prendere W e Q nuovi (cambiano al variare di lambda)
-// 	// Bs_ = DMatrix<double>::Zero(2*n, r_);
-// 	// if(!model_.hasCovariates()) {// non-parametric model
-//   //   std::cout << "Assemblo Bs_ " << std::endl ; 
-// 	//   Bs_.topRows(n) = - model_.PsiTD()*model_.W()*Us_;
-//   // }
-// 	// else // semi-parametric model
-// 	//   Bs_.topRows(n) = - model_.PsiTD()*model_.lmbQ(Us_);
-
-// 	// prepare matrix Y 
-// 	Y_ = Us_.transpose()*model_.Psi();
-// 	init_ = true; // never reinitialize again
-//       }
-
-//       // prepare matrix Bs_
-//       Bs_ = DMatrix<double>::Zero(2*n, r_);
-//       if(!model_.hasCovariates()) {// non-parametric model
-//         Bs_.topRows(n) = - model_.PsiTD()*model_.W()*Us_;
-//       }
-//       else // semi-parametric model
-//         Bs_.topRows(n) = - model_.PsiTD()*model_.lmbQ(Us_);
-
-//       DMatrix<double> sol; // room for problem solution
-//       if(!model_.hasCovariates()){ // nonparametric case
-//         sol = model_.invA().solve(Bs_);
-//       }else{
-//         // if(model_.Psi().cols() > 5000){
-//         if(method_ == StochasticEDFMethod::WoodburyGCV){
-//           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
-//           std::cout << "Inizio Woodbury GCV " << std::endl;
-//           sol = SMW<>().solve(model_.invA(), model_.U(), model_.XtWX(), model_.V(), Bs_);
-//           std::cout << "Fine Woodbury GCV " << std::endl; 
-//         }
-//         // else{
-//         if(method_ == StochasticEDFMethod::CholeskyGCV){   // Cholesky
-//           std::cout << "Inizio Cholesky GCV " << std::endl; 
-//           // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
-
-//           Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
-//           // lltOfA.compute( model_.PsiTD()*model_.lmbQ(model_.Psi()) + model_.pen() ); 
-//           lltOfA.compute( model_.T() );
-//           sol = lltOfA.solve(- Bs_.topRows(n)); 
-//           std::cout << "Fine Cholesky GCV " << std::endl;   
-//         }
-        
-//       }
-//       // compute approximated Tr[S] using monte carlo mean
-//       double MCmean = 0;
-//       for(std::size_t i = 0; i < r_; ++i)
-// 	MCmean += Y_.row(i).dot(sol.col(i).head(n));
-      
-//       return MCmean/r_;
-//     }
-//   };
-
-// }}
   
 #endif // __STOCHASTIC_EDF_H__

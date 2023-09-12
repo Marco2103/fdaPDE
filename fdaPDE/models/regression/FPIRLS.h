@@ -57,7 +57,6 @@ namespace models{
     // DVector<double> beta_{};  // estimate of coefficient vector
     // DVector<double> W_{};     // weight matrix
 
-    double Jfinal_;   // Debug
 
   public:
     // constructor
@@ -103,7 +102,6 @@ namespace models{
       // start loop
       while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){ 
         // std::cout << "FPIRLS iteration: " << k_ + 1 << std::endl;  
-      //   while(k_ < max_iter_ && std::abs(J_new - 0.04472646666589305) > 1e-3){  --> to check a specific value of J 
 	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
 
 	auto pair = m_.compute(mu_);    // aggiunto un k in input 
@@ -115,9 +113,8 @@ namespace models{
 	solver_.data().template insert<double>(WEIGHTS_BLK, std::get<0>(pair));
 
 	// update solver to change in the weight matrix
-	solver_.init_data();  
-	solver_.init_model(); 
-  // if(k_+1 != max_iter_)      // debug per prendere i pesi
+	solver_.init_data(); 
+	solver_.init_model();  
 	solver_.solve();
 	
 	// extract estimates from solver
@@ -132,9 +129,7 @@ namespace models{
 
 	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
   double J = m_.model_loss(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // aggiunto il lambda
-  
-  // std::cout << " J = " << m_.model_loss(mu_) << " + " << m_.lambdaS()*g_.dot(m_.R0()*g_) << " = " << J ; 
-  
+   
 
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
@@ -149,12 +144,6 @@ namespace models{
   std::cout << "Number of FPIRLS iterations: " << k_ << std::endl;
   std::cout << "Value of J at the last iteration: " <<  std::setprecision(16) << J_new << std::endl;  
   
-  Jfinal_ = J_new;    // Debug
-
-      // store weight matrix at convergence
-      // W_ = std::get<0>(m_.compute(mu_));    
-      
-
       return;
     } 
 
@@ -167,7 +156,6 @@ namespace models{
     std::size_t n_iter() const { return k_ ; }                                       // number of iterations
     const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
 
-    const double& J_final() const { return Jfinal_; } 
   };
   
 }}

@@ -2,6 +2,8 @@
 
 ## regularizing PDES
 loadModule("Laplacian_2D_Order1", TRUE)
+loadModule("Laplacian_3D_Order1", TRUE)
+loadModule("Laplacian_1_5D_Order1", TRUE)
 loadModule("ConstantCoefficients_2D_Order1", TRUE)
 loadModule("SpaceVarying_2D_Order1", TRUE)
 loadModule("Laplacian_25D_Order1", TRUE)    # new
