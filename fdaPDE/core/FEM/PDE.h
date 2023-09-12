@@ -88,7 +88,7 @@ namespace FEM{
     bool massLumpingSystem() const { return massLumpingSystem_; }; // M 
 
     // setters 
-    void setMassLumpingSystem(const bool &lumping) const { massLumpingSystem_ = lumping; }; // M
+    void setMassLumpingSystem(const bool &lumping) { massLumpingSystem_ = lumping; }; // M
 
     // solution informations produced by call to .solve()
     const DMatrix<double>&  solution() const { return solver_.solution(); };

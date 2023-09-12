@@ -5,6 +5,8 @@
 #include <fdaPDE/core/utils/Symbols.h>
 #include <fdaPDE/models/regression/SRPDE.h>
 using fdaPDE::models::SRPDE;
+#include <fdaPDE/models/regression/SQRPDE.h>
+using fdaPDE::models::SQRPDE;
 #include <fdaPDE/core/utils/DataStructures/BlockFrame.h>
 #include <fdaPDE/models/ModelTraits.h>
 #include <fdaPDE/core/FEM/PDE.h>
@@ -81,3 +83,40 @@ RCPP_MODULE(Laplacian_3D_Order1) {
     .method("set_dirichlet_bc",     &Laplacian_3D_Order1::set_dirichlet_bc)
     .method("set_forcing_term",     &Laplacian_3D_Order1::set_forcing_term);
 }
+
+
+// // M: added 
+
+// // expose RegularizingPDE as possible argument to other Rcpp modules
+// RCPP_EXPOSED_AS  (Laplacian_1_5D_Order1)
+// RCPP_EXPOSED_WRAP(Laplacian_1_5D_Order1)
+
+// RCPP_MODULE(Laplacian_1_5D_Order1) {
+//   Rcpp::class_<Laplacian_1_5D_Order1>("Laplacian_1_5D_Order1")
+//     .constructor<Rcpp::List>()
+//     // getters
+//     .method("get_quadrature_nodes", &Laplacian_1_5D_Order1::get_quadrature_nodes)
+//     .method("get_dofs_coordinates", &Laplacian_1_5D_Order1::get_dofs_coordinates)
+//     // setters
+//     .method("set_dirichlet_bc",     &Laplacian_1_5D_Order1::set_dirichlet_bc)
+//     .method("R0", &Laplacian_1_5D_Order1::R0)
+//     .method("init", &Laplacian_1_5D_Order1::init)
+//     .method("set_forcing_term",     &Laplacian_1_5D_Order1::set_forcing_term);
+// }
+
+// // expose RegularizingPDE as possible argument to other Rcpp modules
+// RCPP_EXPOSED_AS  (Laplacian_2_5D_Order1)
+// RCPP_EXPOSED_WRAP(Laplacian_2_5D_Order1)
+
+// RCPP_MODULE(Laplacian_2_5D_Order1) {
+//   Rcpp::class_<Laplacian_2_5D_Order1>("Laplacian_2_5D_Order1")
+//     .constructor<Rcpp::List>()
+//     // getters
+//     .method("get_quadrature_nodes", &Laplacian_2_5D_Order1::get_quadrature_nodes)
+//     .method("get_dofs_coordinates", &Laplacian_2_5D_Order1::get_dofs_coordinates)
+//     // setters
+//     .method("set_dirichlet_bc",     &Laplacian_2_5D_Order1::set_dirichlet_bc)
+//     .method("R0", &Laplacian_2_5D_Order1::R0)
+//     .method("init", &Laplacian_2_5D_Order1::init)
+//     .method("set_forcing_term",     &Laplacian_2_5D_Order1::set_forcing_term);
+// }

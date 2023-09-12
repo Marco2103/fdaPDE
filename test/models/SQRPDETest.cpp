@@ -44,7 +44,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 
   // Parameters 
   const std::string TestNumber = "1"; 
-  double alpha = 0.1; 
+  double alpha = 0.5; 
   unsigned int alpha_int = alpha*100; 
   const std::string alpha_string = std::to_string(alpha_int); 
   std::string data_macro_strategy_type = "matern_data"; 
@@ -280,8 +280,6 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 //                           + TestNumber + "/alpha_" + alpha_string  + "/tol_weights_" + tol_weights_string + 
 //                           "/compare_nodes" + "/locs.csv");  // "/sim_M/n_" + seq_n_string[n] + "/sim_" + std::to_string(m) + "/locs.csv");
 //         DMatrix<double> loc = locFile.toEigen();
-
-
 
 //         DMatrix<double> lambda;  // from R
 //         //double lambda;   // from Cpp
@@ -1033,7 +1031,7 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
 
  */
 
-// TEST(SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtLocations) {
+// TEST(SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes) {
 
 //   const std::string TestNumber = "9"; 
 

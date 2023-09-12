@@ -61,6 +61,7 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() {
     BLOCK_FRAME_SANITY_CHECKS;
     DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
     DVector<double> fn = Psi()*f;
+    std::cout << "End initialize mu"  << std::endl; 
     return fn;
   
 
@@ -83,11 +84,11 @@ template <typename PDE, typename SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
 SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
   // compute weight matrix and pseudo-observation vector
-  DVector<double> abs_res{} ;
-  abs_res.resize(y().size()) ; 
+  DVector<double> abs_res{};
+  abs_res.resize(y().size()); 
 
   for(int i = 0; i < y().size(); ++i)
-    abs_res(i) = std::abs(y()(i) - mu(i)) ;   
+    abs_res(i) = std::abs(y()(i) - mu(i));   
 
   pW_.resize(n_obs());
 

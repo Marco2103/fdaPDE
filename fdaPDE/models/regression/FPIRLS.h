@@ -113,7 +113,7 @@ namespace models{
 
 	// update solver to change in the weight matrix
 	solver_.init_data(); 
-	solver_.init_model(); 
+	solver_.init_model();  
 	solver_.solve();
 	
 	// extract estimates from solver

@@ -4,6 +4,8 @@
 #include <fdaPDE/core/utils/Symbols.h>
 #include <fdaPDE/models/regression/SRPDE.h>
 using fdaPDE::models::SRPDE;
+#include <fdaPDE/models/regression/SQRPDE.h>
+using fdaPDE::models::SQRPDE;
 #include <fdaPDE/core/utils/DataStructures/BlockFrame.h>
 #include <fdaPDE/models/ModelTraits.h>
 #include <fdaPDE/core/FEM/PDE.h>
@@ -33,7 +35,8 @@ public:
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["elements"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["neigh"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
-    pde_(domain_) { pde_.setBilinearForm(BilinearFormType()); };
+    pde_(domain_) { 
+      pde_.setBilinearForm(BilinearFormType()); };
   
   // setters
   void set_dirichlet_bc(const DMatrix<double>& data){ pde_.setDirichletBC(data); }
@@ -56,6 +59,12 @@ Laplacian_2D_Order1;
 // 3D simple Laplacian regularization
 typedef RegularizingPDE<3,3,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>
 Laplacian_3D_Order1;
+
+// // M: added 
+// typedef RegularizingPDE<1,2,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>
+// Laplacian_1_5D_Order1;
+// typedef RegularizingPDE<2,3,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>
+// Laplacian_2_5D_Order1;
 
 // constant coefficients PDE type
 template<unsigned int M>

@@ -874,7 +874,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
   const std::string TestNumber = "1"; 
 
   // parameters 
-  double alpha = 0.1; 
+  double alpha = 0.5; 
   unsigned int alpha_int = alpha*100; 
   const std::string alpha_string = std::to_string(alpha_int); 
 
