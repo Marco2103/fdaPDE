@@ -45,13 +45,11 @@ namespace models {
     // computes and cache R1^T*R0^{-1}*R1. Returns an expression encoding \lambda_S*(R1^T*R0^{-1}*R1)
     auto pen() {
       if(is_empty(pen_)) {
-        if(!massLumpingGCV_){
-          std::cout << "Assembly NON lumped pen" << std::endl; 
+        if(!massLumpingGCV_){ 
           fdaPDE::SparseLU<SpMatrix<double>> invR0_;
           invR0_.compute(pde_->R0());
           pen_ = R1().transpose()*invR0_.solve(R1()); // R1^T*R0^{-1}*R1
-        } else{
-            std::cout << "Assembly lumped pen" << std::endl; 
+        } else{ 
             DVector<double> invR0;
             DiagMatrix<double> invR0_;
             invR0.resize(Base::n_basis()); 

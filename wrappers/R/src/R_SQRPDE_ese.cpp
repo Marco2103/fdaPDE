@@ -165,7 +165,7 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatLocations) {
 }
 
 // 2D, areal, laplacian 
-typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::Areal> SQRPDE_Laplacian_2D_Areal;   // era sbagliato
+typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::Areal> SQRPDE_Laplacian_2D_Areal;   
 RCPP_MODULE(SQRPDE_Laplacian_2D_Areal) {
   Rcpp::class_<SQRPDE_Laplacian_2D_Areal>("SQRPDE_Laplacian_2D_Areal")
     .constructor<Laplacian_2D_Order1>()

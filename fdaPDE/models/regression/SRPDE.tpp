@@ -4,14 +4,11 @@
 // NB: a change in the smoothing parameter must trigger a re-initialization of the model
 template <typename PDE, typename SamplingDesign>
 void SRPDE<PDE, SamplingDesign>::init_model() {
-  std::cout << "Sono in init model " << std::endl;
   if(LinearSystemType_ == "Woodbury"){
     // assemble system matrix for nonparameteric part
     A_ = SparseBlockMatrix<double,2,2>
       (-PsiTD()*W()*Psi(), lambdaS()*R1().transpose(),
       lambdaS()*R1(),     lambdaS()*R0()            );
-
-    // std::cout << "nnz: " << A_.nonZerosEstimate() << std::endl;
     
     // cache non-parametric matrix factorization for reuse
     //std::cout << "LU factorization for invA" << std::endl; 
@@ -119,7 +116,6 @@ void SRPDE<PDE, SamplingDesign>::solve() {
     }
   }
 
-std::cout << "Fine solve" << std::endl;
   return;
 }
 

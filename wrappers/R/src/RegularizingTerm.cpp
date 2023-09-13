@@ -36,7 +36,8 @@ RCPP_MODULE(Laplacian_2D_Order1) {
     .method("set_dirichlet_bc",     &Laplacian_2D_Order1::set_dirichlet_bc)
     .method("R0", &Laplacian_2D_Order1::R0)
     .method("init", &Laplacian_2D_Order1::init)
-    .method("set_forcing_term",     &Laplacian_2D_Order1::set_forcing_term);
+    .method("set_forcing_term",     &Laplacian_2D_Order1::set_forcing_term)
+    .method("setMassLumpingSystem",     &Laplacian_2D_Order1::setMassLumpingSystem);
 }
 // expose RegularizingPDE as possible argument to other Rcpp modules
 RCPP_EXPOSED_AS  (ConstantCoefficients_2D_Order1)

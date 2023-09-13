@@ -44,6 +44,7 @@ public:
   // setters
   void set_dirichlet_bc(const DMatrix<double>& data){ pde_.setDirichletBC(data); }
   void set_forcing_term(const DMatrix<double>& data){ pde_.setForcing(data); }
+  void setMassLumpingSystem(bool lump){ pde_.setMassLumpingSystem(lump); }
   // getters
   DMatrix<double> get_quadrature_nodes() const { return pde_.integrator().quadratureNodes(domain_); };
   DMatrix<double> get_dofs_coordinates() const { return domain_.dofCoords(); };
