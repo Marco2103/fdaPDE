@@ -21,7 +21,7 @@ namespace calibration{
       // compute \Psi^T*D*Q (take into account of areal sampling)
       if(model_.hasCovariates())
 	E_ = model_.PsiTD()*model_.Q();
-      else E_ = model_.PsiTD()*model_.W();    // ATTTT!! Modificato -> aggiunto un *model_.W()
+      else E_ = model_.PsiTD()*model_.W(); 
       
       // factorize matrix T
       invT_ = model_.T().partialPivLu();

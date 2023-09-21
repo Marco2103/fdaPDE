@@ -27,13 +27,9 @@ namespace models{
     static_assert(std::is_base_of<PDEBase, PDE>::value);
   private:
     typedef RegressionBase<SRPDE<PDE, SamplingDesign>> Base;  
-    typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization;     // M 
     SparseBlockMatrix<double,2,2> A_{}; // system matrix of non-parametric problem (2N x 2N matrix)
     fdaPDE::SparseLU<SpMatrix<double>> invA_;   // factorization of matrix A
     DVector<double> b_{}; // right hand side of problem's linear system (1 x 2N vector)
-    DVector<double> b_Chol_{}; // M right hand side of problem's linear system (1 x N vector)
-
-    std::string LinearSystemType_ = "Woodbury";  // M 
 
   public:
     IMPORT_REGRESSION_SYMBOLS;
@@ -55,10 +51,7 @@ namespace models{
     // getters
     const SparseBlockMatrix<double,2,2>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
-    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // M 
-
-    // setters 
-    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
+    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  
     
     virtual ~SRPDE() = default;
   };

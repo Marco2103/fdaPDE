@@ -83,17 +83,12 @@ namespace FEM{
       // compute mass matrix [R0]_{ij} = \int_{\Omega} \phi_i \phi_j by discretization of the identity operator
       R0_ = assembler.assemble(Identity());
       if(pde.massLumpingSystem()){   
-        // DOM : R0_ assembled in any case since useful in the lumped case too 
-        //       The lumped version "overwrites" the standard version, if mass lumping is activated 
-        std::cout << "massLumpingSystem = TRUE " << std::endl ;  
         DVector<double> R0_vector;
         R0_vector.resize(R0_.cols()); 
         for(std::size_t j = 0; j < R0_.cols(); ++j)    
           R0_vector[j] = R0_.col(j).sum();  
         R0_ = R0_vector.asDiagonal();
-      } else{
-        std::cout << "massLumpingSystem = FALSE " << std::endl ; 
-      }
+      } 
       init_ = true;
       return;
     }

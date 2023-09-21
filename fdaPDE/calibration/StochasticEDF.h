@@ -7,16 +7,11 @@
 using fdaPDE::core::NLA::SMW;
 #include "../models/regression/RegressionBase.h"
 using fdaPDE::models::is_regression_model;
-#include <Eigen/Cholesky>   // M aggiunto 
+#include <Eigen/Cholesky>   // for the Cholesky decomposition  
 
 
 namespace fdaPDE {
 namespace calibration{
-
-  enum StochasticEDFMethod{
-    WoodburyGCV,
-    CholeskyGCV
-  }; 
 
   // computes an approximation of the trace of S = \Psi*T^{-1}*\Psi^T*Q using a monte carlo approximation.
   template <typename Model>
@@ -32,26 +27,14 @@ namespace calibration{
     DMatrix<double> Y_;  // Us_^T*\Psi
 
     bool init_ = false;
-
-    // StochasticEDFMethod method_;      // via?
-    const unsigned int N_threshold = 3000;  // choose Wood/Chol depending on the problem size
+    const unsigned int N_threshold = 3000;  // to choose Woodbury or Cholesky depending on the problem size
 
   public:
-    // // constructor
-    // StochasticEDF(Model& model, std::size_t r, std::size_t seed, StochasticEDFMethod method = StochasticEDFMethod::WoodburyGCV)
-    //   : model_(model), r_(r), seed_(seed), method_(method) {}
-    // StochasticEDF(Model& model, std::size_t r, StochasticEDFMethod method = StochasticEDFMethod::WoodburyGCV)
-    //   : StochasticEDF(model, r, std::random_device()(), method) {}
-
     // constructor
     StochasticEDF(Model& model, std::size_t r, std::size_t seed)
       : model_(model), r_(r), seed_(seed) {}
     StochasticEDF(Model& model, std::size_t r)
       : StochasticEDF(model, r, std::random_device()()) {}
-
-    // ATT: abbiamo rimosso il qualifier "const" quando passa il modello (come in ExatEDF) perchè ora qui chiamiamo anche model_.Q()
-    //      che deve poter calcolare Q_ e quindi modificare il modello (forse)
-    
 
 // evaluate trace of S exploiting a monte carlo approximation
     double compute() {
@@ -86,16 +69,14 @@ namespace calibration{
       if(!model_.hasCovariates()){ // nonparametric case
         sol = model_.invA().solve(Bs_);
       }else{
-        if (model_.n_basis() > N_threshold){ 
+        if (model_.n_basis() > N_threshold){   // Woodbury 
           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
-       
           sol = SMW<>().solve(model_.invA(), model_.U(), model_.XtWX(), model_.V(), Bs_);
-        
         }
         else{   // Cholesky
-          // solve system (A+UCV)*x = Bs via Cholesky factorization using matrices U and V cached by model_
-          Eigen::LLT<DMatrix<double>> lltOfA; // compute the Cholesky decomposition of A
-          lltOfA.compute( model_.T() );
+          // solve system (Psi^T*Q*Psi + lambda*R1^T*R0^-1*R1)*x = -Bs via Cholesky factorization 
+          Eigen::LLT<DMatrix<double>> lltOfT; // compute the Cholesky decomposition of T
+          lltOfT.compute(model_.T());
           sol = lltOfA.solve(- Bs_.topRows(n));   
         }
         

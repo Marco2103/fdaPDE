@@ -23,7 +23,7 @@ PDE<M,N,R,E,F,B,I,S>::PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& fo
   // prepare basis cache
   buildBasis_();
 }
-// M 
+
 template <unsigned int M, unsigned int N, unsigned int R, typename E,
 	  typename F, typename B, typename I, typename S>
 PDE<M,N,R,E,F,B,I,S>::PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& forcingData, const bool& lumping) :

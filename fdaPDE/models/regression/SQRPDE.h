@@ -24,10 +24,6 @@ using fdaPDE::models::RegressionBase;
 #include "FPIRLS.h"
 using fdaPDE::models::FPIRLS ; 
 
-// For log1exp
-// #include<Rcpp.h>
-// #include<Rmath.h>
-
 namespace fdaPDE{
 namespace models{
   
@@ -40,25 +36,27 @@ namespace models{
     
     double alpha_;                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
-
-    typedef fdaPDE::SparseChol<SpMatrix<double>> CholFactorization;     // M 
-    fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A
-    std::string LinearSystemType_ = "Woodbury";       // M
-
-    // Commento questi membri così stiamo usando quelli di RegressionBase
-    // DiagMatrix<double> W_{};                            // weight matrix at FPRILS convergence
-    // DMatrix<double> XtWX_{}; 
-    // Eigen::PartialPivLU<DMatrix<double>> invXtWX_{};  // factorization of the dense q x q matrix XtWX_
+   
+    fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A      
 
     DVector<double> py_{};                              // y - (1-2*alpha)|y - X*beta - f|
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
 
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 200;  
-    double tol_weights_ = 1e-6;   // DOM const ?
+    double tol_weights_ = 1e-6;  
     double tol_ = 1e-6; 
 
- 
+    // required by FPIRLS (model_loss computes the unpenalized loss)
+    double model_loss(const DVector<double>& mu);
+
+    // required by FPIRLS (initialize \mu for the first FPIRLS iteration)
+    DVector<double> initialize_mu();
+
+    // required by FPIRLS (computes weight matrix and vector of pseudo-observations)
+    // returns a pair of references to W^k and \tilde y^k
+    std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);  
+
   public:
     IMPORT_REGRESSION_SYMBOLS;
     using Base::lambdaS; // smoothing parameter in space
@@ -69,21 +67,11 @@ namespace models{
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    // void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }   DOM
     void setAlpha(const double &alpha) { alpha_ = alpha; }
 
     // ModelBase implementation
     void init_model() { return; }
     virtual void solve(); // finds a solution to the smoothing problem
-
-    // required by FPIRLS (computes weight matrix and vector of pseudo-observations)
-    // returns a pair of references to W^k and \tilde y^k
-    std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
-
-    // model_loss computes the unpenalized loss (it is called by FPIRLS)
-    double model_loss(const DVector<double>& mu); // DOM private ?
-
-    DVector<double> initialize_mu(); 
 
     // iGCV interface implementation
     virtual const DMatrix<double>& T();  
@@ -97,8 +85,6 @@ namespace models{
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
     const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  
-    
-    // const std::string LinearSystemType() const { return LinearSystemType_; }  // DOM
 
     virtual ~SQRPDE() = default;
   };

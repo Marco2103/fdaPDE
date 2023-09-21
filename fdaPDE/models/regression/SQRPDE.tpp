@@ -15,8 +15,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
     XtWX_ = X().transpose()*W_*X(); 
     invXtWX_ = XtWX_.partialPivLu();
   }
-  
-  // A_ =    fpirls.solver().A(); 
+
   invA_ = fpirls.solver().invA();
 
   if(hasCovariates()) {
@@ -25,9 +24,8 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
   }
 
   f_ = fpirls.solver().f();
-  g_ = fpirls.solver().g();   // per completezza (non sappiamo se lo usa)
+  g_ = fpirls.solver().g();   
  
-
   if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
 }
@@ -38,41 +36,24 @@ template <typename PDE, typename SamplingDesign>
 DVector<double> 
 SQRPDE<PDE, SamplingDesign>::initialize_mu() {
 
-  // if(LinearSystemType_ == "Woodbury"){
-
     // assemble system matrix 
     SparseBlockMatrix<double,2,2>
-      A_temp(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
+      A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
         lambdaS()*R1(),     -lambdaS()*R0()            );
 
     // cache non-parametric matrix and its factorization for reuse 
-    fdaPDE::SparseLU<SpMatrix<double>> invA_temp;
-    invA_temp.compute(A_temp);
-    DVector<double> b_temp; 
-    b_temp.resize(A_temp.rows());
-    b_temp.block(n_basis(),0, n_basis(),1) = lambdaS()*u();   // DOM : da controllare
-    b_temp.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
+    fdaPDE::SparseLU<SpMatrix<double>> invA_init;
+    invA_init.compute(A_init);
+    DVector<double> b_init; 
+    b_init.resize(A_init.rows());
+    b_init.block(n_basis(),0, n_basis(),1) = lambdaS()*u();  
+    b_init.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
     BLOCK_FRAME_SANITY_CHECKS;
-    DVector<double> f = (invA_temp.solve(b_temp)).head(n_basis());
+    DVector<double> f = (invA_init.solve(b_init)).head(n_basis());
     DVector<double> fn =  Psi(not_nan())*f;  
-
 
     return fn;
   
-
-  // } else{
-  //   std::cout << "Initialize mu with direct resolution using Cholesky" << std::endl;
-  //   SpMatrix<double> A_Cholesky = 1./n_obs()*PsiTD()*Psi() + 2*Base::pen(); 
-  //   CholFactorization invA_Cholesky;
-  //   invA_Cholesky.compute(A_Cholesky);  
-  //   DVector<double> rhs_Cholesky; 
-  //   rhs_Cholesky.resize(A_Cholesky.rows());
-  //   rhs_Cholesky = -1./n_obs()*PsiTD()*y();    // M if u = 0 (as assumed above)
-  //   DVector<double> f = invA_Cholesky.solve(rhs_Cholesky); 
-  //   DVector<double> fn = Psi()*f;
-  //   return fn;    
-  // }
-
 }
 
 template <typename PDE, typename SamplingDesign>
@@ -107,10 +88,7 @@ double
 SQRPDE<PDE, SamplingDesign>::model_loss(const DVector<double>& mu) {
   
   // compute value of functional J given mu: /(2*n) 
-    return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm() ;    // DOM serve .matrix() dopo cwiseSqrt() ? 
-    // differentemente da GSRPDE, in cui la sequenza dei calcoli è   
-        // array() --> sqrt() --> .. --> matrix() ---> .asDiagonal() 
-    // noi chiamiamo cwiseSqrt che opera component wise sul vettore (quindi è lo stesso) e poi chiamiamo la view asDiagonal   
+    return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm();     
 }
 
 // required to support GCV based smoothing parameter selection
@@ -119,18 +97,8 @@ template <typename PDE, typename SamplingDesign>
 const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
   // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
   if(R_.size() == 0){
-    if(!massLumpingGCV()){
       invR0_.compute(R0());
       R_ = R1().transpose()*invR0_.solve(R1());
-    } else{
-        DVector<double> lumped_invR0;
-        lumped_invR0.resize(n_basis()); 
-        for(std::size_t j = 0; j < n_basis(); ++j)    
-          lumped_invR0[j] = 1 / R0().col(j).sum();  
-        lumped_invR0_ = lumped_invR0.asDiagonal();
-        R_ = R1().transpose()*lumped_invR0_*R1();
-    }
-
   }
   // compute and store matrix T for possible reuse
   if(!hasCovariates()) // case without covariates, Q is the identity matrix
@@ -154,7 +122,7 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
 // returns the numerator of the GCV score 
 template <typename PDE, typename SamplingDesign>
 double SQRPDE<PDE, SamplingDesign>::norm
-(const DMatrix<double>& fitted, const DMatrix<double>& obs) const {   // DOM CONTROLLA ORDINE degli input 
+(const DMatrix<double>& fitted, const DMatrix<double>& obs) const {   
   double result = 0;
   for(std::size_t i = 0; i < obs.rows(); ++i)
     result += rho_alpha(obs.coeff(i,0) - fitted.coeff(i,0));
@@ -165,7 +133,6 @@ double SQRPDE<PDE, SamplingDesign>::norm
 template <typename PDE, typename SamplingDesign>
 double SQRPDE<PDE, SamplingDesign>::rho_alpha(const double& x) const{ 
   return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
-  
 }
 
 

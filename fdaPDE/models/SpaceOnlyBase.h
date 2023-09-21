@@ -24,7 +24,7 @@ namespace models {
     SpMatrix<double> pen_; // discretization of regularizing term R1^T*R0^{-1}*R1
 
     // Mass lumping parameter 
-    bool massLumpingGCV_ = false;   // M 
+    bool massLumpingGCV_ = false;   
     
   public:  
     // constructor
@@ -34,7 +34,7 @@ namespace models {
     
     // setters
     void setLambdaS(double lambda) { lambda_[0] = lambda; } 
-    void setMassLumpingGCV(bool massLumping) { massLumpingGCV_ = massLumping; }   // M 
+    void setMassLumpingGCV(bool massLumping) { massLumpingGCV_ = massLumping; }  
     // getters
     double lambdaS() const { return lambda_[0]; } // smoothing parameter
     const SpMatrix<double>& R0()  const { return pde_->R0(); }    // mass matrix in space
@@ -45,19 +45,9 @@ namespace models {
     // computes and cache R1^T*R0^{-1}*R1. Returns an expression encoding \lambda_S*(R1^T*R0^{-1}*R1)
     auto pen() {
       if(is_empty(pen_)) {
-        if(!massLumpingGCV_){ 
-          fdaPDE::SparseLU<SpMatrix<double>> invR0_;
-          invR0_.compute(pde_->R0());
-          pen_ = R1().transpose()*invR0_.solve(R1()); // R1^T*R0^{-1}*R1
-        } else{ 
-            DVector<double> invR0;
-            DiagMatrix<double> invR0_;
-            invR0.resize(Base::n_basis()); 
-            for(std::size_t j = 0; j < Base::n_basis(); ++j)    
-              invR0[j] = 1 / R0().col(j).sum();  
-            invR0_ = invR0.asDiagonal();
-            pen_ = R1().transpose()*invR0_*R1();  // R1^T*R0^{-1}*R1
-        }
+        fdaPDE::SparseLU<SpMatrix<double>> invR0_;
+        invR0_.compute(pde_->R0());
+        pen_ = R1().transpose()*invR0_.solve(R1()); // R1^T*R0^{-1}*R1
       }
       return lambdaS()*pen_;
     }

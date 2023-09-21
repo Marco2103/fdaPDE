@@ -14,11 +14,10 @@ using fdaPDE::calibration::iGCV;
 #include "FPIRLS.h"
 using fdaPDE::models::FPIRLS;
 
-// regression module imports    // M 
+// regression module imports   
 #include "../SamplingDesign.h"
 #include "RegressionBase.h"
 using fdaPDE::models::RegressionBase;
-
 
 namespace fdaPDE{
 namespace models{
@@ -31,16 +30,13 @@ namespace models{
     static_assert(std::is_base_of<PDEBase, PDE>::value);
   private:
     typedef RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>> Base;
-    // DiagMatrix<double> W_;  // possiamo toglierla?
     Distribution distribution_{};
     DVector<double> py_; // \tilde y^k = G^k(y-u^k) + \theta^k
     DVector<double> pW_; // diagonal of W^k = ((G^k)^{-2})*((V^k)^{-1}) 
-
-    std::string LinearSystemType_ = "Woodbury";       // M
     
     // FPIRLS parameters (set to default)
     std::size_t max_iter_ = 200;
-    double tol_ = 0.000001;   // 0.0002020;
+    double tol_ = 0.0002020;  
 
   public:
     IMPORT_REGRESSION_SYMBOLS;
@@ -59,10 +55,9 @@ namespace models{
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M 
 
     // getter 
-    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  // M 
+    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  
 
     // ModelBase implementation
     void init_model() { return; }
@@ -72,12 +67,11 @@ namespace models{
     // returns a pair of references to W^k = ((G^k)^{-2})*((V^k)^{-1}) and \tilde y^k = G^k(y-u^k) + \theta^k
     std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
 
-    // I:
+    // Compute the model loss \norm{V^{-1/2}(y - \mu)}^2 
     double model_loss(const DVector<double>& mu); 
 
+    // Initialize \mu for the first FPIRLS iteration
     DVector<double> initialize_mu() const; 
-
-    const std::string LinearSystemType() const { return LinearSystemType_; }  // M 
     
     // iGCV interface implementation
     virtual const DMatrix<double>& T(); // T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)

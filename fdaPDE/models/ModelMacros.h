@@ -39,9 +39,6 @@
   using Base::beta_;         /* estimate of coefficient vector for parametric part */    \
   using Base::U_;            /* woodbury matrix [\Psi^T*D*W*X, 0] */                     \
   using Base::V_;            /* woodbury matrix [X^T*W*\Psi,   0] */                     \
-  using Base::W_;            /* estimate of the nonparametric part of the model */       \
-  using Base::XtWX_;         /* PDE misfit */                                            \
-  using Base::invXtWX_;      /* estimate of coefficient vector for parametric part */    \
 
   // macro for the import of some common CRTP functionalities. Requires a Model
   // type to be in the scope of this macro

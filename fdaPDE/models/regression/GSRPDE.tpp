@@ -10,7 +10,7 @@ void GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::solv
   // fpirls converged: extract matrix P and solution estimates
   W_ = fpirls.solver().W();
 
-  if(hasCovariates()) {                // M
+  if(hasCovariates()) {           
     XtWX_ = X().transpose()*W_*X(); 
     invXtWX_ = XtWX_.partialPivLu();
   }
@@ -41,7 +41,6 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::initializ
   return y();
 }
 
-// I:
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 double
@@ -60,18 +59,8 @@ template <typename PDE, typename RegularizationType, typename SamplingDesign,
 const DMatrix<double>& GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::T() {
   // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
   if(R_.size() == 0){
-    if(!massLumpingGCV()){   // M 
-      invR0_.compute(R0());
-      R_ = R1().transpose()*invR0_.solve(R1());
-    } else{
-        DVector<double> lumped_invR0;
-        lumped_invR0.resize(n_basis()); 
-        for(std::size_t j = 0; j < n_basis(); ++j)  
-          lumped_invR0[j] = 1 / R0().col(j).sum();  
-        lumped_invR0_ = lumped_invR0.asDiagonal();
-        R_ = R1().transpose()*lumped_invR0_*R1();
-    }
-
+    invR0_.compute(R0());
+    R_ = R1().transpose()*invR0_.solve(R1());
   }
   // compute and store matrix T for possible reuse
   if(!hasCovariates()) // case without covariates, Q is the identity matrix
@@ -97,7 +86,7 @@ const DMatrix<double>& GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, D
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 double GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::norm
-(const DMatrix<double>& fitted, const DMatrix<double>& obs) const {   // M : Palu: obs and fitted (invertiti fitted e obs perchè in GCV::operator() nella chiamata di norm() hanno questo ordine)
+(const DMatrix<double>& fitted, const DMatrix<double>& obs) const {   
   Distribution distr_{}; // define distribution object
   // total deviance computation
 
@@ -107,7 +96,5 @@ double GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::no
   for(std::size_t i = 0; i < obs.rows(); ++i) 
     result += distr_.deviance(mu.coeff(i,0), obs.coeff(i,0));
     
-    // result += distr_.deviance(fitted.coeff(i,0), obs.coeff(i,0));     // M : Palu: obs and fitted
-
   return result;
 }

@@ -4,7 +4,6 @@
 // NB: a change in the smoothing parameter must trigger a re-initialization of the model
 template <typename PDE, typename SamplingDesign>
 void SRPDE<PDE, SamplingDesign>::init_model() {
-  if(LinearSystemType_ == "Woodbury"){
     // assemble system matrix for nonparameteric part
     A_ = SparseBlockMatrix<double,2,2>
       (-PsiTD()*W()*Psi(), lambdaS()*R1().transpose(),
@@ -17,16 +16,13 @@ void SRPDE<PDE, SamplingDesign>::init_model() {
     b_.resize(A_.rows());
     b_.block(n_basis(),0, n_basis(),1) = lambdaS()*u();
     return;
-
-  } else return;
-
 }
+
   
 // finds a solution to the SR-PDE smoothing problem
 template <typename PDE, typename SamplingDesign>
 void SRPDE<PDE, SamplingDesign>::solve() {
 
-  if(LinearSystemType_ == "Woodbury"){   // M: nonparametric: block resolution; semiparametric: SMW
   BLOCK_FRAME_SANITY_CHECKS;
   DVector<double> sol; // room for problem' solution 
   if(!hasCovariates()){ // nonparametric case       
@@ -52,69 +48,6 @@ void SRPDE<PDE, SamplingDesign>::solve() {
     }
     // store PDE misfit
     g_ = sol.tail(n_basis());
-  } 
-  else{  // M: direct resolution with Cholesky
-    if(!hasCovariates()){ // nonparametric case  
-      SpMatrix<double> A_Cholesky = PsiTD()*W()*Psi() + Base::pen(); 
-      CholFactorization invA_Cholesky;
-      invA_Cholesky.compute(A_Cholesky); 
-      b_Chol_.resize(A_Cholesky.rows());
-
-      if(Base::pde_ -> massLumpingSystem()){
-        DVector<double> lumped_vector;
-        DiagMatrix<double> lumped_invR0;
-        lumped_vector.resize(n_basis()); 
-        for(std::size_t j = 0; j < n_basis(); ++j)  
-          lumped_vector[j] = 1 / R0().col(j).sum();  
-        lumped_invR0 = lumped_vector.asDiagonal();
-
-        b_Chol_ = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*W()*y(); 
-        f_ = invA_Cholesky.solve(b_Chol_); 
-        g_ = lumped_invR0*(R1()*f_ - u()); 
-      } else{
-        fdaPDE::SparseLU<SpMatrix<double>> invR0;
-        invR0.compute(Base::pde_->R0());
-
-        b_Chol_ = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*W()*y(); 
-        f_ = invA_Cholesky.solve(b_Chol_);  
-        g_ = invR0.solve(R1()*f_- u()); 
-      }   
-      
-    } else{ // parametric case  (same as semiparametric but with Q in place of W (see Sangalli ISR pag. 515))
-
-      SpMatrix<double> A_Cholesky = PsiTD()*Base::lmbQ(Psi()) + Base::pen(); 
-      CholFactorization invA_Cholesky;
-      invA_Cholesky.compute(A_Cholesky);
-      b_Chol_.resize(A_Cholesky.rows());
-
-      if(Base::pde_ -> massLumpingSystem()){
-        DVector<double> lumped_vector;
-        DiagMatrix<double> lumped_invR0;
-        lumped_vector.resize(n_basis()); 
-        for(std::size_t j = 0; j < n_basis(); ++j)  
-          lumped_vector[j] = 1 / R0().col(j).sum();  
-        lumped_invR0 = lumped_vector.asDiagonal();
-
-        b_Chol_ = lambdaS()*R1().transpose()*lumped_invR0*u() + PsiTD()*Base::lmbQ(y()); 
-        f_ = invA_Cholesky.solve(b_Chol_);
-        beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_); 
-        g_ = lumped_invR0*(R1()*f_ - u()); 
-        
-      } else{
-        fdaPDE::SparseLU<SpMatrix<double>> invR0;
-        invR0.compute(Base::pde_->R0());
-
-        b_Chol_ = lambdaS()*R1().transpose()*invR0.solve(u()) + PsiTD()*Base::lmbQ(y());
-        f_ = invA_Cholesky.solve(b_Chol_); 
-        beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
-        g_ = invR0.solve(R1()*f_ - u());
-      }
-
-
-
- 
-    }
-  }
 
   return;
 }
@@ -125,17 +58,8 @@ template <typename PDE, typename SamplingDesign>
 const DMatrix<double>& SRPDE<PDE, SamplingDesign>::T() {
   // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
   if(R_.size() == 0){
-    if(!massLumpingGCV()){
-      invR0_.compute(R0());
-      R_ = R1().transpose()*invR0_.solve(R1());
-    } else{
-        DVector<double> lumped_invR0;
-        lumped_invR0.resize(n_basis()); 
-        for(std::size_t j = 0; j < n_basis(); ++j)  
-          lumped_invR0[j] = 1 / R0().col(j).sum();  
-        lumped_invR0_ = lumped_invR0.asDiagonal();
-        R_ = R1().transpose()*lumped_invR0_*R1();
-    }
+    invR0_.compute(R0());
+    R_ = R1().transpose()*invR0_.solve(R1());
   }
   // compute and store matrix T for possible reuse
   if(!hasCovariates()) // case without covariates, Q is the identity matrix

@@ -131,7 +131,6 @@ namespace models {
     double deviance(double x, double y) { return 2*((y-x)/x - std::log(y/x)); };    
   };
 
-  // M: 
   class Gaussian {
   private: 
     double mu_;
@@ -146,10 +145,10 @@ namespace models {
     double mean() const { return mu_; }
     void preprocess(DVector<double>& data) const { return; }
     // vectorized operations
-    //DMatrix<double> variance(const DMatrix<double>& x) const {  return sigma_*sigma_ ; }     // ?? argomento x ?           
+    DMatrix<double> variance(const DMatrix<double>& x) const { return DMatrix<double>::Ones(x.size()); }             
     DMatrix<double> link(const DMatrix<double>& x) const { return x; }  
     DMatrix<double> inv_link(const DMatrix<double>& x) const { return x; }             
-    //DMatrix<double> der_link(const DMatrix<double>& x) const { return 1; }   // ?? 
+    DMatrix<double> der_link(const DMatrix<double>& x) const { return DMatrix<double>::Ones(x.size()); }   
 
     // deviance function
     double deviance(double x, double y) { return (x-y)*(x-y); };

@@ -39,7 +39,6 @@ namespace models {
   public:
     typedef typename model_traits<Model>::PDE PDE; // PDE used for regularization in space
     typedef typename select_regularization_type<Model>::type Base;
-    // typedef typename select_regularization_type<Model>::type::Base SuperBase;  // M 
     typedef SamplingDesign<Model, typename model_traits<Model>::sampling> SamplingBase;
     using Base::pde_;        // differential operator L 
     using Base::df_;         // BlockFrame for problem's data storage
@@ -87,14 +86,10 @@ namespace models {
     // access to NaN corrected \Psi and \Psi^T*D matrices
     const SpMatrix<double>& Psi() const { return has_nan() ? B_ : Psi(not_nan()); }
     auto PsiTD() const { return has_nan() ? B_.transpose()*D() : Psi(not_nan()).transpose()*D();}
-    const bool massLumpingGCV() const { return Base::massLumpingGCV_; }    // M
-
-    // const bool massLumpingGCV() const { return SuperBase::massLumpingGCV_; }    // M
+    const bool massLumpingGCV() const { return Base::massLumpingGCV_; }   
 
     // setters
-    void setMassLumpingGCV(bool massLumping) { Base::setMassLumpingGCV(massLumping); }   // M 
-
-    // void setMassLumpingGCV(bool massLumping) { SuperBase::setMassLumpingGCV(massLumping); }   // M 
+    void setMassLumpingGCV(bool massLumping) { Base::setMassLumpingGCV(massLumping); }   
 
     // utilities
     bool hasCovariates() const { return q() != 0; } // true if the model has a parametric part

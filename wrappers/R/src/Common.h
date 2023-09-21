@@ -19,11 +19,11 @@ using fdaPDE::core::FEM::SpaceVaryingReaction;
 using fdaPDE::core::MESH::Mesh;
 #include <fdaPDE/models/SamplingDesign.h>
 
+
 template <unsigned int M, unsigned int N, unsigned int R, typename F>
 class RegularizingPDE {
 
 private:
-  typedef typename fdaPDE::core::MESH::neighboring_structure<M,N>::type neighb_type;  // new
   typedef typename std::decay<F>::type BilinearFormType;
   // internal data
   Mesh<M,N,R> domain_;
@@ -35,8 +35,7 @@ public:
     domain_(Rcpp::as<DMatrix<double>>(R_Mesh["nodes"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["edges"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["elements"]),
-	    // Rcpp::as<DMatrix<int>>   (R_Mesh["neigh"]),
-      Rcpp::as<neighb_type>   (R_Mesh["neigh"]),
+	    Rcpp::as<DMatrix<int>>   (R_Mesh["neigh"]),
 	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
     pde_(domain_) { 
       pde_.setBilinearForm(BilinearFormType()); };
@@ -57,6 +56,63 @@ public:
   // compile time informations
   typedef PDE<M,N,R, BilinearFormType, DMatrix<double>> PDEType;
 };
+
+
+template<unsigned int R, typename F>         
+class RegularizingPDE<1,2,R,F> {
+
+  private:
+    typedef typename std::decay<F>::type BilinearFormType;
+    // internal data
+    Mesh<1,2,R> domain_;
+    PDE<1,2,R, BilinearFormType, DMatrix<double>> pde_;
+public:
+
+  SpMatrix<int> fromTriplets(const Rcpp::IntegerMatrix& R_neigh, const Rcpp::NumericMatrix& interval){
+    int nnodes = interval.rows();
+    std::vector<Eigen::Triplet<int>> triplets;
+    triplets.reserve(R_neigh.rows());
+
+    for(int i=0; i<R_neigh.rows(); ++i){
+        // realign indexes (we assume index coming from mesh generator to be greater or equal to 1, C++ starts count from 0)
+        triplets.push_back( Eigen::Triplet<int>( R_neigh(i,0)-1, R_neigh(i,1)-1, R_neigh(i,2)) );
+    }
+
+    SpMatrix<int> neigh(nnodes, nnodes);
+    neigh.setFromTriplets(triplets.begin(), triplets.end());
+    return(neigh);
+};
+
+  // constructor
+  RegularizingPDE(const Rcpp::List& R_Mesh) :
+    // initialize domain
+    domain_(Rcpp::as<DMatrix<double>>(R_Mesh["nodes"]),
+	    Rcpp::as<DMatrix<int>>   (R_Mesh["edges"]),
+	    Rcpp::as<DMatrix<int>>   (R_Mesh["elements"]),
+      fromTriplets(R_Mesh["neigh"], R_Mesh["nodes"]), 
+	    Rcpp::as<DMatrix<int>>   (R_Mesh["boundary"])),
+    pde_(domain_) { 
+      pde_.setBilinearForm(BilinearFormType()); 
+      };
+  
+  // setters
+  void set_dirichlet_bc(const DMatrix<double>& data){ pde_.setDirichletBC(data); }
+  void set_forcing_term(const DMatrix<double>& data){ pde_.setForcing(data); }
+  void setMassLumpingSystem(bool lump){ pde_.setMassLumpingSystem(lump); }
+  // getters
+  DMatrix<double> get_quadrature_nodes() const { return pde_.integrator().quadratureNodes(domain_); };
+  DMatrix<double> get_dofs_coordinates() const { return domain_.dofCoords(); };
+  SpMatrix<double> R0() const { return pde_.R0(); }
+  void init() { pde_.init(); }
+  
+  const PDE<1,2,R, BilinearFormType, DMatrix<double>>& pde() const { return pde_; }
+  PDE<1,2,R, BilinearFormType, DMatrix<double>>& pde() { return pde_; }
+  
+  // compile time informations
+  typedef PDE<1,2,R, BilinearFormType, DMatrix<double>> PDEType;
+};
+
+
 // define 2D simple Laplacian regularization.
 typedef RegularizingPDE<2,2,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>
 Laplacian_2D_Order1;
@@ -64,10 +120,10 @@ Laplacian_2D_Order1;
 typedef RegularizingPDE<3,3,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>
 Laplacian_3D_Order1;
 // 2.5D simple Laplacian regularization
-typedef RegularizingPDE<2,3,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>    // new
-Laplacian_25D_Order1;
+typedef RegularizingPDE<2,3,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>    
+Laplacian_2_5D_Order1;
 // 1.5D simple Laplacian regularization
-typedef RegularizingPDE<1,2,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>    // new
+typedef RegularizingPDE<1,2,1, decltype( std::declval<Laplacian<DefaultOperator>>() )>    
 Laplacian_1_5D_Order1;
 
 // constant coefficients PDE type

@@ -52,10 +52,7 @@ namespace models{
     
     DVector<double> mu_{};    // \mu^k = [ \mu^k_1, ..., \mu^k_n ] : mean vector at step k
     // parameters at convergece
-    // DVector<double> f_{};     // estimate of non-parametric spatial field
     DVector<double> g_{};     // PDE misfit
-    // DVector<double> beta_{};  // estimate of coefficient vector
-    // DVector<double> W_{};     // weight matrix
 
 
   public:
@@ -78,8 +75,7 @@ namespace models{
       solver_.data() = m_.data();
       solver_.setLambda(m_.lambda());
       solver_.set_spatial_locations(m_.locs());
-      //solver_.setLinearSystemType(m_.LinearSystemType());   // M to have correspondence between model and solver
-      solver_.setMassLumpingGCV(m_.massLumpingGCV());    // M to have correspondence between model and solver
+      solver_.setMassLumpingGCV(m_.massLumpingGCV());    // to have correspondence between model and solver
       solver_.init_pde();
       solver_.init_regularization();
       solver_.init_sampling();
@@ -100,13 +96,11 @@ namespace models{
       double J_old = tolerance_+1; double J_new = 0;
 
       // start loop
-      while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){ 
-        // std::cout << "FPIRLS iteration: " << k_ + 1 << std::endl;  
-	// request weight matrix W and pseudo-observation vector \tilde y from model --> !!!!
+      while(k_ < max_iter_ && std::abs(J_new - J_old) > tolerance_){  
+	// request weight matrix W and pseudo-observation vector \tilde y from model 
 
-	auto pair = m_.compute(mu_);    // aggiunto un k in input 
+	auto pair = m_.compute(mu_);    
 
-  
 	// solve weighted least square problem
 	// \argmin_{\beta, f} [ \norm(W^{1/2}(y - X\beta - f_n))^2 + \lambda \int_D (Lf - u)^2 ]
 	solver_.data().template insert<double>(OBSERVATIONS_BLK, std::get<1>(pair));
@@ -119,21 +113,17 @@ namespace models{
 	
 	// extract estimates from solver
 
-	// f_ = solver_.f(); 
   g_ = solver_.g();
 
 	// update value of \mu_
 	DVector<double> fitted = solver_.fitted(); // compute fitted values
-
 	mu_ = distribution_.inv_link(fitted);
 
-	// compute value of functional J for this pair (\beta, f): \norm{V^{-1/2}(y - \mu)}^2 + \int_D (Lf-u)^2
-  double J = m_.model_loss(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); // aggiunto il lambda
+	// compute value of functional J for this pair (\beta, f)
+  double J = m_.model_loss(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); 
    
-
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
-
 
       }
 
@@ -141,19 +131,14 @@ namespace models{
   if (k_ == max_iter_)
     std::cout << "MAX ITER RAGGIUNTO " << std::endl;  
 
-  std::cout << "Number of FPIRLS iterations: " << k_ << std::endl;
-  std::cout << "Value of J at the last iteration: " <<  std::setprecision(16) << J_new << std::endl;  
+  std::cout << "Number of FPIRLS iterations: " << k_ << std::endl; 
   
       return;
     } 
 
     // getters 
-    //const DVector<double>& mu() const { return mu_; } // mean vector at convergence
-    // const DVector<double>& weights() const { return W_; }                               // weights matrix W at convergence
-    // const DVector<double>& beta() const { return beta_; }                               // estimate of coefficient vector 
-    // const DVector<double>& f() const { return f_; }                                     // estimate of spatial field 
-    const DVector<double>& g() const { return g_; }                                        // PDE misfit
-    std::size_t n_iter() const { return k_ ; }                                       // number of iterations
+    const DVector<double>& g() const { return g_; }                                           // PDE misfit
+    std::size_t n_iter() const { return k_ ; }                                                // number of iterations
     const typename FPIRLS_internal_solver<Model>::type & solver() const { return solver_; }   // solver  
 
   };

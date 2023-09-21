@@ -86,18 +86,18 @@ RCPP_MODULE(Laplacian_3D_Order1) {
 }
 
 
-RCPP_EXPOSED_AS  (Laplacian_25D_Order1)
-RCPP_EXPOSED_WRAP(Laplacian_25D_Order1)
+RCPP_EXPOSED_AS  (Laplacian_2_5D_Order1)
+RCPP_EXPOSED_WRAP(Laplacian_2_5D_Order1)
 
-RCPP_MODULE(Laplacian_25D_Order1) {
-  Rcpp::class_<Laplacian_25D_Order1>("Laplacian_25D_Order1")
+RCPP_MODULE(Laplacian_2_5D_Order1) {
+  Rcpp::class_<Laplacian_2_5D_Order1>("Laplacian_2_5D_Order1")
     .constructor<Rcpp::List>()
     // getters
-    .method("get_quadrature_nodes", &Laplacian_25D_Order1::get_quadrature_nodes)
-    .method("get_dofs_coordinates", &Laplacian_25D_Order1::get_dofs_coordinates)
+    .method("get_quadrature_nodes", &Laplacian_2_5D_Order1::get_quadrature_nodes)
+    .method("get_dofs_coordinates", &Laplacian_2_5D_Order1::get_dofs_coordinates)
     // setters
-    .method("set_dirichlet_bc",     &Laplacian_25D_Order1::set_dirichlet_bc)
-    .method("set_forcing_term",     &Laplacian_25D_Order1::set_forcing_term);
+    .method("set_dirichlet_bc",     &Laplacian_2_5D_Order1::set_dirichlet_bc)
+    .method("set_forcing_term",     &Laplacian_2_5D_Order1::set_forcing_term);
 }
 
 RCPP_EXPOSED_AS  (Laplacian_1_5D_Order1)

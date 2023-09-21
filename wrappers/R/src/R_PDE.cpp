@@ -29,7 +29,6 @@ public:
 	    Rcpp::as<DMatrix<int>>   (mesh_data["boundary"])){
     // initialize pde depending on run-time informations
     auto L = Laplacian();
-    std::cout << "Hello 2" << std::endl;
     DMatrix<double> u = DMatrix<double>::Zero(domain_.elements()*3, 1);
     pde_ = new PDE<2,2,1, decltype(L), DMatrix<double>>(domain_, L, u);
   }
