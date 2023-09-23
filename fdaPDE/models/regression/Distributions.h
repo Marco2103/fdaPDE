@@ -145,10 +145,10 @@ namespace models {
     double mean() const { return mu_; }
     void preprocess(DVector<double>& data) const { return; }
     // vectorized operations
-    DMatrix<double> variance(const DMatrix<double>& x) const { return DMatrix<double>::Ones(x.size()); }             
+    DMatrix<double> variance(const DMatrix<double>& x) const { return DMatrix<double>::Ones(x.rows(), x.cols()); }             
     DMatrix<double> link(const DMatrix<double>& x) const { return x; }  
     DMatrix<double> inv_link(const DMatrix<double>& x) const { return x; }             
-    DMatrix<double> der_link(const DMatrix<double>& x) const { return DMatrix<double>::Ones(x.size()); }   
+    DMatrix<double> der_link(const DMatrix<double>& x) const { return DMatrix<double>::Ones(x.rows(), x.cols()); }   
 
     // deviance function
     double deviance(double x, double y) { return (x-y)*(x-y); };

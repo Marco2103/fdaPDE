@@ -29,7 +29,6 @@ namespace calibration{
 
     // utilities
     fdaPDE::SparseLU<SpMatrix<double>>& invR0() { return invR0_; };
-    DiagMatrix<double>& lumped_invR0() { return lumped_invR0_; };  
     const DMatrix<double>& R() { return R_; } 
     virtual ~iGCV() = default;
   };

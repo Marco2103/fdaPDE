@@ -77,7 +77,7 @@ namespace calibration{
           // solve system (Psi^T*Q*Psi + lambda*R1^T*R0^-1*R1)*x = -Bs via Cholesky factorization 
           Eigen::LLT<DMatrix<double>> lltOfT; // compute the Cholesky decomposition of T
           lltOfT.compute(model_.T());
-          sol = lltOfA.solve(- Bs_.topRows(n));   
+          sol = lltOfT.solve(- Bs_.topRows(n));   
         }
         
       }

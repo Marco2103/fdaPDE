@@ -147,12 +147,7 @@ namespace calibration{
     //     t = dS*y
     double a(){
       DMatrix<double> g; 
-      if(!model_.massLumpingGCV()){
-        g = model_.R1().transpose()*model_.invR0().solve(model_.u());
-      } else{ 
-        g = model_.R1().transpose()*model_.lumped_invR0()*model_.u();  
-      }
-    
+      g = model_.R1().transpose()*model_.invR0().solve(model_.u());
       // cache h and p since needed for computation of second derivative
       h_ = (model_.lambdaS()*L_ - DMatrix<double>::Identity(model_.n_locs(), model_.n_locs()))*(trS_.invT_).solve(g);
       p_ = model_.Psi()*h_ - dS_*model_.y();

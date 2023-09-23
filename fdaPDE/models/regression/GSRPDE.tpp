@@ -23,7 +23,7 @@ void GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::solv
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 std::tuple<DVector<double>&, DVector<double>&>
-GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute(const DVector<double>& mu) const{
+GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute(const DVector<double>& mu){
   DVector<double> theta_ = distribution_.link(mu); // \theta^k = [ g(\mu^k_1), ..., g(\mu^k_n) ]
   DVector<double> G_ = distribution_.der_link(mu); // G^k = diag(g'(\mu^k_1), ..., g'(\mu^k_n))
   DVector<double> V_ = distribution_.variance(mu); // V^k = diag(v(\mu^k_1), ..., v(\mu^k_n))

@@ -58,7 +58,7 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() const{
 
 template <typename PDE, typename SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
-SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) const{
+SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu){
   // compute weight matrix and pseudo-observation vector
   DVector<double> abs_res{};
   abs_res.resize(y().size()); 

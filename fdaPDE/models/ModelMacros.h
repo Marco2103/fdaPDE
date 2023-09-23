@@ -1,9 +1,9 @@
-#ifndef __MODEL_MACROS_H__
-#define __MODEL_MACROS_H__
+#ifndef MODEL_MACROS_H
+#define MODEL_MACROS_H
 
   // macros for the import of common symbols to avoid long annoying lists of using declarations in model implemetations
 
-  // this macro is intended to import all **common** symbols a model type can expect from its parent classes
+  // this macro is intended to import all common symbols a model type can expect from its parent classes
 #define IMPORT_MODEL_SYMBOLS                                                             \
   using Base::n_basis; /* number of basis function for discretization in space N */      \
   using Base::n_locs;  /* number of locations p_1 ... p_n where data are observed */     \
@@ -17,10 +17,10 @@
   using Base::pde;     /* differential operator L (regularizing term) */                 \
   using Base::data;    /* BlockFrame object containing data */                           \
   
-  // this macro is intended to import all **common** symbols a model can expect from a Regression base
+  // this macro is intended to import all common symbols a model can expect from a Regression base
   // symbols specific for the regularization type used need to be imported via dedicated using declaration
 #define IMPORT_REGRESSION_SYMBOLS                                                        \
-  IMPORT_MODEL_SYMBOLS;			              			                 \
+  IMPORT_MODEL_SYMBOLS;                                           \
   /* data access */                                                                      \
   using Base::y;             /* vector of observations y = [y_1 ... y_n] */              \
   using Base::n_obs;         /* number of observations n */                              \
@@ -39,7 +39,9 @@
   using Base::beta_;         /* estimate of coefficient vector for parametric part */    \
   using Base::U_;            /* woodbury matrix [\Psi^T*D*W*X, 0] */                     \
   using Base::V_;            /* woodbury matrix [X^T*W*\Psi,   0] */                     \
-
+  using Base::W_;            /* estimate of the nonparametric part of the model */       \
+  using Base::XtWX_;         /* PDE misfit */                                            \
+  using Base::invXtWX_;      /* estimate of coefficient vector for parametric part */    \
   // macro for the import of some common CRTP functionalities. Requires a Model
   // type to be in the scope of this macro
 #define DEFINE_CRTP_MODEL_UTILS                                                  \
@@ -53,4 +55,4 @@
 #define DESIGN_MATRIX_BLK   "DESIGN_MATRIX"    // in regression is the design matrix
 #define WEIGHTS_BLK         "WEIGHTS"          // in regression are the weights for heteroscedastic observations
 
-#endif // __MODEL_MACROS_H__
+#endif // MODEL_MACROS_H
