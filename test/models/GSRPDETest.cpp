@@ -401,116 +401,116 @@ using fdaPDE::testing::almost_equal;
    BC:           no
    order FE:     1
  */
-TEST(GSRPDE5, Test5_SemiParametric_Areal) {
+// TEST(GSRPDE5, Test5_SemiParametric_Areal) {
 
-  // Marco
-  // std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
+//   // Marco
+//   // std::string R_path = "/mnt/c/Users/marco/OneDrive - Politecnico di Milano/Corsi/Magistrale/Anno_II_Semestre_II/PACS_project_shared"; 
   
-  // Ilenia 
-  std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared";
+//   // Ilenia 
+//   std::string R_path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/PACS_project_shared";
 
-  double alpha = 0.5; 
-  unsigned int alpha_int = alpha*100; 
-  const std::string alpha_string = std::to_string(alpha_int);
-  const std::string TestNumber = "4"; 
+//   double alpha = 0.5; 
+//   unsigned int alpha_int = alpha*100; 
+//   const std::string alpha_string = std::to_string(alpha_int);
+//   const std::string TestNumber = "4"; 
 
-  std::string path_solutions = R_path + "/R/Our/data/Test_" + 
-          TestNumber + "/alpha_" + alpha_string + "/Test_GSRPDE_Palu/GSRPDE" ;
+//   std::string path_solutions = R_path + "/R/Our/data/Test_" + 
+//           TestNumber + "/alpha_" + alpha_string + "/Test_GSRPDE_Palu/GSRPDE" ;
 
-  // define domain and regularizing PDE
-  MeshLoader<Mesh2D<>> domain("c_shaped_areal");
+//   // define domain and regularizing PDE
+//   MeshLoader<Mesh2D<>> domain("c_shaped_areal");
 
-  CSVReader<double> reader{};
+//   CSVReader<double> reader{};
   
-  auto L = Laplacian();
+//   auto L = Laplacian();
 
-  DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
+//   DMatrix<double> u = DMatrix<double>::Zero(domain.mesh.elements()*3, 1);
   
-  PDE problem(domain.mesh, L, u); // definition of regularizing PDE
+//   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
   
-  // define statistical model
-  CSVReader<int> int_reader{};
-  CSVFile<int> arealFile; // incidence matrix for specification of subdomains
-  arealFile = int_reader.parseFile(path_solutions + "/incidence_matrix.csv");
-  DMatrix<int> areal = arealFile.toEigen();
+//   // define statistical model
+//   CSVReader<int> int_reader{};
+//   CSVFile<int> arealFile; // incidence matrix for specification of subdomains
+//   arealFile = int_reader.parseFile(path_solutions + "/incidence_matrix.csv");
+//   DMatrix<int> areal = arealFile.toEigen();
 
-  // double lambda = std::pow(0.1, 5); 
-  // double lambda; 
+//   // double lambda = std::pow(0.1, 5); 
+//   // double lambda; 
 
-  // GSRPDE<decltype(problem), fdaPDE::models::SpaceOnly, fdaPDE::models::Areal,
-	//  fdaPDE::models::MonolithicSolver, fdaPDE::models::Poisson> model(problem);
+//   // GSRPDE<decltype(problem), fdaPDE::models::SpaceOnly, fdaPDE::models::Areal,
+// 	//  fdaPDE::models::MonolithicSolver, fdaPDE::models::Poisson> model(problem);
 
-  // // model.setLambdaS(lambda);
-  // model.set_spatial_locations(areal);
+//   // // model.setLambdaS(lambda);
+//   // model.set_spatial_locations(areal);
   
 
-  unsigned int M = 10;
+//   unsigned int M = 10;
 
-  for(int m = 1; m <= M; ++m){
+//   for(int m = 1; m <= M; ++m){
 
-    double lambda; 
+//     double lambda; 
   
-    GSRPDE<decltype(problem), fdaPDE::models::SpaceOnly, fdaPDE::models::Areal,
-    fdaPDE::models::MonolithicSolver, fdaPDE::models::Poisson> model(problem);
+//     GSRPDE<decltype(problem), fdaPDE::models::SpaceOnly, fdaPDE::models::Areal,
+//     fdaPDE::models::MonolithicSolver, fdaPDE::models::Poisson> model(problem);
 
-    // model.setLambdaS(lambda);
-    model.set_spatial_locations(areal);
+//     // model.setLambdaS(lambda);
+//     model.set_spatial_locations(areal);
 
-    std::cout << "Sim " << std::to_string(m) << std::endl; 
-    // load data from .csv files
-    CSVFile<double> yFile; // observation file
-    yFile = reader.parseFile(path_solutions + "/sim_" + std::to_string(m) + "/z.csv");
-    DMatrix<double> y = yFile.toEigen();
+//     std::cout << "Sim " << std::to_string(m) << std::endl; 
+//     // load data from .csv files
+//     CSVFile<double> yFile; // observation file
+//     yFile = reader.parseFile(path_solutions + "/sim_" + std::to_string(m) + "/z.csv");
+//     DMatrix<double> y = yFile.toEigen();
 
-    CSVFile<double> XFile; // design matrix
-    XFile = reader.parseFile  (path_solutions + "/sim_" + std::to_string(m) + "/X.csv");
-    DMatrix<double> X = XFile.toEigen();
+//     CSVFile<double> XFile; // design matrix
+//     XFile = reader.parseFile  (path_solutions + "/sim_" + std::to_string(m) + "/X.csv");
+//     DMatrix<double> X = XFile.toEigen();
 
-    // set model data
-    BlockFrame<double, int> df;
-    df.insert(OBSERVATIONS_BLK, y);
-    df.insert(DESIGN_MATRIX_BLK, X);
-    model.setData(df);
+//     // set model data
+//     BlockFrame<double, int> df;
+//     df.insert(OBSERVATIONS_BLK, y);
+//     df.insert(DESIGN_MATRIX_BLK, X);
+//     model.setData(df);
 
-    // read from C++
-    std::ifstream fileLambda(path_solutions + "/sim_" + std::to_string(m) + "/GCV/Exact/LambdaCpp.csv");
-    if (fileLambda.is_open()){
-      fileLambda >> lambda; 
-      fileLambda.close();
-    }
+//     // read from C++
+//     std::ifstream fileLambda(path_solutions + "/sim_" + std::to_string(m) + "/GCV/Exact/LambdaCpp.csv");
+//     if (fileLambda.is_open()){
+//       fileLambda >> lambda; 
+//       fileLambda.close();
+//     }
   
-    model.setLambdaS(lambda);    // read from C++
+//     model.setLambdaS(lambda);    // read from C++
     
-    model.init();
-    model.solve();
+//     model.init();
+//     model.solve();
 
-    // Save C++ solution 
-    DMatrix<double> computedF = model.f();
-    const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-    std::ofstream filef(path_solutions + "/sim_" + std::to_string(m) + "/fCpp.csv");
-    if (filef.is_open()){
-      filef << computedF.format(CSVFormatf);
-      filef.close();
-    }
+//     // Save C++ solution 
+//     DMatrix<double> computedF = model.f();
+//     const static Eigen::IOFormat CSVFormatf(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//     std::ofstream filef(path_solutions + "/sim_" + std::to_string(m) + "/fCpp.csv");
+//     if (filef.is_open()){
+//       filef << computedF.format(CSVFormatf);
+//       filef.close();
+//     }
 
-    DMatrix<double> computedFn = model.Psi()*model.f();
-    const static Eigen::IOFormat CSVFormatfn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-    std::ofstream filefn(path_solutions + "/sim_" + std::to_string(m) + "/fnCpp.csv");
-    if (filefn.is_open()){
-      filefn << computedFn.format(CSVFormatfn);
-      filefn.close();
-    }
+//     DMatrix<double> computedFn = model.Psi()*model.f();
+//     const static Eigen::IOFormat CSVFormatfn(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//     std::ofstream filefn(path_solutions + "/sim_" + std::to_string(m) + "/fnCpp.csv");
+//     if (filefn.is_open()){
+//       filefn << computedFn.format(CSVFormatfn);
+//       filefn.close();
+//     }
 
 
-    DVector<double> computedBeta = model.beta();
-    const static Eigen::IOFormat CSVFormat_beta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-    std::ofstream file_beta(path_solutions + "/sim_" + std::to_string(m) + "/betaCpp.csv");
-    if (file_beta.is_open()){
-      file_beta << computedBeta.format(CSVFormat_beta);
-      file_beta.close();
-    }
+//     DVector<double> computedBeta = model.beta();
+//     const static Eigen::IOFormat CSVFormat_beta(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+//     std::ofstream file_beta(path_solutions + "/sim_" + std::to_string(m) + "/betaCpp.csv");
+//     if (file_beta.is_open()){
+//       file_beta << computedBeta.format(CSVFormat_beta);
+//       file_beta.close();
+//     }
 
-}
+// }
 
-}
+// }
 

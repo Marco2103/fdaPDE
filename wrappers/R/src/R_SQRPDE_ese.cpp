@@ -65,10 +65,10 @@ public:
   void set_subdomains(const DMatrix<int>& areal) { model_.set_spatial_locations(areal); }
   void set_alpha(const double &alpha){ model_.setAlpha(alpha); }
   void setMassLumpingGCV(bool lump){ model_.setMassLumpingGCV(lump); }
-
+  
   /* getters */
   SpMatrix<double> R0() const { return model_.R0(); }
-  SpMatrix<double> Psi() { return model_.Psi(not_nan()); }  
+  SpMatrix<double> Psi() { return model_.Psi(); }  
   auto PsiTD() { return model_.PsiTD(); }   
   DVector<double> f() const { return model_.f(); }; 
   DVector<double> fn() const { return model_.Psi()*model_.f(); }; 
@@ -158,7 +158,7 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatLocations) {
 }
 
 // 2D, areal, laplacian 
-typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::Areal> SQRPDE_Laplacian_2D_Areal;   
+typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::Areal> SQRPDE_Laplacian_2D_Areal;   // era sbagliato
 RCPP_MODULE(SQRPDE_Laplacian_2D_Areal) {
   Rcpp::class_<SQRPDE_Laplacian_2D_Areal>("SQRPDE_Laplacian_2D_Areal")
     .constructor<Laplacian_2D_Order1>()

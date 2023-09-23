@@ -37,7 +37,7 @@ RCPP_MODULE(Laplacian_2D_Order1) {
     .method("R0", &Laplacian_2D_Order1::R0)
     .method("init", &Laplacian_2D_Order1::init)
     .method("set_forcing_term",     &Laplacian_2D_Order1::set_forcing_term)
-    .method("setMassLumpingSystem",     &Laplacian_2D_Order1::setMassLumpingSystem);
+    .method("setMassLumpingSystem",     &Laplacian_2D_Order1::setMassLumpingSystem); 
 }
 // expose RegularizingPDE as possible argument to other Rcpp modules
 RCPP_EXPOSED_AS  (ConstantCoefficients_2D_Order1)
@@ -52,6 +52,7 @@ RCPP_MODULE(ConstantCoefficients_2D_Order1) {
     // setters
     .method("set_dirichlet_bc",     &ConstantCoefficients_2D_Order1::set_dirichlet_bc)
     .method("set_forcing_term",     &ConstantCoefficients_2D_Order1::set_forcing_term)
+    .method("setMassLumpingSystem",     &ConstantCoefficients_2D_Order1::setMassLumpingSystem)
     .method("set_PDE_parameters",   &ConstantCoefficients_2D_Order1::set_PDE_parameters);
 }
 // expose RegularizingPDE as possible argument to other Rcpp modules
@@ -67,6 +68,7 @@ RCPP_MODULE(SpaceVarying_2D_Order1) {
     // setters
     .method("set_dirichlet_bc",     &SpaceVarying_2D_Order1::set_dirichlet_bc)
     .method("set_forcing_term",     &SpaceVarying_2D_Order1::set_forcing_term)
+    .method("setMassLumpingSystem",     &SpaceVarying_2D_Order1::setMassLumpingSystem)
     .method("set_PDE_parameters",   &SpaceVarying_2D_Order1::set_PDE_parameters);
 }
 
@@ -82,7 +84,8 @@ RCPP_MODULE(Laplacian_3D_Order1) {
     .method("get_dofs_coordinates", &Laplacian_3D_Order1::get_dofs_coordinates)
     // setters
     .method("set_dirichlet_bc",     &Laplacian_3D_Order1::set_dirichlet_bc)
-    .method("set_forcing_term",     &Laplacian_3D_Order1::set_forcing_term);
+    .method("set_forcing_term",     &Laplacian_3D_Order1::set_forcing_term)
+    .method("setMassLumpingSystem",     &Laplacian_3D_Order1::setMassLumpingSystem); 
 }
 
 
@@ -97,7 +100,8 @@ RCPP_MODULE(Laplacian_2_5D_Order1) {
     .method("get_dofs_coordinates", &Laplacian_2_5D_Order1::get_dofs_coordinates)
     // setters
     .method("set_dirichlet_bc",     &Laplacian_2_5D_Order1::set_dirichlet_bc)
-    .method("set_forcing_term",     &Laplacian_2_5D_Order1::set_forcing_term);
+    .method("set_forcing_term",     &Laplacian_2_5D_Order1::set_forcing_term)
+    .method("setMassLumpingSystem",     &Laplacian_2_5D_Order1::setMassLumpingSystem); 
 }
 
 RCPP_EXPOSED_AS  (Laplacian_1_5D_Order1)
@@ -111,6 +115,7 @@ RCPP_MODULE(Laplacian_1_5D_Order1) {
     .method("get_dofs_coordinates", &Laplacian_1_5D_Order1::get_dofs_coordinates)
     // setters
     .method("set_dirichlet_bc",     &Laplacian_1_5D_Order1::set_dirichlet_bc)
-    .method("set_forcing_term",     &Laplacian_1_5D_Order1::set_forcing_term);
+    .method("set_forcing_term",     &Laplacian_1_5D_Order1::set_forcing_term)
+    .method("setMassLumpingSystem",     &Laplacian_1_5D_Order1::setMassLumpingSystem); 
 }
 

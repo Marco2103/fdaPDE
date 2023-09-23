@@ -155,6 +155,7 @@ public:
   // setters
   void set_dirichlet_bc(const DMatrix<double>& data){ pde_.setDirichletBC(data); }
   void set_forcing_term(const DMatrix<double>& data){ pde_.setForcing(data); }
+  void setMassLumpingSystem(bool lump){ pde_.setMassLumpingSystem(lump); }
   void set_PDE_parameters(const Rcpp::List& data){
     SMatrix<M> K = Rcpp::as<DMatrix<double>>(data["diffusion"]);
     SVector<M> b = Rcpp::as<DVector<double>>(data["transport"]);
@@ -208,6 +209,7 @@ public:
   // setters
   void set_dirichlet_bc(const DMatrix<double>& data){ pde_.setDirichletBC(data); }
   void set_forcing_term(const DMatrix<double>& data){ pde_.setForcing(data); }
+  void setMassLumpingSystem(bool lump){ pde_.setMassLumpingSystem(lump); }
   void set_PDE_parameters(const Rcpp::List& data){
     DMatrix<double> K = Rcpp::as<DMatrix<double>>(data["diffusion"]);
     diffusion_.setData(K);
