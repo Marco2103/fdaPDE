@@ -48,14 +48,14 @@ namespace models{
     double tol_ = 1e-6; 
 
     // required by FPIRLS (model_loss computes the unpenalized loss)
-    double model_loss(const DVector<double>& mu);
+    double model_loss(const DVector<double>& mu) const;
 
     // required by FPIRLS (initialize \mu for the first FPIRLS iteration)
-    DVector<double> initialize_mu();
+    DVector<double> initialize_mu() const;
 
     // required by FPIRLS (computes weight matrix and vector of pseudo-observations)
     // returns a pair of references to W^k and \tilde y^k
-    std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);  
+    std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu) const;  
 
   public:
     IMPORT_REGRESSION_SYMBOLS;

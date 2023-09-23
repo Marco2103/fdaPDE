@@ -23,7 +23,7 @@ void GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::solv
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 std::tuple<DVector<double>&, DVector<double>&>
-GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute(const DVector<double>& mu) {
+GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::compute(const DVector<double>& mu) const{
   DVector<double> theta_ = distribution_.link(mu); // \theta^k = [ g(\mu^k_1), ..., g(\mu^k_n) ]
   DVector<double> G_ = distribution_.der_link(mu); // G^k = diag(g'(\mu^k_1), ..., g'(\mu^k_n))
   DVector<double> V_ = distribution_.variance(mu); // V^k = diag(v(\mu^k_1), ..., v(\mu^k_n))
@@ -44,7 +44,7 @@ GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::initializ
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 double
-GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::model_loss(const DVector<double>& mu) {
+GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::model_loss(const DVector<double>& mu) const{
   
   // compute value of functional J given mu: \norm{V^{-1/2}(y - \mu)}^2 
 	DVector<double> V = distribution_.variance(mu).array().sqrt().inverse().matrix();

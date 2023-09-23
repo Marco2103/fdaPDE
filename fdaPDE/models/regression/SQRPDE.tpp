@@ -34,7 +34,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 // Non-parametric and semi-parametric cases coincide here, since beta^(0) = 0
 template <typename PDE, typename SamplingDesign>
 DVector<double> 
-SQRPDE<PDE, SamplingDesign>::initialize_mu() {
+SQRPDE<PDE, SamplingDesign>::initialize_mu() const{
 
     // assemble system matrix 
     SparseBlockMatrix<double,2,2>
@@ -58,7 +58,7 @@ SQRPDE<PDE, SamplingDesign>::initialize_mu() {
 
 template <typename PDE, typename SamplingDesign>
 std::tuple<DVector<double>&, DVector<double>&>
-SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
+SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) const{
   // compute weight matrix and pseudo-observation vector
   DVector<double> abs_res{};
   abs_res.resize(y().size()); 
@@ -85,7 +85,7 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu) {
 
 template <typename PDE, typename SamplingDesign>
 double
-SQRPDE<PDE, SamplingDesign>::model_loss(const DVector<double>& mu) {
+SQRPDE<PDE, SamplingDesign>::model_loss(const DVector<double>& mu) const{
   
   // compute value of functional J given mu: /(2*n) 
     return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm();     

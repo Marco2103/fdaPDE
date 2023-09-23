@@ -65,10 +65,10 @@ namespace models{
 
     // required by FPIRLS (computes weight matrix and vector of pseudo-observations)
     // returns a pair of references to W^k = ((G^k)^{-2})*((V^k)^{-1}) and \tilde y^k = G^k(y-u^k) + \theta^k
-    std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
+    std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu) const;
 
     // Compute the model loss \norm{V^{-1/2}(y - \mu)}^2 
-    double model_loss(const DVector<double>& mu); 
+    double model_loss(const DVector<double>& mu) const; 
 
     // Initialize \mu for the first FPIRLS iteration
     DVector<double> initialize_mu() const; 
