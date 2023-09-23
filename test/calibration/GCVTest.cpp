@@ -731,8 +731,6 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
       std::string path = "data/models/SQRPDE/Test_1/alpha_" + 
                          std::to_string(alpha_as_integer) + "/sim_" + std::to_string(m); 
 
-      std::cout << path << std::endl; 
-
       // load data from .csv files
       CSVReader<double> reader{};
       
