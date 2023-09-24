@@ -151,6 +151,7 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatLocations) {
     .method("setMassLumpingGCV",     &SQRPDE_Laplacian_2D_GeoStatLocations::setMassLumpingGCV)
     .method("set_locations",  &SQRPDE_Laplacian_2D_GeoStatLocations::set_locations)
     .method("set_observations", &SQRPDE_Laplacian_2D_GeoStatLocations::set_observations)
+    .method("set_covariates", &SQRPDE_Laplacian_2D_GeoStatLocations::set_covariates)
     .method("init",       &SQRPDE_Laplacian_2D_GeoStatLocations::init)
     .method("init_regularization",       &SQRPDE_Laplacian_2D_GeoStatLocations::init_regularization)
     .method("init_pde",       &SQRPDE_Laplacian_2D_GeoStatLocations::init_pde)

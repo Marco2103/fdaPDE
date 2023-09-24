@@ -57,7 +57,6 @@ Mesh<M,N,R>::Mesh(const DMatrix<double>& points, const DMatrix<int>& edges, cons
   if constexpr(!is_linear_network<M,N>::value)
     neighbors_ = (neighbors_.array() - 1).matrix();
   else {
-    std::cout << "Mesh.tpp neigh  " << std::endl ; 
     neighbors_ = neighbors; // adjacency matrix is directly given as input as sparse matrix
   }
   
