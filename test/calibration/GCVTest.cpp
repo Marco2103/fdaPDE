@@ -712,7 +712,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
   std::vector<SVector<1>> lambdas;
   for(double x = -8.0; x <= -3.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x)));
   // number of simulations
-  unsigned int M = 2;   
+  unsigned int M = 10;   
   // sequence of quantile orders 
   std::vector<double> alphas = {0.1, 0.25, 0.5, 0.75, 0.9}; 
 
@@ -780,7 +780,7 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 TEST(GCV_SQRPDE, Test10_constant_PDE_NonParametric_GeostatisticalAtNodes_GridExact) {
 
   // define domain 
-  MeshLoader<Mesh2D<>> domain("unit_square");
+  MeshLoader<Mesh2D<>> domain("unit_square_1024"); 
 
   // definition of regularizing PDE (anisotropic diffusion)
   SMatrix<2> K;
@@ -790,7 +790,7 @@ TEST(GCV_SQRPDE, Test10_constant_PDE_NonParametric_GeostatisticalAtNodes_GridExa
   PDE problem(domain.mesh, L, u); 
 
   // number of simulations
-  unsigned int M = 2;
+  unsigned int M = 10;
 
   // sequence of quantile orders 
   std::vector<double> alphas = {0.1, 0.5, 0.9}; 
@@ -879,10 +879,10 @@ TEST(GCV_SQRPDE, Test11_Laplacian_NonParametric_Areal_GridExact) {
   std::vector<SVector<1>> lambdas;
 
   // number of simulations
-  unsigned int M = 2;
+  unsigned int M = 10;
 
   // sequence of quantile orders 
-  std::vector<double> alphas = {0.1, 0.5, 0.9}; 
+  std::vector<double> alphas =  {0.1, 0.5, 0.9}; 
 
   for(double alpha : alphas){
 
@@ -965,7 +965,7 @@ TEST(GCV_SQRPDE, Test11_Laplacian_NonParametric_Areal_GridExact) {
 TEST(GCV_SQRPDE, Test12_Laplacian_SemiParametric_GeostatisticalAtLocations_GridExact) {
 
   // define domain 
-  MeshLoader<Mesh3D<>> domain("unit_sphere_fine");
+  MeshLoader<Mesh3D<>> domain("unit_sphere");
 
   // definition of regularizing PDE
   auto L = Laplacian();
@@ -973,7 +973,7 @@ TEST(GCV_SQRPDE, Test12_Laplacian_SemiParametric_GeostatisticalAtLocations_GridE
   PDE problem(domain.mesh, L, u); 
 
   // number of simulations
-  unsigned int M = 2;
+  unsigned int M = 10;
 
   // sequence of quantile orders 
   std::vector<double> alphas = {0.1, 0.5, 0.9}; 
@@ -1069,7 +1069,7 @@ TEST(GCV_SQRPDE, Test13_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact)
   PDE problem(domain.mesh, L, u); 
 
   // number of simulations
-  unsigned int M = 2;
+  unsigned int M = 10;
 
   // sequence of quantile orders 
   std::vector<double> alphas = {0.1, 0.5, 0.9}; 
@@ -1152,7 +1152,7 @@ TEST(GCV_SQRPDE, Test14_Laplacian_SemiParametric_GeostatisticalAtMesh_GridExact)
   PDE problem(domain.mesh, L, u); // definition of regularizing PDE
 
   // number of simulations
-  unsigned int M = 2;
+  unsigned int M = 10;
   // sequence of quantile orders 
   std::vector<double> alphas = {0.1, 0.5, 0.9}; 
 
@@ -1237,7 +1237,7 @@ TEST(GCV_SQRPDE, Test15_Laplacian_SemiParametric_GeostatLocations_GridExact){
   // Test for a diverging sequence of sample size, with fixed number of mesh nodes 
 
   // define domain 
-  MeshLoader<Mesh2D<>> domain("unit_square_1936");  
+  MeshLoader<Mesh2D<>> domain("unit_square_1936");   
 
   // definition of regularizing PDE
   auto L = Laplacian();
@@ -1255,7 +1255,7 @@ TEST(GCV_SQRPDE, Test15_Laplacian_SemiParametric_GeostatLocations_GridExact){
   for(double x = -4.0; x <= -0.9; x +=0.2) lambdas.push_back(SVector<1>(std::pow(10,x))); 
 
   // number of simulations
-  unsigned int M = 2; 
+  unsigned int M = 10; 
 
   // sequence of sample sizes
   std::vector<unsigned int> sample_sizes = {256, 484, 1024, 2025, 3969}; 
@@ -1265,10 +1265,10 @@ TEST(GCV_SQRPDE, Test15_Laplacian_SemiParametric_GeostatLocations_GridExact){
     // load locations from .csv files
     CSVReader<double> reader{};
     CSVFile<double> locFile; // locations file
-    locFile = reader.parseFile("data/models/SQRPDE/Test_10/locs.csv");
+    locFile = reader.parseFile("data/models/SQRPDE/Test_10/n_" + std::to_string(n) + "/locs.csv");
     DMatrix<double> loc; 
     loc = locFile.toEigen();
-    model.set_spatial_locations(loc); 
+    model.set_spatial_locations(loc);
 
     for(int m = 1; m <= M; ++m){
 
@@ -1395,7 +1395,7 @@ TEST(GCV_SQRPDE, Test16_Laplacian_SemiParametric_GeostatLocations_GridExact){
 
       // define GCV function and optimize 
       std::size_t seed = 476813;
-      unsigned int MC_simulations = 100;    // number of Monte Carlo simulations 
+      unsigned int MC_simulations = 1000;    // number of Monte Carlo simulations 
       GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, MC_simulations, seed);
       GridOptimizer<1> opt;
       ScalarField<1, decltype(GCV)> obj(GCV);
@@ -1464,7 +1464,7 @@ TEST(GCV_SQRPDE, Test17_Laplacian_SemiParametric_GeostatisticalAtLocations_GridE
   for(double x = -4.0; x <= -0.9; x +=0.20) lambdas.push_back(SVector<1>(std::pow(10,x)));
 
   // number of simulations
-  unsigned int M = 2; 
+  unsigned int M = 10; 
 
   // sequence of sample sizes
   std::vector<unsigned int> sequence_mesh_nodes = {742, 1452, 2789, 5502}; 
@@ -1472,7 +1472,7 @@ TEST(GCV_SQRPDE, Test17_Laplacian_SemiParametric_GeostatisticalAtLocations_GridE
   for(unsigned int N : sequence_mesh_nodes){
 
     // define domain 
-    MeshLoader<Mesh2D<>> domain("c_shaped_varying_nodes/c_shaped_" + std::to_string(N));  
+    MeshLoader<Mesh2D<>> domain("c_shaped_varying_nodes/mesh_" + std::to_string(N));  
 
     // definition of regularizing PDE
     auto L = Laplacian();
@@ -1575,7 +1575,7 @@ TEST(GCV_SQRPDE, Test18_Laplacian_SemiParametric_GeostatLocations_GridExact){
   for(unsigned int N : mesh_nodes){
 
     // define domain 
-    MeshLoader<Mesh2D<>> domain("c_shaped_" + std::to_string(N));  
+    MeshLoader<Mesh2D<>> domain("c_shaped_varying_nodes/mesh_" + std::to_string(N));  
 
     // definition of regularizing PDE
     auto L = Laplacian();
@@ -1615,7 +1615,7 @@ TEST(GCV_SQRPDE, Test18_Laplacian_SemiParametric_GeostatLocations_GridExact){
 
       // define GCV function and optimize 
       std::size_t seed = 476813;
-      unsigned int MC_simulations = 100;    // number of Monte Carlo simulations 
+      unsigned int MC_simulations = 1000;    // number of Monte Carlo simulations 
       GCV<decltype(model), StochasticEDF<decltype(model)>> GCV(model, MC_simulations, seed);
       GridOptimizer<1> opt;
       ScalarField<1, decltype(GCV)> obj(GCV);

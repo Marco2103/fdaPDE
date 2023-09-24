@@ -326,6 +326,5 @@ TEST(SRPDE, Test4_NonCostantCoefficientsPDE_NonParametric_Areal) {
   DMatrix<double> computedF = model.f();
   std::size_t N = computedF.rows();
 
-  std::cout << "N: " << N << std::endl ; 
   EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
 }
