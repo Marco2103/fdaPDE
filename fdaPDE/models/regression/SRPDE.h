@@ -51,7 +51,6 @@ namespace models{
     // getters
     const SparseBlockMatrix<double,2,2>& A() const { return A_; }
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
-    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  
     
     virtual ~SRPDE() = default;
   };

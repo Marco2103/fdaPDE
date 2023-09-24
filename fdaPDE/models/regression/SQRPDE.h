@@ -84,7 +84,6 @@ namespace models{
     const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
-    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  
 
     virtual ~SQRPDE() = default;
   };

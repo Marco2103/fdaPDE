@@ -75,7 +75,6 @@ namespace models{
       solver_.data() = m_.data();
       solver_.setLambda(m_.lambda());
       solver_.set_spatial_locations(m_.locs());
-      solver_.setMassLumpingGCV(m_.massLumpingGCV());    // to have correspondence between model and solver
       solver_.init_pde();
       solver_.init_regularization();
       solver_.init_sampling();

@@ -56,8 +56,6 @@ namespace models{
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
 
-    // getter 
-    const bool massLumpingGCV() const { return Base::massLumpingGCV(); }  
 
     // ModelBase implementation
     void init_model() { return; }

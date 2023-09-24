@@ -21,10 +21,7 @@ namespace models {
     using Base::model; // underlying model object
     using Base::lambda_; // vector of smoothing parameters
 
-    SpMatrix<double> pen_; // discretization of regularizing term R1^T*R0^{-1}*R1
-
-    // Mass lumping parameter 
-    bool massLumpingGCV_ = false;   
+    SpMatrix<double> pen_; // discretization of regularizing term R1^T*R0^{-1}*R1  
     
   public:  
     // constructor
@@ -34,7 +31,6 @@ namespace models {
     
     // setters
     void setLambdaS(double lambda) { lambda_[0] = lambda; } 
-    void setMassLumpingGCV(bool massLumping) { massLumpingGCV_ = massLumping; }  
     // getters
     double lambdaS() const { return lambda_[0]; } // smoothing parameter
     const SpMatrix<double>& R0()  const { return pde_->R0(); }    // mass matrix in space
