@@ -1,0 +1,60 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE/test/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/gmake -f Makefile cmTC_8bd58/fast && /u/sw/toolchains/gcc-glibc/11.2.0/base/bin/gmake  -f CMakeFiles/cmTC_8bd58.dir/build.make CMakeFiles/cmTC_8bd58.dir/build
+gmake[1]: Entering directory '/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE/test/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_8bd58.dir/src.c.o
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/bin/gcc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_8bd58.dir/src.c.o -c /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE/test/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_8bd58
+/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8bd58.dir/link.txt --verbose=1
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/bin/gcc -rdynamic CMakeFiles/cmTC_8bd58.dir/src.c.o -o cmTC_8bd58 
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/lib/gcc/x86_64-mk-linux/11.2.0/../../../../x86_64-mk-linux/bin/ld: CMakeFiles/cmTC_8bd58.dir/src.c.o: in function `main':
+src.c:(.text+0x2d): undefined reference to `pthread_create'
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/lib/gcc/x86_64-mk-linux/11.2.0/../../../../x86_64-mk-linux/bin/ld: src.c:(.text+0x39): undefined reference to `pthread_detach'
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/lib/gcc/x86_64-mk-linux/11.2.0/../../../../x86_64-mk-linux/bin/ld: src.c:(.text+0x45): undefined reference to `pthread_cancel'
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/lib/gcc/x86_64-mk-linux/11.2.0/../../../../x86_64-mk-linux/bin/ld: src.c:(.text+0x56): undefined reference to `pthread_join'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [CMakeFiles/cmTC_8bd58.dir/build.make:99: cmTC_8bd58] Error 1
+gmake[1]: Leaving directory '/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE/test/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_8bd58/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE/test/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/gmake -f Makefile cmTC_7ddfc/fast && /u/sw/toolchains/gcc-glibc/11.2.0/base/bin/gmake  -f CMakeFiles/cmTC_7ddfc.dir/build.make CMakeFiles/cmTC_7ddfc.dir/build
+gmake[1]: Entering directory '/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE/test/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_7ddfc.dir/CheckFunctionExists.c.o
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/bin/gcc   -DCHECK_FUNCTION_EXISTS=pthread_create -o CMakeFiles/cmTC_7ddfc.dir/CheckFunctionExists.c.o -c /u/sw/toolchains/gcc-glibc/11.2.0/base/share/cmake-3.20/Modules/CheckFunctionExists.c
+Linking C executable cmTC_7ddfc
+/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7ddfc.dir/link.txt --verbose=1
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/bin/gcc  -DCHECK_FUNCTION_EXISTS=pthread_create -rdynamic CMakeFiles/cmTC_7ddfc.dir/CheckFunctionExists.c.o -o cmTC_7ddfc  -lpthreads 
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/lib/gcc/x86_64-mk-linux/11.2.0/../../../../x86_64-mk-linux/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [CMakeFiles/cmTC_7ddfc.dir/build.make:99: cmTC_7ddfc] Error 1
+gmake[1]: Leaving directory '/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE/test/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_7ddfc/fast] Error 2
+
+
+

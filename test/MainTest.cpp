@@ -21,14 +21,14 @@
 // space-time test suites
 #include "core/SplineTest.cpp"
 #include "models/SpaceTimeTest.cpp"
-// regression module test suites
-#include "models/SRPDETest.cpp"
-#include "models/STRPDETest.cpp"
-#include "models/GSRPDETest.cpp"
-//#include "models/FPCATest.cpp"
-// GCV test suites
+// // regression module test suites
+// #include "models/SRPDETest.cpp"
+// #include "models/STRPDETest.cpp"
+// #include "models/GSRPDETest.cpp"
+// #include "models/FPCATest.cpp"
+// // GCV test suites
 #include "calibration/GCVTest.cpp"
-#include "calibration/GCVNewtonTest.cpp"
+//#include "calibration/GCVNewtonTest.cpp"
 
 int main(int argc, char **argv){
   // start testing

@@ -15,6 +15,7 @@ namespace calibration{
     DMatrix<double> R_{}; // R = R1^T*R0^{-1}*R1
     DMatrix<double> T_{}; // T = \Psi^T*Q*\Psi + \lambda*R
     DMatrix<double> Q_{}; // Q_ = I - H, whatever H is for the model
+
   public:
     // constructor
     iGCV() {};

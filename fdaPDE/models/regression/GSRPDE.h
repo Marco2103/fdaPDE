@@ -3,41 +3,44 @@
 
 #include <memory>
 #include <type_traits>
-// CORE imports
 #include "../../core/utils/Symbols.h"
 #include "../../core/FEM/PDE.h"
 using fdaPDE::core::FEM::PDEBase;
 #include "../ModelBase.h"
 #include "../ModelTraits.h"
-// calibration module imports
+#include "../ModelMacros.h"
 #include "../../calibration/iGCV.h"
 using fdaPDE::calibration::iGCV;
 #include "FPIRLS.h"
 using fdaPDE::models::FPIRLS;
 
+// regression module imports   
+#include "../SamplingDesign.h"
+#include "RegressionBase.h"
+using fdaPDE::models::RegressionBase;
+
 namespace fdaPDE{
 namespace models{
 
   // base class for GSRPDE model
-  template <typename PDE, typename RegularizationType, Sampling SamplingDesign,
-	    SolverType Solver, typename Distribution>
+  template <typename PDE, typename RegularizationType, typename SamplingDesign,
+	    typename Solver, typename Distribution = Gaussian>
   class GSRPDE : public RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>>, public iGCV {
     // compile time checks
     static_assert(std::is_base_of<PDEBase, PDE>::value);
   private:
     typedef RegressionBase<GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>> Base;
-    DiagMatrix<double> W_;
     Distribution distribution_{};
-    DVector<double> py_{}; // \tilde y^k = G^k(y-u^k) + \theta^k
-    DVector<double> pW_;   // diagonal of W^k = ((G^k)^{-2})*((V^k)^{-1}) 
+    DVector<double> py_; // \tilde y^k = G^k(y-u^k) + \theta^k
+    DVector<double> pW_; // diagonal of W^k = ((G^k)^{-2})*((V^k)^{-1}) 
     
     // FPIRLS parameters (set to default)
-    std::size_t max_iter_ = 15;
-    double tol_ = 0.0002020;
+    std::size_t max_iter_ = 200;
+    double tol_ = 0.0002020;  
+
   public:
     IMPORT_REGRESSION_SYMBOLS;
-    using Base::lambdaS; // smoothing parameter in space
-    
+    using Base::lambdaS; // smoothing parameter in space    
     // constructor
     GSRPDE() = default;
     // space-only constructor
@@ -52,7 +55,8 @@ namespace models{
     // setter
     void setFPIRLSTolerance(double tol) { tol_ = tol; }
     void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    
+
+
     // ModelBase implementation
     void init_model() { return; }
     virtual void solve(); // finds a solution to the smoothing problem
@@ -60,6 +64,12 @@ namespace models{
     // required by FPIRLS (computes weight matrix and vector of pseudo-observations)
     // returns a pair of references to W^k = ((G^k)^{-2})*((V^k)^{-1}) and \tilde y^k = G^k(y-u^k) + \theta^k
     std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);
+
+    // Compute the model loss \norm{V^{-1/2}(y - \mu)}^2 
+    double model_loss(const DVector<double>& mu) const; 
+
+    // Initialize \mu for the first FPIRLS iteration
+    DVector<double> initialize_mu() const; 
     
     // iGCV interface implementation
     virtual const DMatrix<double>& T(); // T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
@@ -69,29 +79,32 @@ namespace models{
 
     virtual ~GSRPDE() = default;
   };
-  template <typename PDE_, typename RegularizationType_, Sampling SamplingDesign,
-	    SolverType Solver, typename DistributionType_>
-  struct model_traits<GSRPDE<PDE_, RegularizationType_, SamplingDesign, Solver, DistributionType_>> {
+  template <typename PDE_, typename RegularizationType_, typename SamplingDesign_,
+	    typename Solver_, typename DistributionType_>
+  struct model_traits<GSRPDE<PDE_, RegularizationType_, SamplingDesign_, Solver_, DistributionType_>> {
     typedef PDE_ PDE;
-    typedef RegularizationType_ RegularizationType;
-    static constexpr Sampling sampling = SamplingDesign;
-    static constexpr SolverType solver = Solver;
+    typedef RegularizationType_ regularization;
+    typedef SamplingDesign_ sampling;
+    typedef Solver_ solver;
     static constexpr int n_lambda = n_smoothing_parameters<RegularizationType_>::value;
     typedef DistributionType_ DistributionType;
   };
-
   // specialization for separable regularization
-  template <typename PDE_, Sampling SamplingDesign, SolverType Solver, typename DistributionType_>
-  struct model_traits<GSRPDE<PDE_, fdaPDE::models::SpaceTimeSeparable, SamplingDesign, Solver, DistributionType_>> {
+  template <typename PDE_, typename SamplingDesign_, typename Solver_, typename DistributionType_>
+  struct model_traits<GSRPDE<PDE_, fdaPDE::models::SpaceTimeSeparable, SamplingDesign_, Solver_, DistributionType_>> {
     typedef PDE_ PDE;
-    typedef fdaPDE::models::SpaceTimeSeparable RegularizationType;
+    typedef fdaPDE::models::SpaceTimeSeparable regularization;
     typedef SplineBasis<3> TimeBasis; // use cubic B-splines
-    static constexpr Sampling sampling = SamplingDesign;
-    static constexpr SolverType solver = Solver;
+    typedef SamplingDesign_ sampling;
+    typedef Solver_ solver;
     static constexpr int n_lambda = 2;
     typedef DistributionType_ DistributionType;
   };
-  
+
+  // gsrpde trait
+  template <typename Model>
+  struct is_gsrpde { static constexpr bool value = is_instance_of<Model, GSRPDE>::value; };
+
   #include "GSRPDE.tpp"
 }}
 

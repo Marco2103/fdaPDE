@@ -73,11 +73,17 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> Assembler<M,N,R,B,I>::forcingTerm(const
   result.fill(0); // init result vector to zero
 
   // build forcing vector
+  size_t count_element = 0;
   for(const auto& e : mesh_){
+     count_element++;
+     
     for(size_t i = 0; i < n_basis; ++i){
       // perform integration on reference element and store result exploiting additiviy of the integral
+      integrator_.integrate(*e, f, referenceBasis_[i]);
+      
       result[dof_table_(e->ID(),i)] += integrator_.integrate(*e, f, referenceBasis_[i]); // \int_e [f*\psi]
-    }
+    
+     }
   }
   return result;
 }

@@ -50,13 +50,14 @@ namespace FEM{
     // initializes internal FEM solver status
     template <unsigned int M, unsigned int N, unsigned int R, typename E,
 	      typename F, typename B, typename I, typename S>
-    void init(const PDE<M,N,R,E,F,B,I,S>& pde) {
+    void init(const PDE<M,N,R,E,F,B,I,S>& pde) { 
       Assembler<M, N, R, B, I> assembler(pde.domain(), pde.integrator()); // create assembler object
       // fill discretization matrix for current operator
       R1_ = assembler.assemble(pde.bilinearForm());
       R1_.makeCompressed();
     
       // fill forcing vector
+      
       std::size_t n = pde.domain().dof(); // degrees of freedom in space
       std::size_t m; // number of time points
     
@@ -79,9 +80,15 @@ namespace FEM{
 	  force_.block(n*i,0, n,1) = assembler.forcingTerm(pde.forcingData().col(i));
 	}
       }
-
       // compute mass matrix [R0]_{ij} = \int_{\Omega} \phi_i \phi_j by discretization of the identity operator
       R0_ = assembler.assemble(Identity());
+      if(pde.massLumpingSystem()){   
+        DVector<double> R0_vector;
+        R0_vector.resize(R0_.cols()); 
+        for(std::size_t j = 0; j < R0_.cols(); ++j)    
+          R0_vector[j] = R0_.col(j).sum();  
+        R0_ = R0_vector.asDiagonal();
+      } 
       init_ = true;
       return;
     }

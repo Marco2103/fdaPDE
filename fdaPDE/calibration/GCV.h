@@ -71,10 +71,11 @@ namespace calibration{
       std::size_t n = model_.n_obs(); // number of observations      
       double dor = n - (q + trS);     // residual degrees of freedom
       edfs_->emplace_back(q + trS);   // store equivalent degrees of freedom
-      
+       
       // return gcv at point
       double gcv_value = (n/std::pow(dor, 2))*( model_.norm(model_.fitted(), model_.y()) ) ;
       values_->emplace_back(gcv_value);
+      // note: for SQRPDE this corresponds to the square of what we typically define gcv score.  
       return gcv_value;
     }
 
@@ -145,7 +146,8 @@ namespace calibration{
     //       g = R1^T*R0^{-1}*u
     //     t = dS*y
     double a(){
-      DMatrix<double> g = model_.R1().transpose()*model_.invR0().solve(model_.u());
+      DMatrix<double> g; 
+      g = model_.R1().transpose()*model_.invR0().solve(model_.u());
       // cache h and p since needed for computation of second derivative
       h_ = (model_.lambdaS()*L_ - DMatrix<double>::Identity(model_.n_locs(), model_.n_locs()))*(trS_.invT_).solve(g);
       p_ = model_.Psi()*h_ - dS_*model_.y();

@@ -23,11 +23,20 @@ PDE<M,N,R,E,F,B,I,S>::PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& fo
   // prepare basis cache
   buildBasis_();
 }
+
+template <unsigned int M, unsigned int N, unsigned int R, typename E,
+	  typename F, typename B, typename I, typename S>
+PDE<M,N,R,E,F,B,I,S>::PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& forcingData, const bool& lumping) :
+  domain_(domain), bilinearForm_(bilinearForm), forcingData_(forcingData), massLumpingSystem_(lumping) {
+  // prepare basis cache
+  buildBasis_();
+}
+
 template <unsigned int M, unsigned int N, unsigned int R, typename E,
 	  typename F, typename B, typename I, typename S>
 PDE<M,N,R,E,F,B,I,S>::PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& forcingData,
-			  const B& basis, const I& integrator) :
-  domain_(domain), bilinearForm_(bilinearForm), forcingData_(forcingData),
+			  const bool& lumping, const B& basis, const I& integrator) :
+  domain_(domain), bilinearForm_(bilinearForm), forcingData_(forcingData), massLumpingSystem_(lumping), 
   referenceBasis_(basis), integrator_(integrator) {
   // prepare basis cache
   buildBasis_();

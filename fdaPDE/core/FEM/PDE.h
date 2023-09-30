@@ -58,6 +58,8 @@ namespace FEM{
     BASIS_TABLE<M,N,R,B> basis_{}; // basis built over the whole domain_
     S solver_{}; // numerical scheme used to find a solution to this PDE
 
+    bool massLumpingSystem_ = false;  
+
     void buildBasis_(); // initializes BASIS_TABLE
   public:
     // minimal constructor, use below setters to complete the construction of a PDE object
@@ -66,12 +68,16 @@ namespace FEM{
     void setBilinearForm(E bilinearForm) { bilinearForm_ = bilinearForm; }
     // full constructors
     PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& forcingData);
-    PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& forcingData, const B& basis, const I& integrator);
+    PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& forcingData, const bool& lumping);
+    PDE(const Mesh<M,N,R>& domain, E bilinearForm, const F& forcingData, const bool& lumping, const B& basis, const I& integrator);
     
     // setters for boundary conditions
     void setDirichletBC(const DMatrix<double>& data);
     //void setNeumannBC();
     void setInitialCondition(const DVector<double>& data) { initialCondition_ = data; };
+
+    // setters 
+    void setMassLumpingSystem(const bool &lumping) { massLumpingSystem_ = lumping; };
   
     // getters
     const Mesh<M,N,R>& domain() const { return domain_; }
@@ -82,7 +88,8 @@ namespace FEM{
     const I& integrator() const { return integrator_; }
     const B& reference_basis() const { return referenceBasis_; }
     DMatrix<double> quadratureNodes() const { return integrator_.quadratureNodes(domain_); }; // returns all quadrature nodes on the mesh
-    
+    bool massLumpingSystem() const { return massLumpingSystem_; }; 
+
     // solution informations produced by call to .solve()
     const DMatrix<double>&  solution() const { return solver_.solution(); };
     const DMatrix<double>&  force() const { return solver_.force(); }; // rhs of FEM linear system
