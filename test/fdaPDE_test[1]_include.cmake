@@ -1,5 +1,0 @@
-if(EXISTS "/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/test/fdaPDE_test[1]_tests.cmake")
-  include("/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/test/fdaPDE_test[1]_tests.cmake")
-else()
-  add_test(fdaPDE_test_NOT_BUILT fdaPDE_test_NOT_BUILT)
-endif()
