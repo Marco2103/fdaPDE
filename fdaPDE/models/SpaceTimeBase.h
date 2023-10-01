@@ -28,9 +28,6 @@ namespace models {
     
     DVector<double> time_; // time domain [0, T]
 
-    // Mass lumping parameter 
-    bool massLumpingGCV_ = false;   // M 
-
   public:
     // constructor
     SpaceTimeBase() = default;
