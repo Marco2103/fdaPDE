@@ -1,2 +1,0 @@
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/bin/ar qc ../../../lib/libgmock.a CMakeFiles/gmock.dir/src/gmock-all.cc.o
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/bin/ranlib ../../../lib/libgmock.a
