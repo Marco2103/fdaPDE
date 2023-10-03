@@ -43,8 +43,6 @@ namespace models{
 
     SpMatrix<double> P_; // Pt \kron R0
 
-    std::string LinearSystemType_ = "Woodbury";  // M  fittizio 
-
   public:
     // import commonly defined symbols from base
     IMPORT_REGRESSION_SYMBOLS;
@@ -59,12 +57,7 @@ namespace models{
     // ModelBase interface implementation
     void init_model();    // update model object in case of **structural** changes in its definition
     virtual void solve(); // finds a solution to the smoothing problem
-
-    // setters 
-    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M  fittizio per ora non essendovi
-                                                                            // l'implementazione di chol per il sistema
     
-
     // iGCV interface implementation
     virtual const DMatrix<double>& T() { // T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
       // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
@@ -122,8 +115,6 @@ namespace models{
 
     SpMatrix<double> L_; // L \kron R0
 
-    std::string LinearSystemType_ = "Woodbury";  // M  fittizio
-
   public:
     // import commonly defined symbols from base
     IMPORT_REGRESSION_SYMBOLS;
@@ -139,11 +130,6 @@ namespace models{
     // ModelBase interface implementation
     void init_model();    // update model object in case of **structural** changes in its definition
     virtual void solve(); // finds a solution to the smoothing problem
-
-    // setters 
-    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M  fittizio per ora non essendovi
-                                                                            // l'implementazione di chol per il sistema
-    
     
     // iGCV interface implementation
     // virtual const DMatrix<double>& T(); // T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
@@ -166,7 +152,7 @@ namespace models{
     static constexpr int n_lambda = 2;
   };
   
-  // implementation of STRPDE for parabolic space-time regularization, monolithic solver
+  // implementation of STRPDE for parabolic space-time regularization, iterative solver
   template <typename PDE, typename SamplingDesign>
   class STRPDE<PDE, SpaceTimeParabolic, SamplingDesign, IterativeSolver>
     : public RegressionBase<STRPDE<PDE, SpaceTimeParabolic, SamplingDesign, IterativeSolver>>/*, public iGCV*/ {
@@ -178,8 +164,6 @@ namespace models{
     SparseBlockMatrix<double,2,2> A_{}; // system matrix of non-parametric problem (2N x 2N matrix)
     fdaPDE::SparseLU<SpMatrix<double>> invA_; // factorization of matrix A
     DVector<double> b_{};  // right hand side of problem's linear system (1 x 2N vector)
-
-    std::string LinearSystemType_ = "Woodbury";  // M  fittizio
 
     // the functional minimized by the iterative scheme
     // J(f,g) = \sum_{k=1}^m (z^k - \Psi*f^k)^T*(z^k - \Psi*f^k) + \lambda_S*(g^k)^T*(g^k)
@@ -203,12 +187,7 @@ namespace models{
     
     // ModelBase interface implementation
     void init_model() { return; }
-    virtual void solve(); // finds a solution to the smoothing problem
-
-    // setters 
-    void setLinearSystemType(std::string solver) { LinearSystemType_ = solver; }  // M  fittizio per ora non essendovi
-                                                                            // l'implementazione di chol per il sistema
-    
+    virtual void solve(); // finds a solution to the smoothing problem    
 
     // iGCV interface implementation
     // virtual const DMatrix<double>& T(); // T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)

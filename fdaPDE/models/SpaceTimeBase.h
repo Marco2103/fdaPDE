@@ -28,9 +28,6 @@ namespace models {
     
     DVector<double> time_; // time domain [0, T]
 
-    // Mass lumping parameter 
-    bool massLumpingGCV_ = false;   // M 
-
   public:
     // constructor
     SpaceTimeBase() = default;
@@ -42,7 +39,6 @@ namespace models {
     void setLambdaS(double lambdaS) { lambda_[0] = lambdaS; }
     void setLambdaT(double lambdaT) { lambda_[1] = lambdaT; }    
     void setTimeDomain(const DVector<double>& time) { time_ = time; }
-    void setMassLumpingGCV(bool massLumping) { massLumpingGCV_ = massLumping; }   // M 
     // getters
     inline double lambdaS() const { return lambda_[0]; }
     inline double lambdaT() const { return lambda_[1]; }
