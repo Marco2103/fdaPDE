@@ -67,7 +67,9 @@ public:
   
   /* getters */
   SpMatrix<double> R0() const { return model_.R0(); }
+  SpMatrix<double> R1() const { return model_.R1(); }
   SpMatrix<double> Psi() { return model_.Psi(); }  
+  DMatrix<double> u() { return model_.u(); }  
   auto PsiTD() { return model_.PsiTD(); }   
   DVector<double> f() const { return model_.f(); }; 
   DVector<double> fn() const { return model_.Psi()*model_.f(); }; 
@@ -119,7 +121,9 @@ RCPP_MODULE(SQRPDE_ConstantCoefficients_2D_GeoStatNodes) {
     .method("fn",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::fn)
     .method("beta",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::beta)
     .method("R0",       &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::R0)
+    .method("R1",       &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::R1)
     .method("Psi",       &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::Psi)
+    .method("u",       &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::u)
     // setters
     .method("set_lambda_s",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::set_lambda_s)
     .method("set_alpha",     &SQRPDE_ConstantCoefficients_2D_GeoStatNodes::set_alpha)
