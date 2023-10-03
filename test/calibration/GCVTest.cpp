@@ -730,25 +730,6 @@ TEST(GCV_SQRPDE, Test9_Laplacian_NonParametric_GeostatisticalAtNodes_GridExact) 
 
   // check optimal lambda
   EXPECT_TRUE( almost_equal(best_lambda[0], lambdas[9][0]) );
-
-
-  std::cout << "EDFs: " << std::endl; 
-  for(std::size_t i = 0; i < GCV.edfs().size(); ++i){
-    std::cout << std::setprecision(16) << GCV.edfs()[i];
-    std::cout << ", " << std::endl;
-  }
-    
-  std::cout << "---------------------" << std::endl;
-
-  std::cout << "GCV scores: " << std::endl; 
-  for(std::size_t i = 0; i < GCV.values().size(); ++i){
-    std::cout << std::setprecision(16) << std::sqrt(GCV.values()[i]); 
-    std::cout << ", " << std::endl; 
-  }
-    
-  std::cout << "---------------------" << std::endl;
-  std::cout << "Best lambda: " << std::endl; 
-  std::cout << std::setprecision(16) << best_lambda[0];
      
 }
 

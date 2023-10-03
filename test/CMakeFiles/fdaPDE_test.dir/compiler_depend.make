@@ -810,8 +810,50 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o: MainTest.cpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.h \
   utils/Constants.h \
   utils/Utils.h \
-  utils/Constants.h
+  utils/Constants.h \
+  calibration/GCVTest.cpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/GCV.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/SMW.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/ExactEDF.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/RegressionBase.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/StochasticEDF.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Cholesky \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/iGCV.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/extensions/Extension.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GradientFreeOptimizer.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/IterativeOptimizer.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.tpp \
+  utils/MeshLoader.h \
+  utils/Constants.h \
+  utils/Utils.h
 
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.tpp:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/extensions/Extension.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/ExactEDF.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.tpp:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.h:
+
+calibration/GCVTest.cpp:
 
 utils/Utils.h:
 
@@ -860,6 +902,8 @@ utils/MeshLoader.h:
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/random:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/Query.tpp:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/StochasticEDF.h:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/Query.h:
 
@@ -978,6 +1022,8 @@ models/SQRPDETest.cpp:
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/IterativeLinearSolvers/IterativeSolverBase.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/SparseQR/SparseQR.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/GCV.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/SparseLU/SparseLU_column_dfs.h:
 
@@ -1291,6 +1337,8 @@ _deps/googletest-src/googletest/include/gtest/gtest-matchers.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/LU/FullPivLU.h:
 
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GradientFreeOptimizer.h:
+
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/ReferenceElement.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/SelfCwiseBinaryOp.h:
@@ -1381,6 +1429,8 @@ _deps/googletest-src/googletest/include/gtest/internal/gtest-param-util.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/istream:
 
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/IterativeOptimizer.h:
+
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/struct_stat.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/select.h:
@@ -1468,6 +1518,8 @@ _deps/googletest-src/googletest/include/gtest/internal/gtest-param-util.h:
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/IterativeLinearSolvers/SolveWithGuess.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/linux/errno.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.tpp:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/VectorSpace.tpp:
 

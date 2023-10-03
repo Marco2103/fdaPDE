@@ -72,6 +72,8 @@ TEST(SQRPDE, Test1_Laplacian_NonParametric_GeostatisticalAtNodes) {
   
   EXPECT_TRUE( almost_equal(DMatrix<double>(expectedSolution).topRows(N), computedF) );
 
+  // Eigen::saveMarket(computedF, "data/models/SQRPDE/2D_test1/sol.mtx"); 
+
 }
 
 /* test 2
@@ -184,7 +186,7 @@ TEST(SQRPDE, Test3_CostantCoefficientsPDE_NonParametric_GeostatisticalAtNodes) {
   /*   **  test correctness of computed results  **   */
   // estimate of spatial field \hat f
   SpMatrix<double> expectedSolution;
-  Eigen::loadMarket(expectedSolution,   "data/models/SQRPDE/2D_test1/sol.mtx");
+  Eigen::loadMarket(expectedSolution,   "data/models/SQRPDE/2D_test3/sol.mtx");
   DMatrix<double> computedF = model.f();
   std::size_t N = computedF.rows();
   
