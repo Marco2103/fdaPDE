@@ -611,46 +611,32 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o: MainTest.cpp \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/list \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/stl_list.h \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/list.tcc \
-  core/ScalarFieldTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  models/SQRPDETest.cpp \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/SparseExtra \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Sparse \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/fstream \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/basic_file.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/c++io.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/fstream.tcc \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/DynamicSparseMatrix.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/BlockOfDynamicSparseMatrix.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/RandomSetter.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/MarketIO.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/dirent.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent_ext.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/MatrixMarketIterator.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
   /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Core \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/VectorExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/DotProduct.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.tpp \
-  utils/Constants.h \
-  core/VectorFieldTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/DotProduct.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/Divergence.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/VectorExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.tpp \
-  core/MeshTest.cpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/unordered_set \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/unordered_set.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/random \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/random.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/opt_random.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/random.tcc \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/numeric \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/stl_numeric.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/pstl/glue_numeric_defs.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
@@ -659,34 +645,93 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o: MainTest.cpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/VectorSpace.tpp \
   /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/LU \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.tpp \
-  utils/MeshLoader.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/ReferenceElement.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/fstream \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/basic_file.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/c++io.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/fstream.tcc \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.tpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/MeshIterators.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.h \
-  utils/Utils.h \
-  utils/Constants.h \
-  core/ElementTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/VectorSpace.h \
-  core/SearchEngineTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BruteForce/BruteForce.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/ReferenceElement.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/MultivariatePolynomial.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/VectorExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/DotProduct.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/BasisTable.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMBaseSolver.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/Constants.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/FieldPtrs.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/VectorExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/VectorExpressions.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BruteForce/BruteForce.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BarycentricWalk/BarycentricWalk.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BarycentricWalk/BarycentricWalk.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/IntegratorTables.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/MultivariatePolynomial.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/BasisTable.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormTraits.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Traits.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Gradient.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Identity.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Laplacian.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/dT.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMStandardSpaceSolver.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMBaseSolver.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMStandardSpaceTimeSolver.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/SpaceVaryingFunctors.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/Expressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/VectorExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SQRPDE.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/ADT.h \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/stack \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/deque \
@@ -702,130 +747,20 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o: MainTest.cpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/Query.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/Query.tpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/ADT.tpp \
-  core/VectorSpaceTest.cpp \
-  core/KroneckerProductTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/KroneckerProduct.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  core/LagrangianBasisTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/ReferenceElement.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/MultivariatePolynomial.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/ReferenceElement.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/IntegratorTables.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.h \
-  core/IntegratorTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/IntegratorTables.h \
-  core/BilinearFormsTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Laplacian.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Traits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/FieldPtrs.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h \
-  core/PDESolutionsTest.cpp \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/SparseExtra \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Sparse \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/DynamicSparseMatrix.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/BlockOfDynamicSparseMatrix.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/RandomSetter.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/MarketIO.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/dirent.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent_ext.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/MatrixMarketIterator.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/BasisTable.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMBaseSolver.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/Constants.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/FieldPtrs.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/MultivariatePolynomial.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/BasisTable.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Traits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Gradient.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Identity.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Laplacian.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/dT.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMStandardSpaceSolver.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMBaseSolver.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMStandardSpaceTimeSolver.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.tpp \
-  core/SplineTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SplineBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/Spline.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  models/SpaceTimeTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SplineBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/TimeAssembler.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SplineBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/IntegratorTables.h \
-  utils/Utils.h \
-  utils/Constants.h \
-  models/SRPDETest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/SpaceVaryingFunctors.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/Expressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/VectorExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/ADT.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/DataStructures/BlockFrame.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/random \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/random.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/opt_random.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/random.tcc \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/numeric \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/stl_numeric.h \
+  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/pstl/glue_numeric_defs.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Traits.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelMacros.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelMacros.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/SparseBlockMatrix.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Assert.h \
@@ -839,7 +774,6 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o: MainTest.cpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/RegressionBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SpaceOnlyBase.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SpaceTimeBase.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SpaceTimeSeparableBase.h \
@@ -847,145 +781,45 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o: MainTest.cpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/KroneckerProduct.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SpaceTimeBase.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/TimeAssembler.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SplineBasis.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/Spline.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/IntegratorTables.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SpaceTimeParabolicBase.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormTraits.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/RegressionBase.tpp \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/FPIRLS.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/Distributions.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SamplingDesign.h \
-  utils/MeshLoader.h \
-  models/STRPDETest.cpp \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/MarketIO.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/SpaceVaryingFunctors.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/STRPDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SplineBasis.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/SparseBlockMatrix.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/SMW.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/KroneckerProduct.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/DataStructures/BlockVector.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/iGCV.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/RegressionBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelMacros.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/STRPDE.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SamplingDesign.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/preprocess/InitialConditionEstimator.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Laplacian.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/extensions/Extension.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GradientFreeOptimizer.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/GCV.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/SMW.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/ExactEDF.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/RegressionBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/StochasticEDF.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Cholesky \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/iGCV.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelMacros.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/iGCV.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/FPIRLS.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/SparseBlockMatrix.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/SMW.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/Distributions.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/STRPDE.h \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/chrono \
   /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/ratio \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SQRPDE.tpp \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SamplingDesign.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/RegressionBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.tpp \
-  models/GSRPDETest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.h \
   /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/Distributions.h \
-  models/FPCATest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/fPCA.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/SVD \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/GCV.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/KFoldCV.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/thread \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/std_thread.h \
-  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/this_thread_sleep.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/DataStructures/BlockFrame.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/FunctionalBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SamplingDesign.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelTraits.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/ProfilingEstimation.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/STRPDE.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/StochasticEDF.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/fPCA.tpp \
-  calibration/GCVNewtonTest.cpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/GCV.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/extensions/Extension.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/IterativeOptimizer.h \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.tpp \
-  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/extensions/Logger.h \
   utils/MeshLoader.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h \
+  /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.h \
   utils/Constants.h \
-  utils/Utils.h
+  utils/Utils.h \
+  utils/Constants.h
 
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.h:
+utils/Utils.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/fPCA.tpp:
+utils/Constants.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/ProfilingEstimation.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/this_thread_sleep.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/thread:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/KFoldCV.h:
-
-models/FPCATest.cpp:
-
-models/GSRPDETest.cpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.tpp:
+utils/MeshLoader.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/chrono:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/Distributions.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/GSRPDE.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/ExactEDF.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.tpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/extensions/Extension.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GridOptimizer.h:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/STRPDE.tpp:
 
@@ -995,9 +829,13 @@ models/GSRPDETest.cpp:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.tpp:
 
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/Distributions.h:
+
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/RegressionBase.tpp:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SpaceTimeParabolicBase.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/TimeAssembler.h:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/SpaceTimeSeparableBase.h:
 
@@ -1013,67 +851,15 @@ models/GSRPDETest.cpp:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelMacros.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h:
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/numeric:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/SpaceVaryingFunctors.h:
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/random.tcc:
 
-models/SRPDETest.cpp:
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/opt_random.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/space_time/TimeAssembler.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMStandardSpaceSolver.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.tpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/dT.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Identity.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormTraits.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMBaseSolver.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent_ext.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/dirent.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/MarketIO.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/SparseExtra:
-
-core/PDESolutionsTest.cpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/FieldPtrs.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Laplacian.h:
-
-core/IntegratorTest.cpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/IntegratorTables.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/MultivariatePolynomial.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.tpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/KroneckerProduct.h:
-
-core/KroneckerProductTest.cpp:
-
-core/VectorSpaceTest.cpp:
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/random:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/Query.tpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/StochasticEDF.h:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/Query.h:
 
@@ -1087,25 +873,87 @@ core/VectorSpaceTest.cpp:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/AlternatingDigitalTree/ADT.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BarycentricWalk/BarycentricWalk.tpp:
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/ModelBase.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/SpaceVaryingFunctors.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/KroneckerProduct.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.tpp:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMStandardSpaceTimeSolver.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BarycentricWalk/BarycentricWalk.h:
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMStandardSpaceSolver.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BruteForce/BruteForce.h:
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.tpp:
 
-core/SearchEngineTest.cpp:
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/dT.h:
 
-core/ElementTest.cpp:
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.tpp:
 
-utils/Utils.h:
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Laplacian.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/Identity.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/operators/BilinearFormTraits.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/IntegratorTables.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/integration/Integrator.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SRPDE.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/FieldPtrs.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/Assembler.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/solvers/FEMBaseSolver.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.tpp:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/DotProduct.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.tpp:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/MultivariatePolynomial.h:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.tpp:
 
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/MeshIterators.h:
 
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/VectorSpace.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/Expressions.h:
+
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/unordered_set.h:
+
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/unordered_set:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/PDE.h:
+
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/IO/CSVReader.tpp:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h:
+
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent_ext.h:
+
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/dirent.h:
+
+/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/dirent.h:
+
+/u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/src/SparseExtra/MarketIO.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/fstream.tcc:
 
@@ -1117,53 +965,9 @@ utils/Utils.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/fstream:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Mesh.h:
+/u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/SparseExtra:
 
-utils/MeshLoader.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/VectorSpace.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/CompileTime.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/Element.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/numeric:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/random.tcc:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/opt_random.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/random:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/Expressions.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/unordered_set.h:
-
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/unordered_set:
-
-core/MeshTest.cpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.tpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/MatrixField.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/extensions/Logger.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/FEM/basis/LagrangianBasis.tpp:
-
-core/VectorFieldTest.cpp:
-
-utils/Constants.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/DotProduct.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/VectorField.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/ScalarField.tpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/expressions/ScalarExpressions.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/Symbols.h:
+models/SQRPDETest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/list:
 
@@ -1174,8 +978,6 @@ utils/Constants.h:
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/IterativeLinearSolvers/IterativeSolverBase.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/SparseQR/SparseQR.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/calibration/GCV.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/SparseLU/SparseLU_column_dfs.h:
 
@@ -1367,8 +1169,6 @@ utils/Constants.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/DiagonalProduct.h:
 
-models/STRPDETest.cpp:
-
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/SpaceOnlyBase.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/cmath:
@@ -1426,10 +1226,6 @@ _deps/googletest-src/googletest/include/gtest/gtest-matchers.h:
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/waitstatus.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/tr1/bessel_function.tcc:
-
-core/SplineTest.cpp:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/utils/fields/Divergence.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/char_traits.h:
 
@@ -1495,8 +1291,6 @@ core/SplineTest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/LU/FullPivLU.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/GradientFreeOptimizer.h:
-
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/ReferenceElement.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/SelfCwiseBinaryOp.h:
@@ -1557,8 +1351,6 @@ _deps/googletest-src/googletest/include/gtest/internal/gtest-param-util.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/sys/cdefs.h:
 
-calibration/GCVNewtonTest.cpp:
-
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/arch/SSE/TypeCasting.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/types/struct_timespec.h:
@@ -1570,6 +1362,8 @@ calibration/GCVNewtonTest.cpp:
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/stdio.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/functexcept.h:
+
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SQRPDE.tpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h:
 
@@ -1586,8 +1380,6 @@ calibration/GCVNewtonTest.cpp:
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/wchar.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/istream:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/IterativeOptimizer.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/struct_stat.h:
 
@@ -1677,8 +1469,6 @@ calibration/GCVNewtonTest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/linux/errno.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/OPT/optimizers/Newton.tpp:
-
 /mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/NLA/VectorSpace.tpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/wctype-wchar.h:
@@ -1688,8 +1478,6 @@ calibration/GCVNewtonTest.cpp:
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/unique_ptr.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/struct_rwlock.h:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/core/MESH/engines/BruteForce/BruteForce.tpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/types/struct_statx.h:
 
@@ -1806,8 +1594,6 @@ calibration/GCVNewtonTest.cpp:
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/products/TriangularMatrixMatrix.h:
 
 _deps/googletest-src/googletest/include/gtest/internal/gtest-internal.h:
-
-core/LagrangianBasisTest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/posix1_lim.h:
 
@@ -2079,8 +1865,6 @@ _deps/googletest-src/googletest/include/gtest/gtest-param-test.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/linux/limits.h:
 
-/u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/std_thread.h:
-
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/time_members.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/assert.h:
@@ -2146,8 +1930,6 @@ MainTest.cpp:
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/SparseCore/SparseMatrix.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/tr1/modified_bessel_func.tcc:
-
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/preprocess/InitialConditionEstimator.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/MKL_support.h:
 
@@ -2259,8 +2041,6 @@ _deps/googletest-src/googletest/include/gtest/gtest-message.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/NestByValue.h:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/FunctionalBase.h:
-
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/x86_64-mk-linux/bits/c++allocator.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/SVD/BDCSVD.h:
@@ -2297,6 +2077,8 @@ _deps/googletest-src/googletest/include/gtest/gtest-message.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/Transpose.h:
 
+/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/regression/SQRPDE.h:
+
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/DiagonalMatrix.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/Visitor.h:
@@ -2310,8 +2092,6 @@ _deps/googletest-src/googletest/include/gtest/gtest-message.h:
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/Transpositions.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/SolveTriangular.h:
-
-core/BilinearFormsTest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h:
 
@@ -2397,8 +2177,6 @@ core/BilinearFormsTest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Geometry:
 
-/mnt/c/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork/fdaPDE/models/functional/fPCA.h:
-
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/bits/stat.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Geometry/OrthoMethods.h:
@@ -2427,13 +2205,9 @@ core/BilinearFormsTest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Geometry/arch/Geometry_SSE.h:
 
-core/ScalarFieldTest.cpp:
-
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur.h:
-
-models/SpaceTimeTest.cpp:
 
 /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/ext/string_conversions.h:
 
