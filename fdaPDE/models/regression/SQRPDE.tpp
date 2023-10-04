@@ -1,9 +1,10 @@
 // finds a solution to the SQR-PDE smoothing problem
-template <typename PDE, typename SamplingDesign>
-void SQRPDE<PDE, SamplingDesign>::solve() {
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
+void SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
   
+   std::cout << "Entro in fpirls " << std::endl ; 
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
   fpirls.compute();
@@ -16,7 +17,7 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
     invXtWX_ = XtWX_.partialPivLu();
   }
 
-  invA_ = fpirls.solver().invA();
+  // invA_ = fpirls.solver().invA();
 
   if(hasCovariates()) {
     U_ = fpirls.solver().U(); 
@@ -32,33 +33,75 @@ void SQRPDE<PDE, SamplingDesign>::solve() {
 
 
 // Non-parametric and semi-parametric cases coincide here, since beta^(0) = 0
-template <typename PDE, typename SamplingDesign>
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
 DVector<double> 
-SQRPDE<PDE, SamplingDesign>::initialize_mu() const{
+SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M tolto const per il caso time perchè assembla u
 
-    // assemble system matrix 
+  std::cout << "Dim y = " << y().rows() << std::endl; 
+  // std::cout << "Dim u = " << u().rows() << std::endl; 
+
+  std::cout << "Dim Psi = " << Psi().rows() << std::endl; 
+
+  std::cout << "Dim R0 = " << R0().rows() << std::endl; 
+
+  std::cout << "Dim R1 = " << R1().rows() << std::endl;
+
+  std::cout << "n basis = " << n_basis() << std::endl;
+  std::cout << "M = " << n_temporal_locs() << std::endl;
+
+
+  // assemble system matrix 
+  SparseBlockMatrix<double,2,2>
+    A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
+           lambdaS()*R1(),     -lambdaS()*R0()            );
+
+  // correction on the matrix if time is present
+  if constexpr(std::is_same<RegularizationType, SpaceOnly>::value){
+    std::cout << "I'm space only" << std::endl ; 
     SparseBlockMatrix<double,2,2>
-      A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
-        lambdaS()*R1(),     -lambdaS()*R0()            );
+    A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
+           lambdaS()*R1(),     -lambdaS()*R0()            );
+  }
+  else{
+    if constexpr(std::is_same<RegularizationType, SpaceTimeSeparable>::value) {
+      std::cout << "I'm SpaceTimeSeparable" << std::endl ; 
+      SparseBlockMatrix<double,2,2>
+        A_init(PsiTD()*Psi()/n_obs() - lambdaT()*Kronecker(Pt(), pde().R0()), 2*lambdaS()*R1().transpose(),
+              lambdaS()*R1(),                                                -lambdaS()*R0()            );
+    }
+    if constexpr(std::is_same<RegularizationType, SpaceTimeParabolic>::value){
+      // manca da distinguere il solver
+      std::cout << "I'm SpaceTimeParabolic" << std::endl ; 
+      // A_init =SparseBlockMatrix<double,2,2>
+      //   (PsiTD()*Psi()/n_obs(),              2*lambdaS()*(R1() + lambdaT()**Kronecker(L(), pde().R0())).transpose(),
+      //   lambdaS()*(R1() + lambdaT()*Kronecker(L(), pde().R0())),    -lambdaS()*R0()                             );
+    }
+      
+
+  }
+
+    std::cout << "A_init dim =  " << A_init.rows() << std::endl ; 
 
     // cache non-parametric matrix and its factorization for reuse 
     fdaPDE::SparseLU<SpMatrix<double>> invA_init;
     invA_init.compute(A_init);
     DVector<double> b_init; 
     b_init.resize(A_init.rows());
-    b_init.block(n_basis(),0, n_basis(),1) = lambdaS()*u();  
-    b_init.block(0,0, n_basis(),1) = PsiTD()*y()/n_obs(); 
+
+    b_init.block(n_temporal_basis()*n_basis(),0, n_temporal_basis()*n_basis(),1) = lambdaS()*u();  
+    b_init.block(0,0, n_temporal_basis()*n_basis(),1) = PsiTD()*y()/n_obs(); 
     BLOCK_FRAME_SANITY_CHECKS;
-    DVector<double> f = (invA_init.solve(b_init)).head(n_basis());
+    DVector<double> f = (invA_init.solve(b_init)).head(n_temporal_basis()*n_basis());
     DVector<double> fn =  Psi(not_nan())*f;  
 
-    return fn;
+    // return fn;
+    return y();
   
 }
 
-template <typename PDE, typename SamplingDesign>
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
 std::tuple<DVector<double>&, DVector<double>&>
-SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu){
+SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::compute(const DVector<double>& mu){
   // compute weight matrix and pseudo-observation vector
   DVector<double> abs_res{};
   abs_res.resize(y().size()); 
@@ -83,9 +126,9 @@ SQRPDE<PDE, SamplingDesign>::compute(const DVector<double>& mu){
 
 
 
-template <typename PDE, typename SamplingDesign>
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
 double
-SQRPDE<PDE, SamplingDesign>::model_loss(const DVector<double>& mu) const{
+SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::model_loss(const DVector<double>& mu) const{
   
   // compute value of functional J given mu: /(2*n) 
     return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm();     
@@ -93,8 +136,8 @@ SQRPDE<PDE, SamplingDesign>::model_loss(const DVector<double>& mu) const{
 
 // required to support GCV based smoothing parameter selection
 // in case of an SRPDE model we have T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
-template <typename PDE, typename SamplingDesign>
-const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
+const DMatrix<double>& SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::T() {
   // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
   if(R_.size() == 0){
       invR0_.compute(R0());
@@ -110,8 +153,8 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::T() {
 
 // Q is computed on demand only when it is needed by GCV and cached for fast reacess (in general operations
 // involving Q can be substituted with the more efficient routine lmbQ(), which is part of iRegressionModel interface)
-template <typename PDE, typename SamplingDesign>
-const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
+const DMatrix<double>& SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::Q() {
   // compute Q = W(I - H) = W ( I - X*(X^T*W*X)^{-1}*X^T*W ) 
   Q_ = W()*(DMatrix<double>::Identity(n_obs(), n_obs()) - X()*invXtWX().solve(X().transpose()*W()));
 
@@ -120,8 +163,8 @@ const DMatrix<double>& SQRPDE<PDE, SamplingDesign>::Q() {
 
 
 // returns the numerator of the GCV score 
-template <typename PDE, typename SamplingDesign>
-double SQRPDE<PDE, SamplingDesign>::norm
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
+double SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::norm
 (const DMatrix<double>& fitted, const DMatrix<double>& obs) const {   
   double result = 0;
   for(std::size_t i = 0; i < obs.rows(); ++i)
@@ -130,8 +173,8 @@ double SQRPDE<PDE, SamplingDesign>::norm
 }
 
 // returns the pinball loss at a specific x 
-template <typename PDE, typename SamplingDesign>
-double SQRPDE<PDE, SamplingDesign>::rho_alpha(const double& x) const{ 
+template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
+double SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::rho_alpha(const double& x) const{ 
   return 0.5*std::abs(x) + (alpha_ - 0.5)*x; 
 }
 

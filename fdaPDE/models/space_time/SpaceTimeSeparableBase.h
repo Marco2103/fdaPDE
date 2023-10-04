@@ -45,7 +45,9 @@ namespace models{
     // constructor
     SpaceTimeSeparableBase() = default;
     SpaceTimeSeparableBase(const PDE& pde, const DVector<double>& time)
-      : SpaceTimeBase<Model>(pde, time) {}
+      : SpaceTimeBase<Model>(pde, time) {
+        std::cout << "Constructor STSepBase" << std::endl;
+      }
     // init data structure related to separable regularization
     void init_regularization() {
       basis_ = TimeBasis(time_);
@@ -73,6 +75,8 @@ namespace models{
     const SpMatrix<double>& Phi() const { return Phi_; }
     inline std::size_t n_temporal_locs() const { return is_empty(time_locations_) ? time_.rows() : time_locations_.rows(); }
     const DVector<double>& time_locs() const { return is_empty(time_locations_) ? time_ : time_locations_; }
+
+    inline std::size_t n_temporal_basis() const { return basis_.size(); }
 
     // return stacked version of discretized forcing field
     const DVector<double>& u() {

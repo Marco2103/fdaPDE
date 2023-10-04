@@ -2,6 +2,6 @@
 CXX_STD=CXX17
 ## include fdaPDE library in PATH and set compiler flags
 ## PKG_CXXFLAGS=-Wno-ignored-attributes -I%cd%/../../../ -O2 -DNDEBUG -fopenmp -std=c++17
-PKG_CXXFLAGS=-Wno-ignored-attributes -I"C:/Users/marco/PACS/Project/Code/Cpp/fdaPDE-fork" -O2 -DNDEBUG -fopenmp -std=c++17
+PKG_CXXFLAGS=-Wno-ignored-attributes -I"C:/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE" -O2 -DNDEBUG -fopenmp -std=c++17
 SOURCES = $(wildcard ./*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o) $(SOURCES_LIBS:.cpp=.o)

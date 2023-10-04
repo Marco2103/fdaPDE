@@ -2,6 +2,7 @@
 template <typename PDE, typename RegularizationType, typename SamplingDesign,
 	  typename Solver, typename Distribution>
 void GSRPDE<PDE, RegularizationType, SamplingDesign, Solver, Distribution>::solve() {
+
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
   FPIRLS<decltype(*this), Distribution> fpirls(*this, tol_, max_iter_); // FPIRLS engine

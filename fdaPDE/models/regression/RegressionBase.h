@@ -43,6 +43,7 @@ namespace models {
     using Base::pde_;        // differential operator L 
     using Base::df_;         // BlockFrame for problem's data storage
     using Base::n_basis;     // number of basis function over domain D
+    using Base::n_temporal_locs;  // M added 
     using Base::idx;         // indices of observations
     using SamplingBase::Psi; // matrix of spatial basis evaluation at locations p_1 ... p_n
     using SamplingBase::D;   // matrix of subdomains measures (for areal sampling)
