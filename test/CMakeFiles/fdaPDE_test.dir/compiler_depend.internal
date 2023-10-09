@@ -612,7 +612,7 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o
  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/list
  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/stl_list.h
  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/bits/list.tcc
- /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/test/models/SQRPDETest.cpp
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/test/calibration/GCVTest.cpp
  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/unsupported/Eigen/SparseExtra
  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Sparse
  /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h
@@ -727,7 +727,7 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/fields/expressions/VectorExpressions.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/fields/expressions/MatrixExpressions.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/MESH/Mesh.h
- /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/SQRPDE.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/SRPDE.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/Symbols.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/FEM/PDE.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelBase.h
@@ -761,7 +761,6 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/Traits.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelMacros.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelBase.tpp
- /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelTraits.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelMacros.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/NLA/SparseBlockMatrix.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/Assert.h
@@ -775,6 +774,7 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/MESH/Element.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelBase.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/RegressionBase.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelTraits.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/SpaceOnlyBase.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/SpaceTimeBase.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/space_time/SpaceTimeSeparableBase.h
@@ -790,20 +790,42 @@ CMakeFiles/fdaPDE_test.dir/MainTest.cpp.o
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/FEM/operators/BilinearFormTraits.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/FEM/PDE.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/RegressionBase.tpp
- /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/FPIRLS.h
- /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/Distributions.h
- /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/SRPDE.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/SRPDE.tpp
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/STRPDE.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/space_time/SplineBasis.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/NLA/KroneckerProduct.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/DataStructures/BlockVector.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/STRPDE.tpp
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/SQRPDE.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/FPIRLS.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/Distributions.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/SRPDE.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/STRPDE.h
  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/chrono
  /u/sw/toolchains/gcc-glibc/11.2.0/prefix/include/c++/11.2.0/ratio
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/SQRPDE.tpp
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/GSRPDE.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/GSRPDE.tpp
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/SamplingDesign.h
- /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/Distributions.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/calibration/GCV.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/Symbols.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/fields/ScalarField.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/NLA/SMW.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/calibration/ExactEDF.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/regression/RegressionBase.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/calibration/StochasticEDF.h
+ /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3/Eigen/Cholesky
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/calibration/iGCV.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/models/ModelTraits.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/OPT/optimizers/GridOptimizer.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/Symbols.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/fields/ScalarField.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/OPT/extensions/Extension.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/OPT/optimizers/GradientFreeOptimizer.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/OPT/optimizers/GridOptimizer.tpp
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/OPT/optimizers/Newton.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/OPT/optimizers/IterativeOptimizer.h
+ /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/OPT/optimizers/Newton.tpp
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/test/utils/MeshLoader.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/utils/Symbols.h
  /mnt/c/Users/ileni/Universita/Magistrale/Second_year/Second_semester/PACS/Project/fdaPDE_fork/fdaPDE/fdaPDE/core/MESH/Mesh.h

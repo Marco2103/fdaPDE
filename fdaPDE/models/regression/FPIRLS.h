@@ -126,13 +126,17 @@ namespace models{
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
 
+  std::cout << "Value of J at iteration: " << J_new << std::endl;
+
       }
 
 
   if (k_ == max_iter_)
     std::cout << "MAX ITER RAGGIUNTO " << std::endl;  
 
-  std::cout << "Number of FPIRLS iterations: " << k_ << std::endl; 
+  std::cout << "Number of FPIRLS iterations: " << k_ << std::endl;
+
+  std::cout << "Value of J at last iteration: " << J_new << std::endl; 
   
       return;
     } 

@@ -31,9 +31,7 @@ namespace models {
   public:
     // constructor
     SpaceTimeBase() = default;
-    SpaceTimeBase(const PDE& pde, const DVector<double>& time) : ModelBase<Model>(pde), time_(time) {
-      std::cout << "Constructor STBase" << std::endl;
-    };
+    SpaceTimeBase(const PDE& pde, const DVector<double>& time) : ModelBase<Model>(pde), time_(time) {};
     // copy constructor
     SpaceTimeBase(const SpaceTimeBase& rhs) { pde_ = rhs.pde_; time_ = rhs.time_; }
 

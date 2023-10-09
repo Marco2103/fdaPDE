@@ -4,6 +4,9 @@
 // NB: a change in the smoothing parameter must trigger a re-initialization of the model
 template <typename PDE, typename SamplingDesign>
 void STRPDE<PDE, SpaceTimeSeparable, SamplingDesign, MonolithicSolver>::init_model() {
+
+  std::cout << "I'm STSep init_model " << std::endl ; 
+
   // assemble system matrix for the nonparameteric part of the model
   if(is_empty(P_)) P_ = Kronecker(Pt(), pde().R0());  
   A_ = SparseBlockMatrix<double,2,2>
@@ -21,13 +24,17 @@ void STRPDE<PDE, SpaceTimeSeparable, SamplingDesign, MonolithicSolver>::init_mod
 template <typename PDE, typename SamplingDesign>
 void STRPDE<PDE, SpaceTimeSeparable, SamplingDesign, MonolithicSolver>::solve() {
   BLOCK_FRAME_SANITY_CHECKS;
+
   DVector<double> sol; // room for problem' solution
    
   if(!Base::hasCovariates()){ // nonparametric case
+
     // update rhs of STR-PDE linear system
     b_.block(0,0, A_.rows()/2,1) = -PsiTD()*W()*y();
+
     // solve linear system A_*x = b_
     sol = invA_.solve(b_);
+
     f_ = sol.head(A_.rows()/2);
   }else{ // parametric case
     // update rhs of STR-PDE linear system
@@ -44,8 +51,10 @@ void STRPDE<PDE, SpaceTimeSeparable, SamplingDesign, MonolithicSolver>::solve() 
     f_    = sol.head(A_.rows()/2);
     beta_ = invXtWX().solve(X().transpose()*W())*(y() - Psi()*f_);
   }
+  
   // store PDE misfit
   g_ = sol.tail(A_.rows()/2);
+  
   return;
 }
 

@@ -70,11 +70,13 @@ namespace calibration{
         sol = model_.invA().solve(Bs_);
       }else{
         if (model_.n_basis() > N_threshold){   // Woodbury 
+        std::cout << "Wood" << std::endl ;
           // solve system (A+UCV)*x = Bs via woodbury decomposition using matrices U and V cached by model_
           sol = SMW<>().solve(model_.invA(), model_.U(), model_.XtWX(), model_.V(), Bs_);
         }
         else{   // Cholesky
           // solve system (Psi^T*Q*Psi + lambda*R1^T*R0^-1*R1)*x = -Bs via Cholesky factorization 
+          std::cout << "Chol" << std::endl ; 
           Eigen::LLT<DMatrix<double>> lltOfT; // compute the Cholesky decomposition of T
           lltOfT.compute(model_.T());
           sol = lltOfT.solve(- Bs_.topRows(n));   

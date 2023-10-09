@@ -45,12 +45,11 @@ namespace models{
     // constructor
     SpaceTimeSeparableBase() = default;
     SpaceTimeSeparableBase(const PDE& pde, const DVector<double>& time)
-      : SpaceTimeBase<Model>(pde, time) {
-        std::cout << "Constructor STSepBase" << std::endl;
-      }
+      : SpaceTimeBase<Model>(pde, time) {}
     // init data structure related to separable regularization
     void init_regularization() {
       basis_ = TimeBasis(time_);
+
       // compute \Phi = [\Phi]_{ij} = \phi_i(t_j) using the provided basis function
       if(is_empty(time_locations_))
 	Phi_ = basis_.eval(time_); // assume time instants t_1, ..., t_m equal to time nodes
@@ -94,10 +93,11 @@ namespace models{
     // returns an expression encoding \lambda_S*((R1^T*R0^{-1}*R1) \kron Rt) + \lambda_T*(R0 \kron Pt)
     auto pen() {
       if(is_empty(penS_)){ // compute once and cache result
+      std::cout << "Assembly pen" << std::endl ; 
 	fdaPDE::SparseLU<SpMatrix<double>> invR0_;
 	invR0_.compute(pde_->R0());
 	penS_ = Kronecker(pde_->R1().transpose()*invR0_.solve(pde_->R1()), Rt_); // (R1^T*R0^{-1}*R1) \kron Rt
-	penT_ = Kronecker(pde_->R0(), Pt_); // (R0 \kron Pt)
+  penT_ = Kronecker(pde_->R0(), Pt_); // (R0 \kron Pt)
       }
       return lambdaS()*penS_ + lambdaT()*penT_;
     }

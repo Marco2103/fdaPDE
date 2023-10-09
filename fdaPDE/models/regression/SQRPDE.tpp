@@ -3,8 +3,7 @@ template <typename PDE, typename RegularizationType, typename SamplingDesign, ty
 void SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
-  
-   std::cout << "Entro in fpirls " << std::endl ; 
+   
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
   fpirls.compute();
@@ -17,7 +16,7 @@ void SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::solve() {
     invXtWX_ = XtWX_.partialPivLu();
   }
 
-  // invA_ = fpirls.solver().invA();
+  invA_ = fpirls.solver().invA();
 
   if(hasCovariates()) {
     U_ = fpirls.solver().U(); 
@@ -25,7 +24,8 @@ void SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::solve() {
   }
 
   f_ = fpirls.solver().f();
-  g_ = fpirls.solver().g();   
+  g_ = fpirls.solver().g(); 
+  n_iter_ = fpirls.n_iter();   
  
   if(hasCovariates()) beta_ = fpirls.solver().beta();
   return;
@@ -37,17 +37,17 @@ template <typename PDE, typename RegularizationType, typename SamplingDesign, ty
 DVector<double> 
 SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M tolto const per il caso time perchè assembla u
 
-  std::cout << "Dim y = " << y().rows() << std::endl; 
-  // std::cout << "Dim u = " << u().rows() << std::endl; 
+  // std::cout << "Dim y = " << y().rows() << std::endl; -> n 
+  // std::cout << "Dim u = " << u().rows() << std::endl; -> NM
 
-  std::cout << "Dim Psi = " << Psi().rows() << std::endl; 
+  // std::cout << "Dim Psi = " << Psi().rows() << std::endl; -> nm x NM
 
-  std::cout << "Dim R0 = " << R0().rows() << std::endl; 
+  // std::cout << "Dim R0 = " << R0().rows() << std::endl; -> NM x NM
 
-  std::cout << "Dim R1 = " << R1().rows() << std::endl;
+  // std::cout << "Dim R1 = " << R1().rows() << std::endl; -> NM x NM
 
-  std::cout << "n basis = " << n_basis() << std::endl;
-  std::cout << "M = " << n_temporal_locs() << std::endl;
+  // std::cout << "n basis = " << n_basis() << std::endl;    -> N
+  // std::cout << "M = " << n_temporal_locs() << std::endl;  -> M
 
 
   // assemble system matrix 
@@ -57,7 +57,7 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
 
   // correction on the matrix if time is present
   if constexpr(std::is_same<RegularizationType, SpaceOnly>::value){
-    std::cout << "I'm space only" << std::endl ; 
+    std::cout << "I'm SpaceOnly" << std::endl ; 
     SparseBlockMatrix<double,2,2>
     A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
            lambdaS()*R1(),     -lambdaS()*R0()            );
@@ -76,11 +76,9 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
       //   (PsiTD()*Psi()/n_obs(),              2*lambdaS()*(R1() + lambdaT()**Kronecker(L(), pde().R0())).transpose(),
       //   lambdaS()*(R1() + lambdaT()*Kronecker(L(), pde().R0())),    -lambdaS()*R0()                             );
     }
-      
-
   }
 
-    std::cout << "A_init dim =  " << A_init.rows() << std::endl ; 
+    // std::cout << "A_init dim =  " << A_init.rows() << std::endl ;   // -> 2NM x 2NM
 
     // cache non-parametric matrix and its factorization for reuse 
     fdaPDE::SparseLU<SpMatrix<double>> invA_init;
@@ -94,8 +92,8 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
     DVector<double> f = (invA_init.solve(b_init)).head(n_temporal_basis()*n_basis());
     DVector<double> fn =  Psi(not_nan())*f;  
 
-    // return fn;
-    return y();
+    return fn;
+    // return y();
   
 }
 
@@ -138,16 +136,31 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::model_loss(const DVecto
 // in case of an SRPDE model we have T = \Psi^T*Q*\Psi + \lambda*(R1^T*R0^{-1}*R1)
 template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
 const DMatrix<double>& SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::T() {
-  // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
-  if(R_.size() == 0){
-      invR0_.compute(R0());
-      R_ = R1().transpose()*invR0_.solve(R1());
-  }
-  // compute and store matrix T for possible reuse
+  // // compute value of R = R1^T*R0^{-1}*R1, cache for possible reuse
+  // if(R_.size() == 0){
+  //     invR0_.compute(R0());
+  //     R_ = R1().transpose()*invR0_.solve(R1());
+  // }
+  // // compute and store matrix T for possible reuse
+  // if(!hasCovariates()) // case without covariates, Q is the identity matrix
+  //   T_ = PsiTD()*W()*Psi()   + lambdaS()*R_;
+  // else // general case with covariates
+  //   T_ = PsiTD()*lmbQ(Psi()) + lambdaS()*R_;
+
   if(!hasCovariates()) // case without covariates, Q is the identity matrix
-    T_ = PsiTD()*W()*Psi()   + lambdaS()*R_;
-  else // general case with covariates
-    T_ = PsiTD()*lmbQ(Psi()) + lambdaS()*R_;
+    T_ = PsiTD()*W()*Psi()  + Base::pen();
+  else {// general case with covariates
+    T_ = PsiTD()*lmbQ(Psi()) + Base::pen();
+
+    // fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ;
+    // invR0_temp.compute(pde().R0());
+    // auto penS_temp = Kronecker(pde().R1().transpose()*invR0_temp.solve(pde().R1()), Base::Rt()); // (R1^T*R0^{-1}*R1) \kron Rt
+    // auto penT_temp = Kronecker(pde().R0(), Base::Pt()); // (R0 \kron Pt)
+    
+    //   T_ = PsiTD()*lmbQ(Psi()) + lambdaS()*penS_temp + lambdaT()*penT_temp;
+  }
+
+
   return T_;
 }
 

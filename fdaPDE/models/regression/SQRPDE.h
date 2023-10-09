@@ -39,7 +39,7 @@ namespace models{
     double alpha_;                          // quantile order 
     double rho_alpha(const double&) const;  // pinball loss function (quantile check function)
    
-    // fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A      
+    fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A      
 
     DVector<double> py_{};                              // y - (1-2*alpha)|y - X*beta - f|
     DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
@@ -48,6 +48,9 @@ namespace models{
     std::size_t max_iter_ = 200;  
     double tol_weights_ = 1e-6;  
     double tol_ = 1e-6; 
+
+    // Debug
+    std::size_t n_iter_ ;
 
   public:
     IMPORT_REGRESSION_SYMBOLS;
@@ -99,9 +102,10 @@ namespace models{
     double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const ; 
 
     // getters
-    // const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
+    const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
     const DMatrix<double>& U() const { return U_; }
     const DMatrix<double>& V() const { return V_; }
+    const std::size_t& n_iter() const {return n_iter_;}
 
     virtual ~SQRPDE() = default;
   };

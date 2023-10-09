@@ -59,14 +59,23 @@ namespace calibration{
     // GCV(\lambda) = n/(edf^2)*norm(y - \hat y)^2
     double operator()(const SVector<model_traits<M>::n_lambda>& lambda) {
       // fit the model given current lambda
+
+      std::cout << "setLambda in GCV.h" << std::endl ; 
+      std::cout << "rows of lambda " << lambda.rows() << std::endl ; 
       model_.setLambda(lambda);
+      std::cout << "dopo setLambda in GCV.h" << std::endl ; 
       model_.init_model();
+      std::cout << "dopo init" << std::endl ;
       model_.solve();
+      std::cout << "dopo solve" << std::endl ; 
       // compute equivalent degrees of freedom given current lambda (if not already cached)
       if(cache_.find(lambda) == cache_.end()){
-	cache_[lambda] = trS_.compute();
+        std::cout << "inside if" << std::endl ; 
+	      cache_[lambda] = trS_.compute();
+        std::cout << "trS computed" << std::endl ; 
       }
       double trS = cache_[lambda];
+      std::cout << "trS = " << trS << std::endl ;
       double q = model_.q();          // number of covariates
       std::size_t n = model_.n_obs(); // number of observations      
       double dor = n - (q + trS);     // residual degrees of freedom
@@ -74,6 +83,7 @@ namespace calibration{
        
       // return gcv at point
       double gcv_value = (n/std::pow(dor, 2))*( model_.norm(model_.fitted(), model_.y()) ) ;
+      std::cout << "gcv_value = " << gcv_value << std::endl ;
       values_->emplace_back(gcv_value);
       // note: for SQRPDE this corresponds to the square of what we typically define gcv score.  
       return gcv_value;

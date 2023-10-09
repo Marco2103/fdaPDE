@@ -38,7 +38,14 @@ namespace models {
     void setDirichletBC(SpMatrix<double>& A, DMatrix<double>& b);
     void setData(const BlockFrame<double, int>& df, bool reindex = false); // initialize model's data by copying the supplied BlockFrame
     BlockFrame<double, int>& data() { return df_; }  // direct write-access to model's internal data storage
-    void setLambda(const SVector<model_traits<Model>::n_lambda>& lambda) { lambda_ = lambda; }
+    void setLambda(const SVector<model_traits<Model>::n_lambda>& lambda) { 
+      
+      lambda_ = lambda; 
+      
+      std::cout << "Lambda[0] = " << lambda_[0] << std::endl; // M
+      std::cout << "Lambda[1] = " << lambda_[1] << std::endl;
+      
+      }
     void setPDE(const PDE& pde) { pde_ = std::make_shared<PDE>(pde); }
     
     // getters
