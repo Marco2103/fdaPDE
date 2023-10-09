@@ -4,7 +4,6 @@ void SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::solve() {
   // execute FPIRLS for minimization of the functional
   // \norm{V^{-1/2}(y - \mu)}^2 + \lambda \int_D (Lf - u)^2
   
-   std::cout << "Entro in fpirls " << std::endl ; 
   FPIRLS<decltype(*this)> fpirls(*this, tol_, max_iter_); // FPIRLS engine
 
   fpirls.compute();
@@ -37,23 +36,8 @@ template <typename PDE, typename RegularizationType, typename SamplingDesign, ty
 DVector<double> 
 SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M tolto const per il caso time perchè assembla u
 
-  std::cout << "Dim y = " << y().rows() << std::endl; 
-  // std::cout << "Dim u = " << u().rows() << std::endl; 
-
-  std::cout << "Dim Psi = " << Psi().rows() << std::endl; 
-
-  std::cout << "Dim R0 = " << R0().rows() << std::endl; 
-
-  std::cout << "Dim R1 = " << R1().rows() << std::endl;
-
-  std::cout << "n basis = " << n_basis() << std::endl;
-  std::cout << "M = " << n_temporal_locs() << std::endl;
-
-
-  // assemble system matrix 
-  SparseBlockMatrix<double,2,2>
-    A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
-           lambdaS()*R1(),     -lambdaS()*R0()            );
+  DVector<double> f;
+  f.resize(Base::n_temporal_locs() * Base::n_basis()); 
 
   // correction on the matrix if time is present
   if constexpr(std::is_same<RegularizationType, SpaceOnly>::value){
@@ -61,26 +45,6 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
     SparseBlockMatrix<double,2,2>
     A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
            lambdaS()*R1(),     -lambdaS()*R0()            );
-  }
-  else{
-    if constexpr(std::is_same<RegularizationType, SpaceTimeSeparable>::value) {
-      std::cout << "I'm SpaceTimeSeparable" << std::endl ; 
-      SparseBlockMatrix<double,2,2>
-        A_init(PsiTD()*Psi()/n_obs() - lambdaT()*Kronecker(Pt(), pde().R0()), 2*lambdaS()*R1().transpose(),
-              lambdaS()*R1(),                                                -lambdaS()*R0()            );
-    }
-    if constexpr(std::is_same<RegularizationType, SpaceTimeParabolic>::value){
-      // manca da distinguere il solver
-      std::cout << "I'm SpaceTimeParabolic" << std::endl ; 
-      // A_init =SparseBlockMatrix<double,2,2>
-      //   (PsiTD()*Psi()/n_obs(),              2*lambdaS()*(R1() + lambdaT()**Kronecker(L(), pde().R0())).transpose(),
-      //   lambdaS()*(R1() + lambdaT()*Kronecker(L(), pde().R0())),    -lambdaS()*R0()                             );
-    }
-      
-
-  }
-
-    std::cout << "A_init dim =  " << A_init.rows() << std::endl ; 
 
     // cache non-parametric matrix and its factorization for reuse 
     fdaPDE::SparseLU<SpMatrix<double>> invA_init;
@@ -88,14 +52,56 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
     DVector<double> b_init; 
     b_init.resize(A_init.rows());
 
-    b_init.block(n_temporal_basis()*n_basis(),0, n_temporal_basis()*n_basis(),1) = lambdaS()*u();  
-    b_init.block(0,0, n_temporal_basis()*n_basis(),1) = PsiTD()*y()/n_obs(); 
+    b_init.block(Base::n_basis(),0, Base::n_temporal_basis()*Base::n_basis(),1) = lambdaS()*u();  
+    b_init.block(0,0, Base::n_basis(),1) = PsiTD()*y()/n_obs(); 
     BLOCK_FRAME_SANITY_CHECKS;
-    DVector<double> f = (invA_init.solve(b_init)).head(n_temporal_basis()*n_basis());
-    DVector<double> fn =  Psi(not_nan())*f;  
+    f = (invA_init.solve(b_init)).head(Base::n_basis());         
+  }
+  else{
+    if constexpr(std::is_same<RegularizationType, SpaceTimeSeparable>::value){
+      std::cout << "I'm SpaceTimeSeparable" << std::endl ; 
+      SparseBlockMatrix<double,2,2>
+        A_init(PsiTD()*Psi()/n_obs() - Base::lambdaT()*Kronecker(Base::Pt(), pde().R0()), 2*lambdaS()*R1().transpose(),
+               lambdaS()*R1(),                                                -lambdaS()*R0()                           );
+        
+        // cache non-parametric matrix and its factorization for reuse 
+        fdaPDE::SparseLU<SpMatrix<double>> invA_init;
+        invA_init.compute(A_init);
+        DVector<double> b_init; 
+        b_init.resize(A_init.rows());
 
-    // return fn;
-    return y();
+        b_init.block(Base::n_temporal_basis()*Base::n_basis(),0, Base::n_temporal_basis()*Base::n_basis(),1) = lambdaS()*u();  
+        b_init.block(0,0, Base::n_temporal_basis()*Base::n_basis(),1) = PsiTD()*y()/n_obs(); 
+        BLOCK_FRAME_SANITY_CHECKS;
+        f = (invA_init.solve(b_init)).head(Base::n_temporal_basis()*Base::n_basis());  
+    }
+    if constexpr(std::is_same<RegularizationType, SpaceTimeParabolic>::value){
+      std::cout << "I'm SpaceTimeParabolic" << std::endl;
+      if constexpr(std::is_same<Solver, MonolithicSolver>::value){
+        std::cout << "...monolithic solver" << std::endl;
+        SparseBlockMatrix<double,2,2> 
+           A_init(PsiTD()*Psi()/n_obs(),                                              2*lambdaS()*(R1() + Base::lambdaT()*Kronecker(Base::L(), pde().R0())).transpose(),
+                 lambdaS()*(R1() + Base::lambdaT()*Kronecker(Base::L(), pde().R0())), -lambdaS()*R0());
+
+        fdaPDE::SparseLU<SpMatrix<double>> invA_init;
+        invA_init.compute(A_init);
+        DVector<double> b_init; 
+        b_init.resize(A_init.rows());         
+        b_init.block(Base::n_temporal_locs()*Base::n_basis(),0, Base::n_temporal_locs()*Base::n_basis(),1) = lambdaS()*u();  
+        b_init.block(0,0, Base::n_temporal_locs()*Base::n_basis(),1) = PsiTD()*y()/n_obs(); 
+        BLOCK_FRAME_SANITY_CHECKS;
+        f = (invA_init.solve(b_init)).head(Base::n_temporal_locs()*Base::n_basis());    
+ 
+      } 
+      else{
+        std::cout << "...iterative solver" << std::endl;
+        // M same as monolithic (exact initialization)  => no if-else needed               
+      } 
+    }
+  }
+
+  DVector<double> fn =  Psi(not_nan())*f;
+  return fn;
   
 }
 

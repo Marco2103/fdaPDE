@@ -99,11 +99,20 @@ namespace models{
     // computes and cache matrices (Im \kron R0)^{-1} and L \kron R0
     // returns an expression encoding \lambdaS*((Im \kron R1 + \lambda_T*(L \kron R0))^T*(I_m \kron R0)^{-1}*(Im \kron R1 + \lambda_T*(L \kron R0)))
     auto pen() {
+      //std::cout << "calling pen() in ParabolicBase " << std::endl; 
       if(is_empty(pen_)){ // compute once and cache result
+  //std::cout << "here 1 pen() in ParabolicBase " << std::endl; 
 	invR0_.compute(R0());
+  //std::cout << "here 2 pen() in ParabolicBase " << std::endl;
 	penT_ = Kronecker(L_, pde_->R0());	
+  //std::cout << "here 3 pen() in ParabolicBase " << std::endl;
       }
-      return lambdaS()*(R1() + lambdaT()*penT_).transpose()*invR0_.solve(R1() + lambdaT()*penT_);
+      //std::cout << "dim R1 - pen() in ParabolicBase " << R1().rows() << " " << R1().cols() << std::endl;
+      //std::cout << "dim penT - pen() in ParabolicBase " << penT_.rows() << " " << penT_.cols() << std::endl;
+      auto result = lambdaS()*(R1() + lambdaT()*penT_).transpose()*invR0_.solve(R1() + lambdaT()*penT_); 
+      //std::cout << "fine result" << std::endl; 
+      //std::cout << "dim result - pen() in ParabolicBase " << result.rows() << " " << result.cols() << std::endl;
+      return result;
     }
     
     // setters

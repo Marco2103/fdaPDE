@@ -22,7 +22,7 @@ using fdaPDE::calibration::iGCV;
 #include "RegressionBase.h"
 using fdaPDE::models::RegressionBase;
 #include "FPIRLS.h"
-using fdaPDE::models::FPIRLS ; 
+using fdaPDE::models::FPIRLS; 
 
 
 namespace fdaPDE{
@@ -52,14 +52,15 @@ namespace models{
   public:
     IMPORT_REGRESSION_SYMBOLS;
     using Base::lambdaS; // smoothing parameter in space
-    using Base::n_temporal_locs; // number of time instants m defined over [0,T]
-    using Base::n_temporal_basis; // M   
-    using Base::lambdaT; // smoothing parameter in time  
-                         // M : aggiunto per initialize_mu
-    using Base::Pt;      // time penalization matrix: [Pt_]_{ij} = \int_{[0,T]} (\phi_i)_tt*(\phi_j)_tt
-                         // M : aggiunto per initialize_mu Separable 
+    // using Base::n_temporal_locs; // number of time instants m defined over [0,T]
+    // using Base::n_temporal_basis; // M   
+    // using Base::lambdaT;          // M : aggiunto per initialize_mu
+    // using Base::Pt;               // time penalization matrix: [Pt_]_{ij} = \int_{[0,T]} (\phi_i)_tt*(\phi_j)_tt
+    //                               // M : aggiunto per initialize_mu Separable
     // using Base::L;       // [L]_{ii} = 1/DeltaT for i \in {1 ... m} and [L]_{i,i-1} = -1/DeltaT for i \in {1 ... m-1}
-                         // M : aggiunto per initialize_mu Parabolic
+    //                         // M : aggiunto per initialize_mu Parabolic
+
+
     
     // constructor
     SQRPDE() = default;

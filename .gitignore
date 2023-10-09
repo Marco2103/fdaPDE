@@ -160,6 +160,10 @@
 !test/data/models/SQRPDE/2D_test3/*
 !test/data/models/SQRPDE/2D_test4/
 !test/data/models/SQRPDE/2D_test4/*
+!test/data/models/STQRPDE/2D_test3/
+!test/data/models/STQRPDE/2D_test3/*
+!test/data/models/STQRPDE/2D_test4/
+!test/data/models/STQRPDE/2D_test4/*
 !test/data/models/FPCA/2D_test1/
 !test/data/models/FPCA/2D_test1/*
 !test/data/models/FPCA/2D_test2/

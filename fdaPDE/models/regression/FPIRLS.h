@@ -87,9 +87,9 @@ namespace models{
 
       static_assert(is_regression_model<Model>::value);   
 
-      std::cout << "Initialize mu " << std::endl ; 
+      std::cout << "Initialize mu " << std::endl; 
       mu_ = m_.initialize_mu(); 
-      std::cout << "Fine initialize mu " << std::endl ; 
+      std::cout << "Fine initialize mu " << std::endl; 
   
       distribution_.preprocess(mu_);
       
