@@ -60,7 +60,7 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
   }
   else{
     if constexpr(std::is_same<RegularizationType, SpaceTimeSeparable>::value){
-      std::cout << "I'm SpaceTimeSeparable" << std::endl ; 
+      std::cout << "I'm SpaceTimeSeparable" << std::endl; 
       SparseBlockMatrix<double,2,2>
         A_init(PsiTD()*Psi()/n_obs() - Base::lambdaT()*Kronecker(Base::Pt(), pde().R0()), 2*lambdaS()*R1().transpose(),
                lambdaS()*R1(),                                                -lambdaS()*R0()                           );
@@ -76,8 +76,10 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
         BLOCK_FRAME_SANITY_CHECKS;
         f = (invA_init.solve(b_init)).head(Base::n_temporal_basis()*Base::n_basis());  
     }
+
     if constexpr(std::is_same<RegularizationType, SpaceTimeParabolic>::value){
       std::cout << "I'm SpaceTimeParabolic" << std::endl;
+
       if constexpr(std::is_same<Solver, MonolithicSolver>::value){
         std::cout << "...monolithic solver" << std::endl;
         SparseBlockMatrix<double,2,2> 
@@ -92,11 +94,37 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
         b_init.block(0,0, Base::n_temporal_locs()*Base::n_basis(),1) = PsiTD()*y()/n_obs(); 
         BLOCK_FRAME_SANITY_CHECKS;
         f = (invA_init.solve(b_init)).head(Base::n_temporal_locs()*Base::n_basis());    
- 
+
       } 
       else{
+
         std::cout << "...iterative solver" << std::endl;
-        // M same as monolithic (exact initialization)  => no if-else needed               
+
+        SparseBlockMatrix<double,2,2> 
+           A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1(),
+                 lambdaS()*R1(),         -lambdaS()*R0());
+
+        std::cout << "dim A_init: " << A_init.rows() << ", " << A_init.cols() << std::endl;          
+
+        fdaPDE::SparseLU<SpMatrix<double>> invA_init;
+        invA_init.compute(A_init);
+        DVector<double> b_init; 
+        b_init.resize(A_init.rows());        
+        std::cout << "dim b_init: " << b_init.size() << std::endl;   
+        std::cout << "dim y(): " << y().size() << std::endl;   // ---> da dove esce 500 ?? 
+        std::cout << "n*m: " << Base::n_temporal_locs()*Base::n_basis() << std::endl; 
+        // DVector<double> u_init; 
+        // u_init.resize(Base::n_temporal_locs()Base::n_basis());
+        // for(unsigned int i = 0; i < Base::n_temporal_locs(); ++i)
+        //   u_init.block(0,0, model().n_basis(),1) = u(i); 
+
+        b_init.block(Base::n_basis(),0, Base::n_basis(),1) = DVector<double>::Zero(Base::n_basis()); //lambdaS()*u();  
+        b_init.block(0,0, Base::n_basis(),1) = PsiTD()*y()/n_obs(); 
+        BLOCK_FRAME_SANITY_CHECKS;
+        std::cout << "after sanity check " << std::endl; 
+        f = (invA_init.solve(b_init)).head(Base::n_temporal_locs()*Base::n_basis()); 
+        std::cout << "after f " << std::endl; 
+                   
       } 
     }
   }
@@ -156,10 +184,12 @@ const DMatrix<double>& SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::
   // else // general case with covariates
   //   T_ = PsiTD()*lmbQ(Psi()) + lambdaS()*R_;
 
-  if(!hasCovariates()) // case without covariates, Q is the identity matrix
-    T_ = PsiTD()*W()*Psi()  + Base::pen();
-  else {// general case with covariates
-    T_ = PsiTD()*lmbQ(Psi()) + Base::pen();
+  if constexpr(!std::is_same<Solver, IterativeSolver>::value){   // M: iterative non ha pen()
+    if(!hasCovariates()) // case without covariates, Q is the identity matrix
+      T_ = PsiTD()*W()*Psi()  + Base::pen();
+    else {// general case with covariates
+      T_ = PsiTD()*lmbQ(Psi()) + Base::pen();
+  }
 
     // fdaPDE::SparseLU<SpMatrix<double>> invR0_temp ;
     // invR0_temp.compute(pde().R0());

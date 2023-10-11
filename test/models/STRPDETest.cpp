@@ -112,7 +112,7 @@ using fdaPDE::preprocess::InitialConditionEstimator;
  */
 TEST(STRPDE, Test1bis_Laplacian_NonParametric_GeostatisticalAtNodes_Separable_Monolithic) {
 
-  std::string path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/Thesis_shared/space_time/Test_STRPDE" ;
+  std::string path = "/mnt/c/Users/ileni/OneDrive - Politecnico di Milano/Thesis_shared/space_time/Test_STRPDE";
 
   // define time domain
   DVector<double> time_mesh;
@@ -143,8 +143,6 @@ TEST(STRPDE, Test1bis_Laplacian_NonParametric_GeostatisticalAtNodes_Separable_Mo
   BlockFrame<double, int> df;
   df.stack(OBSERVATIONS_BLK, y);
   model.setData(df);
-
-  std::cout << "y.rows() = " << model.y().rows() << std::endl ; 
   
   // // solve smoothing problem
   model.init();

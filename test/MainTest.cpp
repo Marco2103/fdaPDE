@@ -24,7 +24,7 @@
 // // regression module test suites
 // #include "models/SRPDETest.cpp"
 // #include "models/STRPDETest.cpp"
-// #include "models/SQRPDETest.cpp"
+#include "models/SQRPDETest.cpp"
 //#include "models/GSRPDETest.cpp"
 // #include "models/FPCATest.cpp"
 // // GCV test suites

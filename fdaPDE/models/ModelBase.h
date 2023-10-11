@@ -42,9 +42,6 @@ namespace models {
       
       lambda_ = lambda; 
       
-      std::cout << "Lambda[0] = " << lambda_[0] << std::endl; // M
-      std::cout << "Lambda[1] = " << lambda_[1] << std::endl;
-      
       }
     void setPDE(const PDE& pde) { pde_ = std::make_shared<PDE>(pde); }
     
