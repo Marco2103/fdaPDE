@@ -18,7 +18,7 @@ void SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::solve() {
 
   invA_ = fpirls.solver().invA();
 
-  if(hasCovariates()) {
+  if(hasCovariates()){
     U_ = fpirls.solver().U(); 
     V_ = fpirls.solver().V(); 
   }
@@ -42,7 +42,7 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
 
   // correction on the matrix if time is present
   if constexpr(std::is_same<RegularizationType, SpaceOnly>::value){
-    std::cout << "I'm SpaceOnly" << std::endl ; 
+    std::cout << "I'm SpaceOnly" << std::endl; 
     SparseBlockMatrix<double,2,2>
     A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1().transpose(),
            lambdaS()*R1(),     -lambdaS()*R0()            );
