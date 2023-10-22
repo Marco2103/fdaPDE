@@ -81,6 +81,8 @@
 !test/data/models/STRPDE/*
 !test/data/models/SQRPDE/
 !test/data/models/SQRPDE/*
+!test/data/models/MSQRPDE/
+!test/data/models/MSQRPDE/*
 !test/data/models/FPCA/
 !test/data/models/FPCA/*
 !test/data/misc/

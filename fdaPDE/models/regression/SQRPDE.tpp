@@ -53,7 +53,7 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
     DVector<double> b_init; 
     b_init.resize(A_init.rows());
 
-    b_init.block(Base::n_basis(),0, Base::n_temporal_basis()*Base::n_basis(),1) = lambdaS()*u();  
+    b_init.block(Base::n_basis(),0, Base::n_basis(),1) = lambdaS()*u();  
     b_init.block(0,0, Base::n_basis(),1) = PsiTD()*y()/n_obs(); 
     BLOCK_FRAME_SANITY_CHECKS;
     f = (invA_init.solve(b_init)).head(Base::n_basis());         

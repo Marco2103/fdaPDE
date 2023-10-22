@@ -131,7 +131,6 @@ namespace models{
     std::cout << "MAX ITER RAGGIUNTO " << std::endl;  
 
   std::cout << "Number of FPIRLS iterations: " << k_ << std::endl;
-
   std::cout << "Value of J at last iteration: " << J_new << std::endl; 
   
       return;

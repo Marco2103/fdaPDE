@@ -5,30 +5,35 @@
 template <typename PDE, typename SamplingDesign>
 void MSQRPDE<PDE, SamplingDesign>::init_model() {
 
+    std::cout << "MSQRPDE init model: here 1" << std::endl;
     // Assemble matrices
     assemble_matrices();  
+    std::cout << "MSQRPDE init model: here 2" << std::endl;
 
     // Definition of h SQRPDE models for initialization 
     for(std::size_t j = 0; j < h_; ++j){
-        SQRPDE<PDE, fdaPDE::models::SpaceOnly, SamplingDesign, fdaPDE::models::MonolithicSolver> model_j(pde(), alphas_[j]);
+        std::cout << "MSQRPDE init model: here 3." << j << std::endl;
+        SQRPDE<PDE, fdaPDE::models::SpaceOnly, SamplingDesign, fdaPDE::models::MonolithicSolver> 
+            model_j(pde(), alphas_[j]);
 
         // solver initialization
         model_j.data() = data();
-        model_j.setLambda(lambdas_[j]);
+        model_j.setLambdaS(lambdas_[j]);
         model_j.set_spatial_locations(this->locs());
         model_j.init_pde();
         model_j.init_regularization();
-        model_j.init_sampling();
+        model_j.init_sampling();    
         model_j.init_nan();
         model_j.init_model();
         model_j.solve();
 
-        f_curr_(j) = model_j.f();
-        fn_curr_(j) = Psi()*model_j.f();
-        g_curr_(j) = model_j.g();
-        beta_curr_(j) = model_j.beta();
+        f_curr_.segment(j*n_basis(), (j+1)*n_basis()-1) = model_j.f();
+        fn_curr_.segment(j*n_obs(), (j+1)*n_obs()-1) = Psi()*model_j.f();
+        g_curr_.segment(j*n_basis(), (j+1)*n_basis()-1) = model_j.g();
+        beta_curr_.segment(j*q(), (j+1)*q()-1) = model_j.beta();
 
     }
+    std::cout << "MSQRPDE init model: here 4" << std::endl;
     
     return;
 }
@@ -61,20 +66,20 @@ void MSQRPDE<PDE, SamplingDesign>::solve() {
                 DVector<double> delta_j; 
 
                 if(!hasCovariates()){
-                     w_j = 2*(y() - fn_prev_(j)).cwiseAbs(); 
+                     w_j = 2*(y() - fn_prev_.segment(j*n_obs(), (j+1)*n_obs()-1)).cwiseAbs(); 
 
                     if(j < h_-1) {
-                        delta_j = 2*(eps_*DVector<double>::Ones(n_obs()) - D_script_.row(j)*fn_prev_(j)).cwiseAbs().cwiseInverse(); 
+                        delta_j = 2*(eps_*DVector<double>::Ones(n_obs()) - D_script_.row(j)*fn_prev_.segment(j*n_obs(), (j+1)*n_obs()-1)).cwiseAbs().cwiseInverse(); 
                     }
                     
                     z_j = y() + (0.5 - alphas_[j])*DiagMatrix<double>(w_j)*DVector<double>::Ones(n_obs()); 
 
                 }
                 else{
-                    w_j = 2*(y()-X().transpose()*beta_prev_(j) - fn_prev_(j)).cwiseAbs(); 
+                    w_j = 2*(y()-X().transpose()*beta_prev_.segment(j*q(), (j+1)*q()-1) - fn_prev_.segment(j*n_obs(), (j+1)*n_obs()-1)).cwiseAbs(); 
 
                     if(j < h_-1) {
-                        delta_j = 2*(eps_*DVector<double>::Ones(n_obs())-X().transpose()*D_.row(j)*beta_prev_(j) - D_script_.row(j)*fn_prev_(j)).cwiseAbs().cwiseInverse(); 
+                        delta_j = 2*(eps_*DVector<double>::Ones(n_obs())-X().transpose()*D_.row(j)*beta_prev_.segment(j*q(), (j+1)*q()-1) - D_script_.row(j)*fn_prev_.segment(j*n_obs(), (j+1)*n_obs()-1)).cwiseAbs().cwiseInverse(); 
                     }
                     
                     z_j = y() + (0.5 - alphas_[j])*DiagMatrix<double>(w_j)*DVector<double>::Ones(n_obs()); 
@@ -131,24 +136,67 @@ void MSQRPDE<PDE, SamplingDesign>::solve() {
                 }
                 // store PDE misfit
                 g_curr_ = sol.tail(h_*n_basis());
-     
+
+                // update J 
+                J_old = J_new; 
+                J_new = model_loss() + g_curr_.dot(R0_multiple_*g_curr_);   // R0 multiple already contains lambdas!
         }
 
-        gamma_ = gamma_*5;  // change factor
+        gamma_ *= C_;  
 
     }
-
-
-
-
 
   return;
 }
 
 
 template <typename PDE, typename SamplingDesign>
-bool MSQRPDE<PDE, SamplingDesign>::crossing_constraints() {
-    return true;
+const bool MSQRPDE<PDE, SamplingDesign>::crossing_constraints() const {
+
+    bool crossed = false; 
+    int i = 0; 
+    int j = 0; 
+    while(!crossed & i < n_obs()){
+        while(!crossed & j < h_-1){
+            if(X().row(i) * D_.row(j) * beta_curr_ + (D_script_.row(j) * f_curr_)(i) < eps_)
+                crossed = true; 
+            j++;   
+        }
+        i++; 
+    }
+
+    return crossed;
+}
+
+template <typename PDE, typename SamplingDesign>
+DVector<double> MSQRPDE<PDE, SamplingDesign>::fitted() const{
+
+    DVector<double> ret; 
+    for(int j = 0; j < h_; ++j){
+        ret << ret, fitted(j); 
+    }
+    return ret; 
+
+}
+
+
+template <typename PDE, typename SamplingDesign>
+DVector<double> MSQRPDE<PDE, SamplingDesign>::fitted(unsigned int j) const{
+
+    return X()*beta_curr_.segment(j*q(), (j+1)*q()-1) + f_curr_.segment(j*n_basis(), (j+1)*n_basis()-1); 
+
+}
+
+template <typename PDE, typename SamplingDesign>
+double MSQRPDE<PDE, SamplingDesign>::model_loss() const{
+  
+    // compute value of the unpenalized unconstrained functional J: 
+    double loss = 0.; 
+    for(int j = 0; j < h_; ++j){
+        loss += rho_alpha(alphas_[j], y() - fitted(j)).sum(); 
+    }
+    return loss; 
+
 }
 
 template <typename PDE, typename SamplingDesign>
@@ -166,3 +214,15 @@ const DMatrix<double>& MSQRPDE<PDE, SamplingDesign>::Q_multiple() {
 
   return Q_multiple_;
 }
+
+
+// returns the pinball loss at a specific x 
+template <typename PDE, typename Solver>
+ DVector<double> MSQRPDE<PDE, Solver>::rho_alpha(const double& alpha, const DVector<double>& x) const{ 
+  return 0.5*x.cwiseAbs() + (alpha - 0.5)*x; 
+}
+
+// template <typename PDE, typename Solver>
+// const std::pair<unsigned int, unsigned int>  MSQRPDE<PDE, Solver>::block_indexes(unsinged int j, usigned int dim) const{
+//     return std::make_pair<unsigned int, unsigned int>(j*dim, (j+1)*dim-1); 
+// }

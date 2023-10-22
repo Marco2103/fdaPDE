@@ -71,6 +71,7 @@ namespace NLA {
   template <typename Lhs, typename Rhs>
   KroneckerProduct<Lhs, Rhs> Kronecker
   (const Eigen::MatrixBase<Lhs> &lhs, const Eigen::MatrixBase<Rhs>& rhs) {
+    std::cout << "Kron base base" << std::endl;
     return KroneckerProduct<Lhs, Rhs>(lhs.derived(), rhs.derived());
   }
 
@@ -78,6 +79,7 @@ namespace NLA {
   template <typename Lhs, typename Rhs>
   SparseKroneckerProduct<Lhs, Rhs, SparseStorage, SparseStorage> Kronecker
   (const Eigen::SparseMatrixBase<Lhs> &lhs, const Eigen::SparseMatrixBase<Rhs>& rhs) {
+    std::cout << "Kron sparse sparse" << std::endl;
     return SparseKroneckerProduct<Lhs, Rhs, SparseStorage, SparseStorage>(lhs.derived(), rhs.derived());
   }
   

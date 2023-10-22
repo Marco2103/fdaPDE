@@ -41,48 +41,37 @@ namespace models{
   private:
     typedef RegressionBase<MSQRPDE<PDE, SamplingDesign>> Base;
     
-    static const unsigned int h_;    // number of quantile orders 
-    const std::vector<double> alphas_;                          // quantile order 
-    // double rho_alpha(const double&) const;             // pinball loss function (quantile check function)
-
-    // fdaPDE::SparseLU<SpMatrix<double>> invA_;         // factorization of matrix A      
-
-    // DVector<double> py_{};                              // y - (1-2*alpha)|y - X*beta - f|
-    // DVector<double> pW_{};                              // diagonal of W^k = 1/(2*n*|y - X*beta - f|)
-
-    // // FPIRLS parameters (set to default)
-    // std::size_t max_iter_ = 200;  
-    // double tol_weights_ = 1e-6;  
-    // double tol_ = 1e-6; 
-
-    // Tolerances
-    double gamma_ = 1; 
-    double eps_ = 1e-6; 
+    unsigned int h_;                     // number of quantile orders 
+    const std::vector<double> alphas_;   // quantile order 
 
     // algorithm's parameters 
-    double tolerance_; 
-    std::size_t max_iter_;
-    std::size_t k_ = 0; // iteration index
+    double gamma_ = 1;               // crossing penalty 
+    double eps_ = 1e-6;              // crossing tolerance 
+    double C_ = 5;                   // crossing penalty factor
+    double tolerance_ = 1e-6;        // convergence tolerance 
+    std::size_t max_iter_ = 200;     // max number of iterations 
+    std::size_t k_ = 0;              // iteration index
 
-    // System 
-    SparseBlockMatrix<double,2,2> A_{}; // system matrix of non-parametric problem (2N x 2N matrix)
+    // linear system  
+    SparseBlockMatrix<double,2,2> A_{};         // system matrix of non-parametric problem (2hN x 2hN matrix)
     fdaPDE::SparseLU<SpMatrix<double>> invA_;   // factorization of matrix A
-    DVector<double> b_{};
+    DVector<double> b_{};                       // system rhs 
+
+    // room for solution 
+    DVector<double> f_curr_{};     // current estimate of the spatial field f (1 x h*N vector)
+    DVector<double> fn_curr_{};    // current estimate of the spatial field f_n (1 x h*n vector)
+    DVector<double> g_curr_{};     // current PDE misfit
+    DVector<double> beta_curr_{};  // current estimate of the coefficient vector (1 x h*q vector)
+    DVector<double> f_prev_{};     // previous estimate of the spatial field f (1 x h*N vector)
+    DVector<double> fn_prev_{};    // previous estimate of the spatial field f_n (1 x h*n vector)
+    DVector<double> g_prev_{};     // previous PDE misfit
+    DVector<double> beta_prev_{};  // previous estimate of the coefficient vector (1 x h*q vector)
 
     // room for algorithm quantities 
-    DVector<double> f_curr_{};     // estimate of the spatial field (1 x h*N vector)
-    DVector<double> fn_curr_{};    // estimate of the spatial field (1 x h*n vector)
-    DVector<double> g_curr_{};     // PDE misfit
-    DVector<double> beta_curr_{};  // estimate of the coefficient vector (1 x h*q vector)
-    DVector<double> f_prev_{};     // estimate of the spatial field (1 x h*N vector)
-    DVector<double> fn_prev_{};    // estimate of the spatial field (1 x h*n vector)
-    DVector<double> g_prev_{};     // PDE misfit
-    DVector<double> beta_prev_{};  // estimate of the coefficient vector (1 x h*q vector)
-
-    SpMatrix<double> Ih_;     // identity h x h 
-    SpMatrix<double> In_;     // identity n x n
-    SpMatrix<double> Iq_;     // identity q x q 
-    SpMatrix<double> Ihn_;     // identity h*n x h*n 
+    SpMatrix<double> Ih_;                 // identity h x h 
+    SpMatrix<double> In_;                 // identity n x n
+    SpMatrix<double> Iq_;                 // identity q x q 
+    SpMatrix<double> Ihn_;                // identity h*n x h*n 
     SpMatrix<double> Psi_multiple_{}; 
     SpMatrix<double> R0_multiple_{};
     SpMatrix<double> R1_multiple_{}; 
@@ -101,89 +90,111 @@ namespace models{
   public:
     IMPORT_REGRESSION_SYMBOLS;
 
-    std::vector<double> lambdas_;       // smoothing parameters in space   
+    DVector<double> lambdas_;       // smoothing parameters in space   
 
     // constructor
     MSQRPDE() = default;
     MSQRPDE(const PDE& pde, std::vector<double>& alphas = {0.1, 0.5, 0.9}) : Base(pde), alphas_(alphas) {
       h_ = alphas_.size();
-      f_curr_.resize(h_, n_basis());
-      fn_curr_.resize(h_, n_obs());
-      g_curr_.resize(h_, n_basis());
-      beta_curr_.resize(h_, q());
-      f_prev_.resize(h_, n_basis());
-      fn_prev_.resize(h_, n_obs());
-      g_prev_.resize(h_, n_basis());
-      beta_prev_.resize(h_, q());
     }; 
     
-    // setter
-    // void setFPIRLSTolerance(double tol) { tol_ = tol; }
-    // void setFPIRLSMaxIterations(std::size_t max_iter) { max_iter_ = max_iter; }
-    // void setAlpha(const double &alpha) { alpha_ = alpha; }
 
     // ModelBase implementation
     void init_model() ;
     virtual void solve(); // finds a solution to the smoothing problem
 
-    // required by FPIRLS (model_loss computes the unpenalized loss)
-    // double model_loss(const DVector<double>& mu) const;
-
-    // required by FPIRLS (initialize \mu for the first FPIRLS iteration)
-    // DVector<double> initialize_mu() const;
-
-    // required by FPIRLS (computes weight matrix and vector of pseudo-observations)
-    // returns a pair of references to W^k and \tilde y^k
-    // std::tuple<DVector<double>&, DVector<double>&> compute(const DVector<double>& mu);  
-
-
-    bool crossing_constraints();
+    const bool crossing_constraints() const;
 
     void assemble_matrices(){
 
+      std::cout << "MSQRPDE assemble: here 1" << std::endl;
+
+      // room for solution 
+      f_curr_.resize(h_*n_basis());
+      fn_curr_.resize(h_*n_obs());
+      g_curr_.resize(h_*n_basis());
+      beta_curr_.resize(h_*q());
+      f_prev_.resize(h_*n_basis());
+      fn_prev_.resize(h_*n_obs());
+      g_prev_.resize(h_*n_basis());
+      beta_prev_.resize(h_*q());
+
+      std::cout << "MSQRPDE assemble: here 2" << std::endl;
+
+      // set all lambdas equal 
+      lambdas_.resize(h_);   
+      lambdas_ =  this->lambdaS()*DVector<double>::Ones(h_);  
+
+      std::cout << "MSQRPDE assemble: here 3" << std::endl;
+
+      // set identity matrices 
       Ih_.resize(h_, h_); 
 	    Ih_.setIdentity();
-
       In_.resize(n_obs(), n_obs()); 
 	    In_.setIdentity();
-
       Iq_.resize(n_obs(), n_obs()); 
 	    Iq_.setIdentity();
-
       Ihn_.resize(h_*n_obs(), h_*n_obs()); 
 	    Ihn_.setIdentity();
 
-      // Assemble FEM, mass and stiffness matrices
+      std::cout << "MSQRPDE assemble: here 4" << std::endl;
+
+      // assemble FEM, mass and stiffness matrices
       Psi_multiple_ = Kronecker(Ih_, Psi()); 
-      R0_multiple_ = Kronecker(DiagMatrix<double>(lambdas_), R0());
-      R1_multiple_ = Kronecker(DiagMatrix<double>(lambdas_), R1());
+      std::cout << "MSQRPDE assemble: here 4.1" << std::endl;
+      R0_multiple_ = Kronecker(SpMatrix<double>(DiagMatrix<double>(lambdas_)), R0());
+      std::cout << "MSQRPDE assemble: here 4.5" << std::endl;
+      R1_multiple_ = Kronecker(SpMatrix<double>(DiagMatrix<double>(lambdas_)), R1());
 
-      X_multiple_ = Kronecker(Ih_, X()); 
+      std::cout << "MSQRPDE assemble: here 5" << std::endl;
 
-      BandMatrix<double> E_(h_-1, h_, 1, 1);
-      E_.diagonal(1).setConstant(1);
-      E_.diagonal(-1).setConstant(-1);
+      // assemble 
+      DMatrix<double> Ih_dense(Ih_); 
+      X_multiple_ = Kronecker(Ih_dense, X()); 
 
-      D_ = Kronecker(SpMatrix<double>(E_), Iq_);
-      D_script_ = Kronecker(SpMatrix<double>(E_), In_); 
+      std::cout << "MSQRPDE assemble: here 6" << std::endl;
 
-      
+      // BandMatrix<double> E_(h_-1, h_, 1, 1);
+      // E_.diagonal(1).setConstant(1);
+      // E_.diagonal(-1).setConstant(-1);
+      SpMatrix<double> E_{};
+      E_.resize(h_-1, h_); 
+      E_.reserve(2*h_-1); 
+
+      std::vector<fdaPDE::Triplet<double>> tripletListOnes;
+      std::vector<fdaPDE::Triplet<double>> tripletListMinusOnes;
+      tripletListMinusOnes.reserve(h_);
+      tripletListOnes.reserve(h_-1);
+
+      std::cout << "MSQRPDE assemble: here 7" << std::endl;
+
+      for(std::size_t i = 0; i < h_; ++i)
+	      tripletListMinusOnes.emplace_back(i, i, -1.0);
+
+      for(std::size_t i = 0; i < h_-1; ++i)
+	      tripletListOnes.emplace_back(i, i+1, 1.0);
+
+      E_.setFromTriplets(tripletListOnes.begin(), tripletListOnes.end());
+      E_.setFromTriplets(tripletListMinusOnes.begin(), tripletListMinusOnes.end());
+
+      std::cout << "MSQRPDE assemble: here 8" << std::endl;
+
+      D_ = Kronecker(E_, Iq_);        
+      D_script_ = Kronecker(E_, In_);  
+
+      std::cout << "MSQRPDE assemble: here 9" << std::endl;
 
     }
 
+    DVector<double> rho_alpha(const double&, const DVector<double>&) const; 
+    DVector<double> fitted(unsigned int j) const; 
+    DVector<double> fitted() const; 
+    double model_loss() const; 
+    const std::pair<unsigned int, unsigned int> block_indexes(unsigned int, unsigned int) const; 
 
     // // iGCV interface implementation
     // virtual const DMatrix<double>& T();  
     // virtual const DMatrix<double>& Q(); 
-
-    // // returns the euclidian norm of y - \hat y
-    // double norm(const DMatrix<double>& obs, const DMatrix<double>& fitted) const ; 
-
-    // getters
-    // const fdaPDE::SparseLU<SpMatrix<double>>& invA() const { return invA_; }
-    // const DMatrix<double>& U() const { return U_; }
-    // const DMatrix<double>& V() const { return V_; }
-
 
     const DMatrix<double>& H_multiple(); 
     const DMatrix<double>& Q_multiple(); 

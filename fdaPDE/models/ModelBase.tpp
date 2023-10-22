@@ -1,11 +1,17 @@
 // perform initialization of model object, must be called before call to .solve()
 template <typename Model>
 void ModelBase<Model>::init(){
+  std::cout << "modelBase: here 1" << std::endl; 
   init_pde();                    // init pde object
+  std::cout << "modelBase: here 2" << std::endl;
   model().init_regularization(); // init regularization term 
+  std::cout << "modelBase: here 3" << std::endl;
   model().init_sampling(true);   // init \Psi matrix, always force recomputation
+  std::cout << "modelBase: here 4" << std::endl;
   model().init_nan();            // analyze and set missingness pattern
+  std::cout << "modelBase: here 5" << std::endl;
   model().init_model();
+  std::cout << "modelBase: here 6" << std::endl;
 }
 
 // set model's data from blockframe
