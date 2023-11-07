@@ -118,9 +118,17 @@ namespace models{
 	DVector<double> fitted = solver_.fitted(); // compute fitted values
 	mu_ = distribution_.inv_link(fitted);
 
-	// compute value of functional J for this pair (\beta, f)
-  double J = m_.model_loss(mu_) + m_.lambdaS()*g_.dot(m_.R0()*g_); 
-   
+  // compute value of functional J for this pair (\beta, f)
+  double J = m_.model_loss(mu_) ;     
+  if constexpr (is_space_only<Model>::value)
+      // for a space only problem we can leverage the following identity
+      // \int_D (Lf-u)^2 = g^\top*R_0*g = f^\top*P*f, being P = R_1^\top*(R_0)^{-1}*R_1
+      J += m_.lambdaS()*solver_.g().dot(solver_.R0() * solver_.g());
+  else
+      // space-time separable regularization requires to compute the penalty matrix
+      // J += solver_.f().dot(m_.pen()*solver_.f());  -> dopo aver corretto pen ok
+      J += m_.lambdaS()*g_.dot(solver_.R0()*g_) + m_.lambdaT()*solver_.f().dot(Kronecker(solver_.Pt(), solver_.pde().R0())*solver_.f());
+
 	// prepare for next iteration
 	k_++; J_old = J_new; J_new = J;
 

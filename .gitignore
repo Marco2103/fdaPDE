@@ -75,6 +75,10 @@
 !test/data/mesh/network/*
 !test/data/models/
 !test/data/models/*
+!test/models/
+!test/models/*
+!test/models/SQRPDETest.cpp/
+!test/models/MSQRPDETest.cpp/
 !test/data/models/SRPDE/
 !test/data/models/SRPDE/*
 !test/data/models/STRPDE/

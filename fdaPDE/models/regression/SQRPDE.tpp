@@ -31,7 +31,6 @@ void SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::solve() {
   return;
 }
 
-
 // Non-parametric and semi-parametric cases coincide here, since beta^(0) = 0
 template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
 DVector<double> 
@@ -104,8 +103,7 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
            A_init(PsiTD()*Psi()/n_obs(), 2*lambdaS()*R1(),
                  lambdaS()*R1(),         -lambdaS()*R0());
 
-        std::cout << "dim A_init: " << A_init.rows() << ", " << A_init.cols() << std::endl;          
-
+        std::cout << "dim A_init: " << A_init.rows() << ", " << A_init.cols() << std::endl;
         fdaPDE::SparseLU<SpMatrix<double>> invA_init;
         invA_init.compute(A_init);
         DVector<double> b_init; 
@@ -133,6 +131,9 @@ SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::initialize_mu() {  // M
   return fn;
   
 }
+
+
+
 
 template <typename PDE, typename RegularizationType, typename SamplingDesign, typename Solver>
 std::tuple<DVector<double>&, DVector<double>&>
@@ -166,7 +167,7 @@ double
 SQRPDE<PDE, RegularizationType, SamplingDesign, Solver>::model_loss(const DVector<double>& mu) const{
   
   // compute value of functional J given mu: /(2*n) 
-    return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm();     
+  return (pW_.cwiseSqrt().matrix().asDiagonal()*(py_ - mu)).squaredNorm();     
 }
 
 // required to support GCV based smoothing parameter selection

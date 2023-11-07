@@ -25,12 +25,13 @@
 // #include "models/SRPDETest.cpp"
 // #include "models/STRPDETest.cpp"
 //#include "models/SQRPDETest.cpp"
-#include "models/MSQRPDETest.cpp"
+//#include "models/MSQRPDETest.cpp"
 //#include "models/GSRPDETest.cpp"
 // #include "models/FPCATest.cpp"
 // // GCV test suites
 //#include "calibration/GCVTest.cpp"
 // #include "calibration/GCVNewtonTest.cpp"
+#include "models/US_ozone.cpp"
 
 int main(int argc, char **argv){
   // start testing

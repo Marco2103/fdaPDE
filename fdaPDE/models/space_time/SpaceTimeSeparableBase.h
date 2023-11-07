@@ -93,11 +93,11 @@ namespace models{
     // returns an expression encoding \lambda_S*((R1^T*R0^{-1}*R1) \kron Rt) + \lambda_T*(R0 \kron Pt)
     auto pen() {
       if(is_empty(penS_)){ // compute once and cache result
-      std::cout << "Assembly pen" << std::endl ; 
 	fdaPDE::SparseLU<SpMatrix<double>> invR0_;
 	invR0_.compute(pde_->R0());
-	penS_ = Kronecker(pde_->R1().transpose()*invR0_.solve(pde_->R1()), Rt_); // (R1^T*R0^{-1}*R1) \kron Rt
-  penT_ = Kronecker(pde_->R0(), Pt_); // (R0 \kron Pt)
+  penS_ = Kronecker(Rt_, pde_->R1().transpose()*invR0_.solve(pde_->R1()));  // Rt \kron (R1^T*R0^{-1}*R1) 
+  penT_ = Kronecker(Pt_, pde_->R0());
+
       }
       return lambdaS()*penS_ + lambdaT()*penT_;
     }

@@ -36,13 +36,13 @@ RCPP_EXPOSED_AS  (SpaceVarying_2D_Order1)
 RCPP_EXPOSED_WRAP(SpaceVarying_2D_Order1)
 
 // wrapper for SQRPDE module
-template <typename RegularizingPDE, typename S> class R_SQRPDE{
+template <typename RegularizingPDE, typename RegularizationType, typename S, typename Solver> class R_SQRPDE{
 protected:
   typedef RegularizingPDE RegularizingPDE_;
   RegularizingPDE_ regularization_; // tipo di PDE
 
   // qui metti il modello che vuoi wrappare 
-  SQRPDE<typename RegularizingPDE_::PDEType, S> model_;
+  SQRPDE<typename RegularizingPDE_::PDEType, RegularizationType, S, Solver> model_;
   BlockFrame<double, int> df_;
 public:
   
@@ -91,7 +91,8 @@ public:
 // definition of Rcpp modules
 
 // 2D, locations == nodes, laplacian 
-typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::GeoStatMeshNodes> SQRPDE_Laplacian_2D_GeoStatNodes;
+typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::SpaceOnly, 
+                fdaPDE::models::GeoStatMeshNodes, fdaPDE::models::MonolithicSolver> SQRPDE_Laplacian_2D_GeoStatNodes;
 RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatNodes) {
   Rcpp::class_<SQRPDE_Laplacian_2D_GeoStatNodes>("SQRPDE_Laplacian_2D_GeoStatNodes")
     .constructor<Laplacian_2D_Order1>()
@@ -105,14 +106,17 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatNodes) {
     .method("set_lambda_s",     &SQRPDE_Laplacian_2D_GeoStatNodes::set_lambda_s)
     .method("set_alpha",     &SQRPDE_Laplacian_2D_GeoStatNodes::set_alpha)
     .method("set_observations", &SQRPDE_Laplacian_2D_GeoStatNodes::set_observations)
+    .method("set_covariates", &SQRPDE_Laplacian_2D_GeoStatNodes::set_covariates)
     .method("init",       &SQRPDE_Laplacian_2D_GeoStatNodes::init)
     .method("init_regularization",       &SQRPDE_Laplacian_2D_GeoStatNodes::init_regularization)
     .method("init_pde",       &SQRPDE_Laplacian_2D_GeoStatNodes::init_pde)
     .method("solve",            &SQRPDE_Laplacian_2D_GeoStatNodes::solve);
 }
 
- // 2D, locations == nodes, constant PDE coefficients 
-typedef R_SQRPDE<ConstantCoefficients_2D_Order1, fdaPDE::models::GeoStatMeshNodes> SQRPDE_ConstantCoefficients_2D_GeoStatNodes;
+// 2D, locations == nodes, constant PDE coefficients 
+typedef R_SQRPDE<ConstantCoefficients_2D_Order1,
+                fdaPDE::models::SpaceOnly, fdaPDE::models::GeoStatMeshNodes, 
+                fdaPDE::models::MonolithicSolver> SQRPDE_ConstantCoefficients_2D_GeoStatNodes;
 RCPP_MODULE(SQRPDE_ConstantCoefficients_2D_GeoStatNodes) {
   Rcpp::class_<SQRPDE_ConstantCoefficients_2D_GeoStatNodes>("SQRPDE_ConstantCoefficients_2D_GeoStatNodes")
     .constructor<ConstantCoefficients_2D_Order1>()
@@ -136,7 +140,8 @@ RCPP_MODULE(SQRPDE_ConstantCoefficients_2D_GeoStatNodes) {
 }
 
 // 2D, locations != nodes, laplacian 
-typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::GeoStatLocations> SQRPDE_Laplacian_2D_GeoStatLocations;
+typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::SpaceOnly, 
+                fdaPDE::models::GeoStatLocations, fdaPDE::models::MonolithicSolver> SQRPDE_Laplacian_2D_GeoStatLocations;
 RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatLocations) {
   Rcpp::class_<SQRPDE_Laplacian_2D_GeoStatLocations>("SQRPDE_Laplacian_2D_GeoStatLocations")
     .constructor<Laplacian_2D_Order1>()
@@ -158,8 +163,33 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_GeoStatLocations) {
     .method("solve",            &SQRPDE_Laplacian_2D_GeoStatLocations::solve);
 }
 
+// // 2D, locations != nodes, SpaceVarying
+// typedef R_SQRPDE<SpaceVarying_2D_Order1, fdaPDE::models::SpaceOnly, 
+//                 fdaPDE::models::GeoStatLocations, fdaPDE::models::MonolithicSolver> SQRPDE_SpaceVarying_2D_GeoStatLocations;
+// RCPP_MODULE(SQRPDE_SpaceVarying_2D_GeoStatLocations) {
+//   Rcpp::class_<SQRPDE_SpaceVarying_2D_GeoStatLocations>("SQRPDE_SpaceVarying_2D_GeoStatLocations")
+//     .constructor<SpaceVarying_2D_Order1>()
+//     //getters 
+//     .method("f",     &SQRPDE_SpaceVarying_2D_GeoStatLocations::f)
+//     .method("fn",     &SQRPDE_SpaceVarying_2D_GeoStatLocations::fn)
+//     .method("beta",     &SQRPDE_SpaceVarying_2D_GeoStatLocations::beta)
+//     .method("R0",       &SQRPDE_SpaceVarying_2D_GeoStatLocations::R0)
+//     .method("Psi",       &SQRPDE_SpaceVarying_2D_GeoStatLocations::Psi)
+//     // setters
+//     .method("set_lambda_s",     &SQRPDE_SpaceVarying_2D_GeoStatLocations::set_lambda_s)
+//     .method("set_alpha",     &SQRPDE_SpaceVarying_2D_GeoStatLocations::set_alpha)
+//     .method("set_locations",  &SQRPDE_SpaceVarying_2D_GeoStatLocations::set_locations)
+//     .method("set_observations", &SQRPDE_SpaceVarying_2D_GeoStatLocations::set_observations)
+//     .method("set_covariates", &SQRPDE_SpaceVarying_2D_GeoStatLocations::set_covariates)
+//     .method("init",       &SQRPDE_SpaceVarying_2D_GeoStatLocations::init)
+//     .method("init_regularization",       &SQRPDE_SpaceVarying_2D_GeoStatLocations::init_regularization)
+//     .method("init_pde",       &SQRPDE_SpaceVarying_2D_GeoStatLocations::init_pde)
+//     .method("solve",            &SQRPDE_SpaceVarying_2D_GeoStatLocations::solve);
+// }
+
 // 2D, areal, laplacian 
-typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::Areal> SQRPDE_Laplacian_2D_Areal;   // era sbagliato
+typedef R_SQRPDE<Laplacian_2D_Order1, fdaPDE::models::SpaceOnly, 
+                fdaPDE::models::Areal, fdaPDE::models::MonolithicSolver> SQRPDE_Laplacian_2D_Areal;   // era sbagliato
 RCPP_MODULE(SQRPDE_Laplacian_2D_Areal) {
   Rcpp::class_<SQRPDE_Laplacian_2D_Areal>("SQRPDE_Laplacian_2D_Areal")
     .constructor<Laplacian_2D_Order1>()
@@ -185,7 +215,8 @@ RCPP_MODULE(SQRPDE_Laplacian_2D_Areal) {
 
 
 // 3D, locations == nodes, laplacian 
-typedef R_SQRPDE<Laplacian_3D_Order1, fdaPDE::models::GeoStatMeshNodes> SQRPDE_Laplacian_3D_GeoStatNodes;
+typedef R_SQRPDE<Laplacian_3D_Order1, fdaPDE::models::SpaceOnly,
+                fdaPDE::models::GeoStatMeshNodes, fdaPDE::models::MonolithicSolver> SQRPDE_Laplacian_3D_GeoStatNodes;
 RCPP_MODULE(SQRPDE_Laplacian_3D_GeoStatNodes) {
   Rcpp::class_<SQRPDE_Laplacian_3D_GeoStatNodes>("SQRPDE_Laplacian_3D_GeoStatNodes")
     .constructor<Laplacian_3D_Order1>()
@@ -209,7 +240,8 @@ RCPP_MODULE(SQRPDE_Laplacian_3D_GeoStatNodes) {
 }
 
 // 3D, locations != nodes, laplacian 
-typedef R_SQRPDE<Laplacian_3D_Order1, fdaPDE::models::GeoStatLocations> SQRPDE_Laplacian_3D_GeoStatLocations;
+typedef R_SQRPDE<Laplacian_3D_Order1, fdaPDE::models::SpaceOnly,
+                fdaPDE::models::GeoStatLocations, fdaPDE::models::MonolithicSolver> SQRPDE_Laplacian_3D_GeoStatLocations;
 RCPP_MODULE(SQRPDE_Laplacian_3D_GeoStatLocations) {
   Rcpp::class_<SQRPDE_Laplacian_3D_GeoStatLocations>("SQRPDE_Laplacian_3D_GeoStatLocations")
     .constructor<Laplacian_3D_Order1>()
@@ -234,7 +266,8 @@ RCPP_MODULE(SQRPDE_Laplacian_3D_GeoStatLocations) {
 }
 
 // 2.5, locations = nodes , laplacian
-typedef R_SQRPDE<Laplacian_2_5D_Order1, fdaPDE::models::GeoStatMeshNodes> SQRPDE_Laplacian_2_5D_GeoStatNodes;
+typedef R_SQRPDE<Laplacian_2_5D_Order1, fdaPDE::models::SpaceOnly,
+                fdaPDE::models::GeoStatMeshNodes, fdaPDE::models::MonolithicSolver> SQRPDE_Laplacian_2_5D_GeoStatNodes;
 RCPP_MODULE(SQRPDE_Laplacian_2_5D_GeoStatNodes) {
   Rcpp::class_<SQRPDE_Laplacian_2_5D_GeoStatNodes>("SQRPDE_Laplacian_2_5D_GeoStatNodes")
     .constructor<Laplacian_2_5D_Order1>()
@@ -258,7 +291,8 @@ RCPP_MODULE(SQRPDE_Laplacian_2_5D_GeoStatNodes) {
 
 
 // 1.5, locations = nodes , laplacian
-typedef R_SQRPDE<Laplacian_1_5D_Order1, fdaPDE::models::GeoStatMeshNodes> SQRPDE_Laplacian_1_5D_GeoStatNodes;
+typedef R_SQRPDE<Laplacian_1_5D_Order1, fdaPDE::models::SpaceOnly, 
+                fdaPDE::models::GeoStatMeshNodes, fdaPDE::models::MonolithicSolver> SQRPDE_Laplacian_1_5D_GeoStatNodes;
 RCPP_MODULE(SQRPDE_Laplacian_1_5D_GeoStatNodes) {
   Rcpp::class_<SQRPDE_Laplacian_1_5D_GeoStatNodes>("SQRPDE_Laplacian_1_5D_GeoStatNodes")
     .constructor<Laplacian_1_5D_Order1>()
